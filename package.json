@@ -1,0 +1,11 @@
+{
+  "name": "u-queue",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com.cnpmjs.org/Juaoie/u-queue.git",
+  "author": "Juaoie <uaoie@qq.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "gulp": "^4.0.2"
+  }
+}
