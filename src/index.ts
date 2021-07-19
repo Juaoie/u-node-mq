@@ -44,8 +44,6 @@ export default class Unodemq {
       this.sendMessageToQueue(item, news);
     });
   }
-  $emit(queueName: string, news: any): void;
-  $emit(news: any): void;
   $emit(queueName: any, news?: any): void {
     if (queueName === undefined) throw "缺少参数";
     //发送消息给交换机
