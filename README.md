@@ -252,6 +252,7 @@ const allNewsLogs = new AllNewsLogs();
 | -------------------- | ------ | ------------ |
 | id                   | String | 消息 id      |
 | createTimeFormat     | String | 消息创建时间 |
+| size                 | String | 消息大小     |
 | readNum              | Number | 读取次数     |
 | latestReadTimeFormat | String | 最近读取时间 |
 
