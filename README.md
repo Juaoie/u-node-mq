@@ -224,16 +224,19 @@ const allQueueLogs = new AllQueueLogs();
 
 **allQueueLogs 参数说明**
 
-| 名称           | 类型     | 说明                                 |
-| -------------- | -------- | ------------------------------------ |
-| name           | String   | 队列名称                             |
-| id             | String   | 队列 id                              |
-| newsIdList     | String[] | 队列内消息 id 列表                   |
-| newsNum        | Number   | 队列内消息数量                       |
-| allNewsnum     | Number   | 队列内所有消息数量（包括已消费的）   |
-| consumerIdList | String[] | 队列消费者 id 列表                   |
-| consumerNum    | Number   | 队列消费者者数量                     |
-| allConsumerNum | Number   | 队列内所有消费者数量（包括已取消的） |
+| 名称            | 类型     | 说明                                     |
+| --------------- | -------- | ---------------------------------------- |
+| name            | String   | 队列名称                                 |
+| id              | String   | 队列 id                                  |
+| ask             | Boolean  | 是否需要消息确认                         |
+| awaitTimeFormat | Number   | 等待消息确认的最大时长，ask 为 true 才有 |
+| type            | "random" | 多个消费者的时候如何分发消息             |
+| newsIdList      | String[] | 队列内消息 id 列表                       |
+| newsNum         | Number   | 队列内消息数量                           |
+| allNewsnum      | Number   | 队列内所有消息数量（包括已消费的）       |
+| consumerIdList  | String[] | 队列消费者 id 列表                       |
+| consumerNum     | Number   | 队列消费者者数量                         |
+| allConsumerNum  | Number   | 队列内所有消费者数量（包括已取消的）     |
 
 ## 11、AllNewsLogs
 
@@ -245,9 +248,26 @@ const allNewsLogs = new AllNewsLogs();
 
 **allNewsLogs 参数说明**
 
-| 名称       | 类型   | 说明                             |
-| ---------- | ------ | -------------------------------- |
-| id         | String | 消息 id                          |
-| createTime | String | 消息创建时间                     |
-| readNum    | Number | 读取次数，即消费失败次数         |
-| updateTime | String | 最近读取时间，即最近消费失败时间 |
+| 名称                 | 类型   | 说明         |
+| -------------------- | ------ | ------------ |
+| id                   | String | 消息 id      |
+| createTimeFormat     | String | 消息创建时间 |
+| readNum              | Number | 读取次数     |
+| latestReadTimeFormat | String | 最近读取时间 |
+
+## 12、AllConsumerLogs
+
+创建消费者日志
+
+```javascript
+const allConsumerLogs = new AllConsumerLogs();
+```
+
+**allConsumerLogs 参数说明**
+
+| 名称                    | 类型   | 说明           |
+| ----------------------- | ------ | -------------- |
+| id                      | String | 消费者 id      |
+| createTimeFormat        | String | 消费者创建时间 |
+| consumeNum              | Number | 消费次数       |
+| latestConsumeTimeFormat | String | 最近消费时间   |
