@@ -1,32 +1,32 @@
-export default class AllExchangeLogs {
-  /**
-   * 交换机名称
-   */
-  name: String;
+export default class ExchangeLogs {
   /**
    * 交换机 id
    */
-  id: String;
+  id: string;
+  /**
+   * 交换机名称
+   */
+  name: string;
   /**
    * 	emit 成功数量
    */
-  emitNum: Boolean;
+  emitNum: number;
   /**
    * 数据分配成功数量
    */
-  dispenseNum: Number;
+  dispenseNum: number;
   /**
    * 	消息队列 id 的数量
    */
-  queueIdList: String[];
+  queueIdList: string[];
   /**
    * 消息队列名称列表
    */
-  queueNameList: String[];
+  queueNameList: string[];
   /**
    * 消息队列数量
    */
-  queueNum: Number;
+  queueNum: number;
 
   constructor() {}
 }

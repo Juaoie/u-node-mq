@@ -6,7 +6,7 @@ export default class Tools {
    * 获取随机数
    * @returns
    */
-  static random(): String {
+  static random(): string {
     return String(Math.round(Math.random() * 10000000000));
   }
 
@@ -14,7 +14,7 @@ export default class Tools {
    * 获取格式化时间
    * @returns
    */
-  static getTimeFormat(): String {
+  static getTimeFormat(): string {
     const now = new Date();
 
     const year = now.getFullYear(); //年
@@ -63,10 +63,8 @@ export default class Tools {
         totalLength += 4;
       }
     }
-    if (totalLength >= 1024 * 1024)
-      return (totalLength / (1024 * 1024)).toFixed(2) + "MB";
-    if (totalLength >= 1024 && totalLength < 1024 * 1024)
-      return (totalLength / 1024).toFixed(2) + "KB";
+    if (totalLength >= 1024 * 1024) return (totalLength / (1024 * 1024)).toFixed(2) + "MB";
+    if (totalLength >= 1024 && totalLength < 1024 * 1024) return (totalLength / 1024).toFixed(2) + "KB";
     else return totalLength + "B";
   };
 }

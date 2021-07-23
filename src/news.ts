@@ -1,9 +1,6 @@
-import News from "./news";
 import Tools from "./utils/tools";
 
-type Consume = (news: News) => Promise<Boolean> | void;
-
-export default class Consumer {
+export default class News {
   /**
    * id
    */
@@ -13,12 +10,12 @@ export default class Consumer {
    */
   createTime: number;
   /**
-   * 消费方法
+   * 消息内容
    */
-  consume: Consume;
-  constructor(consume: Consume) {
+  content: any;
+  constructor(content: any) {
     this.id = Tools.random();
     this.createTime = new Date().getTime();
-    this.consume = consume;
+    this.content = content;
   }
 }

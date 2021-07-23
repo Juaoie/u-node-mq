@@ -41,11 +41,11 @@ uNodeMQ.create(Object);
 
 **Object 参数说明**
 
-| 名称      | 类型       | 必填 | 说明 |
-| --------- | ---------- | ---- | ---- |
-| exchanges | Exchange[] | 否   |      |
-| queues    | Queues[]   | 否   |      |
-| logs      | Logs       | 否   |      |
+| 名称      | 类型       | 必填 | 说明       |
+| --------- | ---------- | ---- | ---------- |
+| exchanges | Exchange[] | 否   | 交换机列表 |
+| queues    | Queues[]   | 否   | 队列列表   |
+| logs      | Logs       | 否   | 日志系统   |
 
 **uNodeMQ 方法说明**
 
@@ -65,31 +65,30 @@ const exchange = new Exchange(Object);
 
 **Object 参数说明**
 
-| 名称   | 类型     | 必填 | 说明                    |
-| ------ | -------- | ---- | ----------------------- |
-| name   | String   | 是   | 交换机名称              |
-| id     | String   | 否   | 交换机 id，不填自动生成 |
-| routes | String[] | 否   | 需要匹配的队列名称      |
-| queues | Queues[] | 否   | 队列列表                |
+| 名称     | 类型     | 必填 | 说明                                     |
+| -------- | -------- | ---- | ---------------------------------------- |
+| name     | String   | 是   | 交换机名称                               |
+| routes   | String[] | 否   | 需要匹配的队列名称                       |
+| repeater | Function | 否   | 自定义路由函数，填写该参数 routes 将失效 |
+| queues   | Queues[] | 否   | 队列列表                                 |
 
-**exchange 方法说明**
-
-| 名称     | 参数     | 说明     |
-| -------- | -------- | -------- |
-| repeater | Function | 中继器   |
-| emit     | News     | 发送数据 |
-
-**exchange.repeater() 方法参数说明**
+**exchange.repeater 方法参数说明**
 
 | 参数   | 类型 | 说明                         |
 | ------ | ---- | ---------------------------- |
 | 参数 1 | News | 此处修改 news 数据将不会生效 |
 
-**exchange.repeater() 方法返回值说明**
+**exchange.repeater 方法返回值说明**
 
 | 返回值 | 类型     | 说明                                |
 | ------ | -------- | ----------------------------------- |
 | 返回值 | String[] | 匹配到的队列名称列表，routes 将失效 |
+
+**exchange 方法说明**
+
+| 名称 | 参数 | 说明     |
+| ---- | ---- | -------- |
+| emit | News | 发送数据 |
 
 ---
 
@@ -106,12 +105,11 @@ const queue = new Queue(Object);
 | 名称      | 类型       | 必填 | 默认     | 说明                                          |
 | --------- | ---------- | ---- | -------- | --------------------------------------------- |
 | name      | String     | 是   |          | 队列名称                                      |
-| id        | String     | 否   |          | 队列 id，不填则自动生成                       |
 | news      | News[]     | 否   | []       | 消息列表                                      |
 | consumers | Consumer[] | 否   | []       | 消费者列表                                    |
 | ask       | Boolean    | 否   | false    | 是否需要消息确认，为 true，则需要手动确认消息 |
 | awaitTime | Number     | 否   | 10\*1000 | 等待消息确认的最大时长，单位为 ms             |
-| type      | "random"   | 否   | "random" | 多个消费者的时候如何分发消息                  |
+| type      | "Random"   | 否   | "Random" | 多个消费者的时候如何分发消息                  |
 
 **queue 方法说明**
 
@@ -138,7 +136,7 @@ const news = new News(Any);
 | ---------- | ------ | -------------- |
 | id         | String | 消息 id        |
 | createTime | Number | 消息创建时间戳 |
-| news       | Any    | 消息内容       |
+| content    | Any    | 消息内容       |
 
 ---
 
@@ -168,7 +166,7 @@ const consumer = new Consumer(Function);
 | ---------- | -------- | ---------------- |
 | id         | String   | 消费者 id        |
 | createTime | Number   | 消费者创建时间戳 |
-| news       | Function | 消费方法         |
+| consume    | Function | 消费方法         |
 
 ---
 
@@ -180,24 +178,33 @@ const consumer = new Consumer(Function);
 const logs = new Logs();
 ```
 
+**logs 参数说明**
+
+| 名称            | 参数           | 说明              |
+| --------------- | -------------- | ----------------- |
+| allExchangelogs | ExchangeLogs[] | exchange 日志列表 |
+| allQueueLogs    | QueueLogs[]    | queue 日志        |
+| allNewsLogs     | NewsLogs[]     | news 日志         |
+| allConsumerLogs | ConsumerLogs[] | consumer 日志     |
+
 **logs 方法说明**
 
-| 名称               | 参数     | 返回值            | 说明                                          |
-| ------------------ | -------- | ----------------- | --------------------------------------------- |
-| clear              |          | Boolean           | 清空所有日志                                  |
-| getAllExchangeLogs | String[] | AllExchangeLogs[] | 参数为过滤的字段名称， 获取所有 exchange 日志 |
-| getAllQueueLogs    | String[] | AllQueueLogs[]    | 获取所有 queue 日志                           |
-| getAllNewsLogs     | String[] | AllNewsLogs[]     | 获取所有 news 日志                            |
-| getAllConsumerLogs | String[] | AllConsumerLogs[] | 获取所有 consumer 日志                        |
+| 名称               | 参数 | 返回值         | 说明                   |
+| ------------------ | ---- | -------------- | ---------------------- |
+| clear              |      | Boolean        | 清空所有日志           |
+| getAllExchangeLogs |      | ExchangeLogs[] | 获取所有 exchange 日志 |
+| getAllQueueLogs    |      | QueueLogs[]    | 获取所有 queue 日志    |
+| getAllNewsLogs     |      | NewsLogs[]     | 获取所有 news 日志     |
+| getAllConsumerLogs |      | ConsumerLogs[] | 获取所有 consumer 日志 |
 
 ---
 
-## 9、AllExchangeLogs
+## 9、ExchangeLogs
 
 创建交换机消息日志
 
 ```javascript
-const allExchangeLogs = new AllExchangeLogs(Object);
+const exchangeLogs = new ExchangeLogs(Object);
 ```
 
 **Object 参数说明**
@@ -214,15 +221,15 @@ const allExchangeLogs = new AllExchangeLogs(Object);
 
 ---
 
-## 10、AllQueueLogs
+## 10、QueueLogs
 
 创建消息队列日志
 
 ```javascript
-const allQueueLogs = new AllQueueLogs();
+const queueLogs = new QueueLogs();
 ```
 
-**allQueueLogs 参数说明**
+**queueLogs 参数说明**
 
 | 名称            | 类型     | 说明                                     |
 | --------------- | -------- | ---------------------------------------- |
@@ -233,42 +240,44 @@ const allQueueLogs = new AllQueueLogs();
 | type            | "random" | 多个消费者的时候如何分发消息             |
 | newsIdList      | String[] | 队列内消息 id 列表                       |
 | newsNum         | Number   | 队列内消息数量                           |
-| allNewsnum      | Number   | 队列内所有消息数量（包括已消费的）       |
+| allNewsNum      | Number   | 队列内所有消息数量（包括已消费的）       |
 | consumerIdList  | String[] | 队列消费者 id 列表                       |
 | consumerNum     | Number   | 队列消费者者数量                         |
 | allConsumerNum  | Number   | 队列内所有消费者数量（包括已取消的）     |
 
-## 11、AllNewsLogs
+## 11、NewsLogs
 
 创建消息日志
 
 ```javascript
-const allNewsLogs = new AllNewsLogs();
+const newsLogs = new NewsLogs();
 ```
 
-**allNewsLogs 参数说明**
+**newsLogs 参数说明**
 
 | 名称                 | 类型   | 说明         |
 | -------------------- | ------ | ------------ |
 | id                   | String | 消息 id      |
 | createTimeFormat     | String | 消息创建时间 |
+| destroyTimeFormat    | String | 消息销毁时间 |
 | size                 | String | 消息大小     |
 | readNum              | Number | 读取次数     |
 | latestReadTimeFormat | String | 最近读取时间 |
 
-## 12、AllConsumerLogs
+## 12、ConsumerLogs
 
 创建消费者日志
 
 ```javascript
-const allConsumerLogs = new AllConsumerLogs();
+const consumerLogs = new ConsumerLogs();
 ```
 
-**allConsumerLogs 参数说明**
+**consumerLogs 参数说明**
 
 | 名称                    | 类型   | 说明           |
 | ----------------------- | ------ | -------------- |
 | id                      | String | 消费者 id      |
 | createTimeFormat        | String | 消费者创建时间 |
+| destroyTimeFormat       | String | 消息销毁时间   |
 | consumeNum              | Number | 消费次数       |
 | latestConsumeTimeFormat | String | 最近消费时间   |

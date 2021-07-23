@@ -2,23 +2,23 @@ enum Type {
   random = "random",
 }
 
-export default class AllQueueLogs {
-  /**
-   * 队列名称
-   */
-  name: String;
+export default class QueueLogs {
   /**
    * 队列 id
    */
-  id: String;
+  id: string;
+  /**
+   * 队列名称
+   */
+  name: string;
   /**
    * 	是否需要消息确认
    */
-  ask: Boolean;
+  ask: boolean;
   /**
    * 等待消息确认的最大时长，ask 为 true 才有
    */
-  awaitTimeFormat: Number;
+  awaitTimeFormat: number;
   /**
    * 多个消费者的时候如何分发消息
    */
@@ -26,26 +26,26 @@ export default class AllQueueLogs {
   /**
    * 	队列内消息 id 列表
    */
-  newsIdList: String[];
+  newsIdList: string[];
   /**
    * 队列内消息数量
    */
-  newsNum: Number;
+  newsNum: number;
   /**
    * 队列内所有消息数量（包括已消费的）
    */
-  allNewsnum: Number;
+  allNewsNum: number;
   /**
    * 队列消费者 id 列表
    */
-  consumerIdList: String[];
+  consumerIdList: string[];
   /**
    * 	队列消费者者数量
    */
-  consumerNum: Number;
+  consumerNum: number;
   /**
    * 队列内所有消费者数量（包括已取消的）
    */
-  allConsumerNum: Number;
+  allConsumerNum: number;
   constructor() {}
 }
