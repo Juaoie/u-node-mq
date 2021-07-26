@@ -1,8 +1,8 @@
 import News from "./news";
-import { Queue } from "./queue";
+import Queue from "./queue";
 import Tools from "./utils/tools";
 
-type Repeater = (news: News) => string[];
+type Repeater = (content: any) => string[];
 
 type Option = {
   name: string;
@@ -14,7 +14,7 @@ type Option = {
 /**
  * 交换机
  */
-export class Exchange {
+export default class Exchange {
   /**
    * id
    */
@@ -42,5 +42,25 @@ export class Exchange {
     this.queues = option.queues;
     this.repeater = option.repeater;
     this.id = Tools.random();
+  }
+  /**
+   * 获取单个队列
+   * @param queueName
+   * @returns
+   */
+  getQueue(queueName: String): Queue {
+    const queue: Queue = this.queues.find((item) => item.name === queueName);
+    if (queue === undefined) throw `队列${queue}不存在`;
+    return queue;
+  }
+  emit( news:News){
+    //中继器存在
+    if(this.repeater){
+
+    }else {
+      const 
+    }
+
+    
   }
 }

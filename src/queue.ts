@@ -15,7 +15,7 @@ type Option = {
 /**
  * 队列
  */
-export class Queue {
+export default class Queue {
   /**
    * id
    */

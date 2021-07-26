@@ -74,9 +74,9 @@ const exchange = new Exchange(Object);
 
 **exchange.repeater 方法参数说明**
 
-| 参数   | 类型 | 说明                         |
-| ------ | ---- | ---------------------------- |
-| 参数 1 | News | 此处修改 news 数据将不会生效 |
+| 参数   | 类型    | 说明                   |
+| ------ | ------- | ---------------------- |
+| 参数 1 | content | 此处不因该修改 content |
 
 **exchange.repeater 方法返回值说明**
 
