@@ -53,14 +53,16 @@ export default class Exchange {
     if (queue === undefined) throw `队列${queue}不存在`;
     return queue;
   }
-  emit( news:News){
-    //中继器存在
-    if(this.repeater){
 
-    }else {
-      const 
+  emit(news: News) {
+    if (this.repeater) {
+      //中继器模式
+    } else {
+      //路由模式
+      if (this.routes === undefined) throw "routes不存在";
+      this.routes.forEach((item) => {
+        this.getQueue(item).pushNews(News);
+      });
     }
-
-    
   }
 }

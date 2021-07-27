@@ -13,7 +13,7 @@ type Option = {
   type?: QueueType.Random;
 };
 /**
- * 队列
+ * 队列，理论上一个队列的数据格式应该具有一致性
  */
 export default class Queue {
   /**
@@ -52,5 +52,16 @@ export default class Queue {
     this.awaitTime = option.awaitTime;
     this.type = option.type;
     this.id = Tools.random();
+  }
+  /**
+   * 添加消息
+   * @param news
+   */
+  pushNews(news: News) {
+    this.news.push(news);
+    this.on();
+  }
+  send() {
+    
   }
 }
