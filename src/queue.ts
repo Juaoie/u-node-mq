@@ -59,7 +59,7 @@ export default class Queue {
    */
   pushNews(news: News) {
     this.news.push(news);
-    this.on();
+    this.send();
   }
   send() {
     
