@@ -1,6 +1,4 @@
-enum Type {
-  random = "random",
-}
+import Tools from "../utils/tools";
 
 export default class QueueLogs {
   /**
@@ -15,14 +13,6 @@ export default class QueueLogs {
    * 	是否需要消息确认
    */
   ask: boolean;
-  /**
-   * 等待消息确认的最大时长，ask 为 true 才有
-   */
-  awaitTimeFormat: number;
-  /**
-   * 多个消费者的时候如何分发消息
-   */
-  type: Type;
   /**
    * 	队列内消息 id 列表
    */
@@ -47,5 +37,21 @@ export default class QueueLogs {
    * 队列内所有消费者数量（包括已取消的）
    */
   allConsumerNum: number;
-  constructor() {}
+  constructor(
+    id: string,
+    name: string,
+    ask: boolean,
+    newsIdList: string[],
+    consumerIdList: string[]
+  ) {
+    this.id = id;
+    this.name = name;
+    this.ask = ask;
+    this.newsIdList = newsIdList;
+    this.newsNum = newsIdList.length;
+    this.allNewsNum = newsIdList.length;
+    this.consumerIdList = consumerIdList;
+    this.consumerNum = consumerIdList.length;
+    this.allConsumerNum = consumerIdList.length;
+  }
 }

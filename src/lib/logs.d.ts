@@ -1,6 +1,7 @@
-import Tools from "../utils/tools";
-
-export default class ExchangeLogs {
+/**
+ * 记录交换机日志
+ */
+interface ExchangeLogs {
   /**
    * 交换机 id
    */
@@ -18,7 +19,7 @@ export default class ExchangeLogs {
    */
   dispenseNum: number;
   /**
-   * 	消息队列 id 的列表
+   * 	消息队列 id 的数量
    */
   queueIdList: string[];
   /**
@@ -29,17 +30,4 @@ export default class ExchangeLogs {
    * 消息队列数量
    */
   queueNum: number;
-
-  constructor(
-    id: string,
-    name: string,
-    queueIdList: string[],
-    queueNameList: string[]
-  ) {
-    this.id = id;
-    this.name = name;
-    this.queueIdList = queueIdList;
-    this.queueNameList = queueNameList;
-    this.queueNum = queueIdList.length;
-  }
 }

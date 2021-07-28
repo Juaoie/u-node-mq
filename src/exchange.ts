@@ -1,5 +1,6 @@
 import News from "./news";
 import Queue from "./queue";
+import UNodeMQ from "./uNodeMQ";
 import Tools from "./utils/tools";
 
 type Repeater = (content: any) => string[];
@@ -54,14 +55,14 @@ export default class Exchange {
     return queue;
   }
 
-  emit(news: News) {
+  emit(news: News, logs?: UNodeMQ) {
     if (this.repeater) {
       //中继器模式
     } else {
       //路由模式
       if (this.routes === undefined) throw "routes不存在";
       this.routes.forEach((item) => {
-        this.getQueue(item).pushNews(News);
+        this.getQueue(item).pushNews(news, logs);
       });
     }
   }
