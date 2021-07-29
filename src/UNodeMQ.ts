@@ -64,8 +64,12 @@ export default class UNodeMQ {
         id: item.id,
         name: item.name,
         ask: item.ask,
-        newsIdList: this.news.filter((itemNews) => itemNews.queueId === item.id).map((item) => item.id),
-        consumerIdList: this.consumers.filter((itemCons) => itemCons.queueId === item.id).map((item) => item.id),
+        newsIdList: this.news
+          .filter((itemNews) => itemNews.queueId === item.id)
+          .map((item) => item.id),
+        consumerIdList: this.consumers
+          .filter((itemCons) => itemCons.queueId === item.id)
+          .map((item) => item.id),
       });
     });
 
@@ -91,9 +95,7 @@ export default class UNodeMQ {
    * @returns
    */
   getExchange(exchangeName: string): Exchange {
-    const exchange = this.exchanges.find((item) => item.name === exchangeName);
-    if (exchange === undefined) throw `交换机${exchangeName}不存在`;
-    return exchange;
+    return this.exchanges.find((item) => item.name === exchangeName);
   }
   /**
    * 获取单个队列
@@ -101,9 +103,7 @@ export default class UNodeMQ {
    * @returns
    */
   getQueue(queueName: string): Queue {
-    const queue = this.queues.find((item) => item.name === queueName);
-    if (queue === undefined) throw `队列${queueName}不存在`;
-    return queue;
+    return this.queues.find((item) => item.name === queueName);
   }
   /**
    * 获取消费者
@@ -111,9 +111,7 @@ export default class UNodeMQ {
    * @returns
    */
   getConsumer(queueId: string): Consumer {
-    const comment = this.consumers.find((item) => item.queueId === queueId);
-    if (comment === undefined) throw `消费者不存在`;
-    return comment;
+    return this.consumers.find((item) => item.queueId === queueId);
   }
   /**
    *工厂创建消息
@@ -141,28 +139,31 @@ export default class UNodeMQ {
   emit(exchangeName: string, content?: any) {
     //获取交换机
     const exchange: Exchange = this.getExchange(exchangeName);
-    //生成消息
-    const news = this.newsFactory(content);
+    if (!exchange)
+      return this.logs.emit("ADD_ERR_LOGS", `交换机${exchangeName}不存在`);
+
     if (exchange.repeater) {
       //中继器模式
     } else if (exchange.routes) {
       //路由模式
       exchange.routes.forEach((item) => {
-        try {
-          //获取队列
-          const queue = this.getQueue(item);
-          //写入队列id
-          news.queueId = queue.id;
-          //push消息
-          this.news.push(news);
-          //发送消息
-        } catch (error) {
-          //TODO:队列不存在的处理方式
-        }
+        //获取队列
+        const queue = this.getQueue(item);
+        if (!queue) return this.logs.emit("ADD_ERR_LOGS", `队列${item}不存在`);
+        //生成消息
+        const news = this.newsFactory(content);
+        //写入队列id
+        news.queueId = queue.id;
+        //push消息
+        this.news.push(news);
+        //发送消息
       });
 
       if (this.logs) {
-        this.logs.emit("EDIT_EXCHANGE_DISPENSE_NUM", { id: exchange.id, addDispenseNum: exchange.routes.length });
+        this.logs.emit("EDIT_EXCHANGE_DISPENSE_NUM", {
+          id: exchange.id,
+          addDispenseNum: exchange.routes.length,
+        });
       }
     } else {
       throw "routes不存在";
