@@ -43,7 +43,6 @@ export default class Queue {
     this.consumers = option.consumers;
     this.ask = option.ask;
     this.awaitTime = option.awaitTime;
-    this.type = option.type;
     this.id = Tools.random();
   }
   /**
@@ -52,6 +51,7 @@ export default class Queue {
    */
   pushNews(news: News, logs?: UNodeMQ) {
     this.news.push(news);
+    logs.emit("EDI_QUEUE_")
     this.send(logs);
   }
   /**
@@ -61,23 +61,29 @@ export default class Queue {
   send(logs?: UNodeMQ) {
     // 不存在消费者
     if (this.consumers.length === 0) return;
-    const tempNews: News[] = [];
     this.news.forEach(async (item) => {
       //获取随机index
       const index = Math.round(Math.random() * (this.consumers.length - 1));
       if (this.ask) {
         //需要消息确定
         const isOk = await this.consumers[index].consume(item);
-        if (!isOk) tempNews.push(item);
-        if(logs)logs.emit("")
+        if (logs) {
+          logs.emit("EDIT_NEWS_STATUS", {
+            destroyTimeFormat: Tools.getTimeFormat(),
+            consumptionSuccess: Boolean(isOk),
+          });
+        }
       } else {
         //不需要消息确定
         this.consumers[index].consume(item);
+        if (logs) {
+          logs.emit("EDIT_NEWS_STATUS", {
+            destroyTimeFormat: Tools.getTimeFormat(),
+            consumptionSuccess: true,
+          });
+        }
       }
-
-      //记录日志
-      // console.log()
-      Logs.log()
     });
+    this.news = [];
   }
 }

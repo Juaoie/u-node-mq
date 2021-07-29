@@ -1,5 +1,3 @@
-import Tools from "../utils/tools";
-
 export default class ExchangeLogs {
   /**
    * 交换机 id
@@ -18,28 +16,25 @@ export default class ExchangeLogs {
    */
   dispenseNum: number;
   /**
-   * 	消息队列 id 的列表
+   * 	emit 消息队列 id 的列表
    */
-  queueIdList: string[];
+  emitQueueIdList: string[];
   /**
-   * 消息队列名称列表
+   * emit 消息队列名称列表
    */
-  queueNameList: string[];
+  emitQueueNameList: string[];
   /**
-   * 消息队列数量
+   * emit 消息队列数量
    */
-  queueNum: number;
+  emitQueueNum: number;
 
-  constructor(
-    id: string,
-    name: string,
-    queueIdList: string[],
-    queueNameList: string[]
-  ) {
+  constructor(id: string, name: string) {
     this.id = id;
     this.name = name;
-    this.queueIdList = queueIdList;
-    this.queueNameList = queueNameList;
-    this.queueNum = queueIdList.length;
+    this.emitNum = 0;
+    this.dispenseNum = 0;
+    this.emitQueueIdList = [];
+    this.emitQueueNameList = [];
+    this.emitQueueNum = 0;
   }
 }

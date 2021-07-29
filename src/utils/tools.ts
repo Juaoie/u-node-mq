@@ -14,8 +14,10 @@ export default class Tools {
    * 获取格式化时间
    * @returns
    */
-  static getTimeFormat(): string {
-    const now = new Date();
+  static getTimeFormat(time?: string | number): string {
+    let now = null;
+    if (time) now = new Date(time);
+    else now = new Date();
 
     const year = now.getFullYear(); //年
     const month = now.getMonth() + 1; //月

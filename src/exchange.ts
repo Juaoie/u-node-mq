@@ -56,11 +56,18 @@ export default class Exchange {
   }
 
   emit(news: News, logs?: UNodeMQ) {
+    if (logs) {
+      //emitNum增加一个
+      logs.emit("EDIT_EXCHANGE_EMIT_NUM", { id: this.id, addEmitNum: 1 });
+    }
     if (this.repeater) {
       //中继器模式
     } else {
       //路由模式
       if (this.routes === undefined) throw "routes不存在";
+      if (logs) {
+        logs.emit("EDIT_EXCHANGE_DISPENSE_NUM", { id: this.id, addDispenseNum: this.routes.length });
+      }
       this.routes.forEach((item) => {
         this.getQueue(item).pushNews(news, logs);
       });

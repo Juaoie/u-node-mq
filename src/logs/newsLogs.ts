@@ -14,19 +14,17 @@ export default class NewsLogs {
    */
   destroyTimeFormat: string;
   /**
+   * 是否被成功消费
+   */
+  consumptionSuccess: boolean;
+  /**
    * 消息大小
    */
   size: string;
-  /**
-   * 读取次数
-   */
-  readNum: number;
-  /**
-   * 最近读取时间
-   */
-  latestReadTimeFormat: string;
-  constructor() {}
-  setSize(news: any) {
-    this.size = tools.memorySize(JSON.stringify(news));
+  constructor(id: string, createTimeFormat: string, consumptionSuccess: boolean, size: string) {
+    this.id = id;
+    this.createTimeFormat = createTimeFormat;
+    this.consumptionSuccess = consumptionSuccess;
+    this.size = size;
   }
 }

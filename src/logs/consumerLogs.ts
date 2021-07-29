@@ -2,7 +2,7 @@ export default class ConsumerLogs {
   /**
    * 消费者 id
    */
-  id: number;
+  id: string;
   /**
    * 	消费者创建时间
    */
@@ -15,9 +15,9 @@ export default class ConsumerLogs {
    * 消费次数
    */
   consumeNum: number;
-  /**
-   * 最近消费时间
-   */
-  latestConsumeTimeFormat: string;
-  constructor() {}
+  constructor(id: string, createTimeFormat: string) {
+    this.id = id;
+    this.createTimeFormat = createTimeFormat;
+    this.consumeNum = 0;
+  }
 }

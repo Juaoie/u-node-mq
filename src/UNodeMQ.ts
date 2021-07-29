@@ -1,15 +1,20 @@
-import Exchange from "./exchange";
+import Consumer from "./data/consumer";
+import Exchange from "./data/exchange";
 import Logs from "./logs/logs";
-import News from "./news";
-import Queue from "./queue";
+import News from "./data/news";
+import Queue from "./data/queue";
+import Tools from "./utils/tools";
 
 type Option = {
   exchanges?: Exchange[];
   queues?: Queue[];
+  news?: News[];
+  consumers?: Consumer[];
   logs?: UNodeMQ;
 };
+
 /**
- *
+ * 交换机和队列并没有直接的绑定关系
  */
 export default class UNodeMQ {
   /**
@@ -21,40 +26,64 @@ export default class UNodeMQ {
    */
   queues: Queue[];
   /**
+   * 消息列表
+   */
+  news: News[];
+  /**
+   * 消费者列表
+   */
+  consumers: Consumer[];
+  /**
    * 日志系统
    */
   logs: UNodeMQ;
   constructor(option?: Option) {
-    this.exchanges = option.exchanges;
-    this.queues = option.queues;
+    this.exchanges = option.exchanges || [];
+    this.queues = option.queues || [];
+    this.news = option.news || [];
+    this.consumers = option.consumers || [];
     this.logs = option.logs;
-    //记录
-    if (this.logs) {
-      if (this.exchanges) {
-        //遍历发送交换机日志给logs
-        this.exchanges.forEach((item) => {
-          this.logs.emit("EXCHANGE_LOGS", {
-            id: item.id,
-            name: item.name,
-            queueIdList: this.exchanges.map((item) => item.id),
-            queueNameList: this.exchanges.map((item) => item.name),
-          });
-        });
-      }
+    this.createLogs();
+  }
+  /**
+   * 创建日志
+   * @returns
+   */
+  createLogs() {
+    if (!this.logs) return;
 
-      if (this.queues) {
-        //遍历发送队列日志给logs
-        this.queues.forEach((item) => {
-          this.logs.emit("QUEUE_LOGS", {
-            id: item.id,
-            name: item.name,
-            ask: item.ask,
-            newsIdList: item.news.map((item) => item.id),
-            consumerIdList: item.consumers.map((item) => item.id),
-          });
-        });
-      }
-    }
+    this.exchanges.forEach((item) => {
+      this.logs.emit("ADD_EXCHANGE", {
+        id: item.id,
+        name: item.name,
+      });
+    });
+
+    this.queues.forEach((item) => {
+      this.logs.emit("ADD_QUEUE", {
+        id: item.id,
+        name: item.name,
+        ask: item.ask,
+        newsIdList: this.news.filter((itemNews) => itemNews.queueId === item.id).map((item) => item.id),
+        consumerIdList: this.consumers.filter((itemCons) => itemCons.queueId === item.id).map((item) => item.id),
+      });
+    });
+
+    this.news.forEach((item) => {
+      this.logs.emit("ADD_NEWS", {
+        id: item.id,
+        createTimeFormat: Tools.getTimeFormat(item.createTime),
+        consumptionSuccess: false, //初始化的消息不能是被消费的消息
+        size: Tools.memorySize(String(item.content)),
+      });
+    });
+
+    this.consumers.forEach((item) => {
+      this.logs.emit("ADD_CONSUMER", {
+        id: item.id,
+        createTimeFormat: Tools.getTimeFormat(item.createTime),
+      });
+    });
   }
   /**
    * 获取单个交换机
@@ -66,9 +95,77 @@ export default class UNodeMQ {
     if (exchange === undefined) throw `交换机${exchangeName}不存在`;
     return exchange;
   }
-  emit(exchangeName: string, content: any) {
-    const exchange: Exchange = this.getExchange(exchangeName);
+  /**
+   * 获取单个队列
+   * @param queueName
+   * @returns
+   */
+  getQueue(queueName: string): Queue {
+    const queue = this.queues.find((item) => item.name === queueName);
+    if (queue === undefined) throw `队列${queueName}不存在`;
+    return queue;
+  }
+  /**
+   * 获取消费者
+   * @param queueId
+   * @returns
+   */
+  getConsumer(queueId: string): Consumer {
+    const comment = this.consumers.find((item) => item.queueId === queueId);
+    if (comment === undefined) throw `消费者不存在`;
+    return comment;
+  }
+  /**
+   *工厂创建消息
+   * @param content
+   * @returns
+   */
+  newsFactory(content: any) {
     const news = new News(content);
-    exchange.emit(news, this.logs);
+    if (this.logs) {
+      //发送消息日志
+      this.logs.emit("ADD_NEWS", {
+        id: news.id,
+        createTimeFormat: Tools.getTimeFormat(news.createTime),
+        consumptionSuccess: false, //初始化的消息不能是被消费的消息
+        size: Tools.memorySize(String(news.content)),
+      });
+    }
+    return news;
+  }
+  /**
+   * 发送消息
+   * @param exchangeName
+   * @param content
+   */
+  emit(exchangeName: string, content?: any) {
+    //获取交换机
+    const exchange: Exchange = this.getExchange(exchangeName);
+    //生成消息
+    const news = this.newsFactory(content);
+    if (exchange.repeater) {
+      //中继器模式
+    } else if (exchange.routes) {
+      //路由模式
+      exchange.routes.forEach((item) => {
+        try {
+          //获取队列
+          const queue = this.getQueue(item);
+          //写入队列id
+          news.queueId = queue.id;
+          //push消息
+          this.news.push(news);
+          //发送消息
+        } catch (error) {
+          //TODO:队列不存在的处理方式
+        }
+      });
+
+      if (this.logs) {
+        this.logs.emit("EDIT_EXCHANGE_DISPENSE_NUM", { id: exchange.id, addDispenseNum: exchange.routes.length });
+      }
+    } else {
+      throw "routes不存在";
+    }
   }
 }
