@@ -11,6 +11,7 @@ type Option = {
   logs?: UNodeMQ;
 };
 type Consume = (content: any) => Promise<Boolean>;
+export { Exchange, Queue, News, Consumer };
 /**
  * 交换机和队列并没有直接的绑定关系
  */
