@@ -16,10 +16,6 @@ export default class ExchangeLogs {
    */
   dispenseNum: number;
   /**
-   * 	emit 消息队列 id 的列表
-   */
-  emitQueueIdList: string[];
-  /**
    * emit 消息队列名称列表
    */
   emitQueueNameList: string[];
@@ -33,7 +29,6 @@ export default class ExchangeLogs {
     this.name = name;
     this.emitNum = 0;
     this.dispenseNum = 0;
-    this.emitQueueIdList = [];
     this.emitQueueNameList = [];
     this.emitQueueNum = 0;
   }

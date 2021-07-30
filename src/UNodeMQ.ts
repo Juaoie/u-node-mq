@@ -109,25 +109,9 @@ export default class UNodeMQ {
    * @returns
    */
   getQueueList(queueNameList: string[]): Queue[] {
-    return this.queues.filter((item) => queueNameList.indexOf(item.name) !== -1);
-  }
-  /**
-   *工厂创建消息
-   * @param content
-   * @returns
-   */
-  newsFactory(content: any) {
-    const news = new News(content);
-    if (this.logs) {
-      //发送消息日志
-      this.logs.emit("ADD_NEWS", {
-        id: news.id,
-        createTimeFormat: Tools.getTimeFormat(news.createTime),
-        consumptionSuccess: false, //初始化的消息不能是被消费的消息
-        size: Tools.memorySize(String(news.content)),
-      });
-    }
-    return news;
+    return this.queues.filter(
+      (item) => queueNameList.indexOf(item.name) !== -1
+    );
   }
   /**
    * 添加错误日志
@@ -154,14 +138,34 @@ export default class UNodeMQ {
     queueList.forEach((queue) => {
       queue.pushNews(content);
     });
+    return true;
   }
 
   /**
    * 创建消费者
+   * @param queueName
+   * @param consume
+   * @returns
    */
   async on(queueName: string, consume: Consume) {
     const queue = this.getQueue(queueName);
     if (!queue) this.addErrLogs(`队列${queueName}不存在`);
     queue.pushConsumer(consume);
+    return true;
+  }
+  /**
+   * 移除消费者
+   * @param queueName
+   * @param consume
+   * @returns
+   */
+  async off(queueName: string, consume: Consume) {
+    const queue = this.getQueue(queueName);
+    if (!queue) this.addErrLogs(`队列${queueName}不存在`);
+    queue.offConsumer(consume);
+    return true;
+  }
+  async once() {
+    return `我哪来的时间写啊`;
   }
 }

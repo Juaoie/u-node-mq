@@ -1,4 +1,4 @@
-import UNodeMQ from "../UNodeMQ";
+import UNodeMQ from "../uNodeMQ";
 import Tools from "../utils/tools";
 import Consumer from "./consumer";
 import News from "./news";
@@ -71,16 +71,31 @@ export default class Queue {
     });
   }
   /**
+   * 添加消费者日志
+   * @param id
+   * @param createTimeFormat
+   * @returns
+   */
+  addConsumer(id: string, createTimeFormat: string) {
+    if (!this.logs) return;
+    this.logs.emit(Event.AddConsumer, {
+      id,
+      createTimeFormat,
+      consumeNum: 0,
+      consumeFail: 0,
+    });
+  }
+  /**
    *编辑消息消费日志
    * @param id
    * @param consumptionSuccess
    */
-  editNewsNed(id: string, consumptionSuccess: boolean) {
+  editNews(id: string, consumptionSuccess: boolean) {
     if (!this.logs) return;
-    this.logs.emit(Event.EditNewsNed, {
+    this.logs.emit(Event.EditNews, {
       id,
+      destroyTimeFormat: Tools.getTimeFormat(), //只要编辑，就代表需要销毁了
       consumptionSuccess,
-      destroyTimeFormat: Tools.getTimeFormat(),
     });
   }
   /**
@@ -89,10 +104,16 @@ export default class Queue {
    * @param consumeNum
    * @param consumeFail
    */
-  editConsumerNum(id: string, consumeNum, consumeFail) {
+  editConsumer(
+    id: string,
+    destroyTimeFormat: string,
+    consumeNum: number,
+    consumeFail: number
+  ) {
     if (!this.logs) return;
-    this.logs.emit(Event.EditConsumerNum, {
+    this.logs.emit(Event.EditConsumer, {
       id,
+      destroyTimeFormat,
       consumeNum,
       consumeFail,
     });
@@ -106,7 +127,11 @@ export default class Queue {
     const news = new News(contet);
     this.news.push(news);
     //添加消息日志
-    this.addNews(news.id, Tools.getTimeFormat(news.createTime), Tools.memorySize(String(news.content)));
+    this.addNews(
+      news.id,
+      Tools.getTimeFormat(news.createTime),
+      Tools.memorySize(String(news.content))
+    );
     //消费
     this.consumeNews();
   }
@@ -119,7 +144,21 @@ export default class Queue {
     const consumer = new Consumer(consume);
     this.consumers.push(consumer);
     //添加消费者日志
-    this.addNews(news.id, Tools.getTimeFormat(news.createTime), Tools.memorySize(String(news.content)));
+    this.addConsumer(consumer.id, Tools.getTimeFormat(consumer.createTime));
+    //消费
+    this.consumeNews();
+  }
+  /**
+   *移除消费者
+   * @param consume
+   * @returns
+   */
+  offConsumer(consume: Consume) {
+    if (this.consumers === undefined) this.consumers = [];
+    const index = this.consumers.findIndex((item) => item.consume === consume);
+    if (index === -1) return this.addErrLogs(`消费者不存在`);
+    this.editConsumer(this.consumers[index].id, Tools.getTimeFormat(), 0, 0);
+    this.consumers.splice(index, 1);
   }
   /**
    * 消费方法
@@ -140,12 +179,12 @@ export default class Queue {
           const isOk = await this.consumers[index].consume(news.content);
           if (isOk) {
             //消费成功
-            this.editNewsNed(news.id, true);
-            this.editConsumerNum(this.consumers[index].id, 1, 0);
+            this.editNews(news.id, true);
+            this.editConsumer(this.consumers[index].id, null, 1, 0);
           } else {
             //消费失败
-            this.editNewsNed(news.id, false);
-            this.editConsumerNum(this.consumers[index].id, 1, 1);
+            this.editNews(news.id, false);
+            this.editConsumer(this.consumers[index].id, null, 1, 1);
           }
         } catch (error) {
           this.addErrLogs(`消费者${this.consumers[index].id}消费错误了`);
@@ -159,8 +198,8 @@ export default class Queue {
         try {
           this.consumers[index].consume(news.content);
           //不需要确认的情况，都属于消费成功
-          this.editNewsNed(news.id, true);
-          this.editConsumerNum(this.consumers[index].id, 1, 0);
+          this.editNews(news.id, true);
+          this.editConsumer(this.consumers[index].id, null, 1, 0);
         } catch (error) {
           this.addErrLogs(`消费者${this.consumers[index].id}消费错误了`);
         }
