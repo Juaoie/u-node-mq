@@ -1,9 +1,10 @@
 {
-  "name": "u-queue",
+  "name": "u-node-mq",
   "version": "1.0.0",
+  "author": "hugaojie",
+  "description": "一个简易的插件",
   "main": "index.js",
-  "repository": "https://github.com.cnpmjs.org/Juaoie/u-queue.git",
-  "author": "Juaoie <uaoie@qq.com>",
+  "repository": "https://github.com/Juaoie/u-node-mq.git",
   "license": "MIT",
   "devDependencies": {
     "gulp": "^4.0.2",
