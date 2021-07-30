@@ -8,7 +8,6 @@ type Repeater = (content: any) => Promise<string[]>;
 type Option = {
   name: string;
   routes?: string[];
-  queues?: Queue[];
   repeater?: Repeater;
 };
 

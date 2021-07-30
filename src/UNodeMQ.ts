@@ -4,7 +4,7 @@ import News from "./data/news";
 import Queue from "./data/queue";
 import Tools from "./utils/tools";
 import { Event } from "./logs/enum";
-
+type Repeater = (content: any) => Promise<string[]>;
 type Option = {
   exchanges?: Exchange[];
   queues?: Queue[];
@@ -36,6 +36,36 @@ export default class UNodeMQ {
    * 日志系统
    */
   logs: UNodeMQ;
+  /**
+   * 创建交换机
+   * @param name
+   * @param routes
+   * @param repeater
+   * @returns
+   */
+  createExchange(name: string, routes: string[], repeater: Repeater): Exchange {
+    const exchange = new Exchange({ name, routes, repeater });
+    this.exchanges.push(exchange);
+    return exchange;
+  }
+  /**
+   * 创建队列
+   * @param name
+   * @param ask
+   * @param news
+   * @param consumers
+   * @returns
+   */
+  createQueue(
+    name: string,
+    ask?: boolean,
+    news?: News[],
+    consumers?: Consumer[]
+  ) {
+    const queue = new Queue({ name, ask, news, consumers });
+    this.queues.push(queue);
+    return queue;
+  }
   constructor(option?: Option) {
     this.exchanges = option.exchanges || [];
     this.queues = option.queues || [];
