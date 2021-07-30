@@ -13,10 +13,6 @@ export default class News {
    * 消息内容
    */
   content: any;
-  /**
-   * 队列id
-   */
-  queueId: string;
   constructor(content: any) {
     this.id = Tools.random();
     this.createTime = new Date().getTime();

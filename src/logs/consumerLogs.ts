@@ -12,9 +12,13 @@ export default class ConsumerLogs {
    */
   destroyTimeFormat: string;
   /**
-   * 消费次数
+   * 所有消费次数
    */
   consumeNum: number;
+  /**
+   * 消费失败次数
+   */
+  consumeFail: number;
   constructor(id: string, createTimeFormat: string) {
     this.id = id;
     this.createTimeFormat = createTimeFormat;
