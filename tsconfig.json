@@ -4,6 +4,7 @@
     "target": "ES5",
     "lib": ["ES6"],
     "declaration": true,
-    "removeComments": true
+    "removeComments": true,
+    "esModuleInterop": true
   }
 }

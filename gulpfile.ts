@@ -1,7 +1,8 @@
-import { dest, src, parallel } from "gulp";
+import { dest, src, series } from "gulp";
+import del from "del";
 
 //用ts创建项目
-import * as ts from "gulp-typescript";
+import ts from "gulp-typescript";
 const tsProject = ts.createProject("tsconfig.json");
 
 /**
@@ -9,11 +10,11 @@ const tsProject = ts.createProject("tsconfig.json");
  * @returns
  */
 const _ts = (): NodeJS.ReadWriteStream => {
-  return src("./src/**/*.ts").pipe(tsProject()).js.pipe(dest("dist"));
+  return src("./src/**/*.ts").pipe(tsProject()).pipe(dest("dist"));
 };
 
-export const _state = (): NodeJS.ReadWriteStream => {
-  return src(["./package.json", "./README.md"]).pipe(dest("./dist"));
+const _del = () => {
+  return del(["./dist"]);
 };
 
-export default parallel(_ts, _state);
+export default series(_del, _ts);
