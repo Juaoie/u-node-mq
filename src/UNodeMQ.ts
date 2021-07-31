@@ -56,20 +56,15 @@ export default class UNodeMQ {
    * @param consumers
    * @returns
    */
-  createQueue(
-    name: string,
-    ask?: boolean,
-    news?: News[],
-    consumers?: Consumer[]
-  ) {
+  createQueue(name: string, ask?: boolean, news?: News[], consumers?: Consumer[]) {
     const queue = new Queue({ name, ask, news, consumers });
     this.queues.push(queue);
     return queue;
   }
   constructor(option?: Option) {
-    this.exchanges = option.exchanges || [];
-    this.queues = option.queues || [];
-    this.logs = option.logs;
+    this.exchanges = option?.exchanges || [];
+    this.queues = option?.queues || [];
+    this.logs = option?.logs;
     this.createLogs();
   }
   /**
@@ -140,9 +135,7 @@ export default class UNodeMQ {
    * @returns
    */
   getQueueList(queueNameList: string[]): Queue[] {
-    return this.queues.filter(
-      (item) => queueNameList.indexOf(item.name) !== -1
-    );
+    return this.queues.filter((item) => queueNameList.indexOf(item.name) !== -1);
   }
   /**
    * 添加错误日志
@@ -162,6 +155,7 @@ export default class UNodeMQ {
     //获取交换机
     const exchange: Exchange = this.getExchange(exchangeName);
     if (!exchange) this.addErrLogs(`交换机${exchangeName}不存在`);
+    if (!exchange) throw `交换机${exchangeName}不存在`;
     //获取队列列表
     const queueNameList = await exchange.getQueueNameList(content);
     const queueList = this.getQueueList(queueNameList);
