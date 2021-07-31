@@ -1,6 +1,9 @@
 {
+  "include": ["src"],
   "compilerOptions": {
-    "target": "ES6",
-    "experimentalDecorators": true
+    "target": "ES5",
+    "lib": ["ES6"],
+    "declaration": true,
+    "removeComments": true
   }
 }
