@@ -167,9 +167,9 @@ export default class Queue {
    */
   consumeNews() {
     //如果不存在消费者
-    if (this.consumers?.length) return;
+    if (!this.consumers?.length) return;
     //如果不存在消息
-    if (this.news?.length) return;
+    if (!this.news?.length) return;
     if (this.ask) {
       //需要消息确认
       this.news.forEach(async (news) => {

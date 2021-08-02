@@ -175,6 +175,7 @@ export default class UNodeMQ {
   async on(queueName: string, consume: Consume) {
     const queue = this.getQueue(queueName);
     if (!queue) this.addErrLogs(`队列${queueName}不存在`);
+    if (!queue) throw `队列${queueName}不存在`;
     queue.pushConsumer(consume);
     return true;
   }
@@ -187,6 +188,7 @@ export default class UNodeMQ {
   async off(queueName: string, consume: Consume) {
     const queue = this.getQueue(queueName);
     if (!queue) this.addErrLogs(`队列${queueName}不存在`);
+    if (!queue) throw `队列${queueName}不存在`;
     queue.offConsumer(consume);
     return true;
   }
