@@ -43,9 +43,14 @@ export default class UNodeMQ {
    * @param repeater
    * @returns
    */
-  createExchange(name: string, routes: string[], repeater: Repeater): Exchange {
+  createExchange(name: string, routes: string[], repeater: Repeater, auto: boolean): Exchange {
     const exchange = new Exchange({ name, routes, repeater });
     this.exchanges.push(exchange);
+    if (auto && routes) {
+      routes.forEach((item) => {
+        this.createQueue(item);
+      });
+    }
     return exchange;
   }
   /**

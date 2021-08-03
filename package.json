@@ -1,14 +1,12 @@
 {
   "name": "u-node-mq",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "author": "hugaojie",
   "description": "一个简易的插件",
   "main": "dist/UNodeMQ.js",
   "repository": "https://github.com/Juaoie/u-node-mq.git",
   "license": "MIT",
-  "scripts": {
-    "build":"gulp && npm publish"
-  },
+  "scripts": {},
   "dependencies": {},
   "devDependencies": {
     "@types/gulp": "^4.0.9",
