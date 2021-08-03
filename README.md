@@ -1,4 +1,50 @@
-# u-queue
+# u-node-mq
+
+可以前端多模块通信的消息中心模型
+
+## 安装
+
+`yarn add u-node-mq`
+
+or
+
+`npm install u-node-mq`
+
+## 基本使用方法
+
+```javascript
+import UNodeMQ from "u-node-mq";
+const unmq = new UNodeMQ();
+//可以挂到抬手就摸得到的位置
+// Vue.prototype.unmq = new UNodeMQ();
+
+//创建登录交换机
+unmq.createExchange("LOGIN_SUCCESS", ["PLAN_BIND_USER"], null, true);
+
+//发送数据
+unmq.emit("LOGIN_SUCCESS", null);
+
+//接受数据
+unmq.on("PLAN_BIND_USER", this.planBindUser);
+```
+
+---
+
+```
+上面是新文档
+    /\
+    ||
+    ||
+  水槽线
+    ||
+    ||
+    \/
+下面是旧文档
+```
+
+---
+
+# u-node-mq
 
 可以前端多模块通信的简易消息中心模型
 
