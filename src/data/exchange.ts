@@ -30,7 +30,7 @@ export default class Exchange {
   /**
    * 中继器
    */
-  repeater: Repeater;
+  repeater?: Repeater;
   /**
    * 日志系统
    */

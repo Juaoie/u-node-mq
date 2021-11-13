@@ -3,17 +3,17 @@ import Tools from "../utils/tools";
 import Consumer from "./consumer";
 import News from "./news";
 import { Event } from "../logs/enum";
-type Option = {
+interface Option<T> {
   name: string;
   ask?: boolean;
-  news?: News[];
+  news?: News<T>[];
   consumers?: Consumer[];
-};
-type Consume = (content: any) => Promise<Boolean>;
+}
+type Consume = (content: any) => Promise<boolean> | boolean | void;
 /**
  * 队列，理论上一个队列的数据格式应该具有一致性
  */
-export default class Queue {
+export default class Queue<T> {
   /**
    * id
    */
@@ -29,7 +29,7 @@ export default class Queue {
   /**
    * 消息列表
    */
-  news: News[];
+  news: News<T>[];
   /**
    * 消费者列表
    */
@@ -38,7 +38,7 @@ export default class Queue {
    * 日志系统
    */
   logs: UNodeMQ;
-  constructor(option: Option) {
+  constructor(option: Option<T>) {
     this.id = Tools.random();
     this.name = option.name;
     this.ask = option.ask;
@@ -104,12 +104,7 @@ export default class Queue {
    * @param consumeNum
    * @param consumeFail
    */
-  editConsumer(
-    id: string,
-    destroyTimeFormat: string,
-    consumeNum: number,
-    consumeFail: number
-  ) {
+  editConsumer(id: string, destroyTimeFormat: string, consumeNum: number, consumeFail: number) {
     if (!this.logs) return;
     this.logs.emit(Event.EditConsumer, {
       id,
@@ -127,11 +122,7 @@ export default class Queue {
     const news = new News(contet);
     this.news.push(news);
     //添加消息日志
-    this.addNews(
-      news.id,
-      Tools.getTimeFormat(news.createTime),
-      Tools.memorySize(String(news.content))
-    );
+    this.addNews(news.id, Tools.getTimeFormat(news.createTime), Tools.memorySize(String(news.content)));
     //消费
     this.consumeNews();
   }
@@ -209,3 +200,5 @@ export default class Queue {
     this.news = [];
   }
 }
+
+

@@ -1,6 +1,6 @@
 import Tools from "../utils/tools";
 
-type Consume = (content: any) => Promise<Boolean>;
+type Consume = (content: any) => Promise<boolean> | boolean | void;
 
 export default class Consumer {
   /**

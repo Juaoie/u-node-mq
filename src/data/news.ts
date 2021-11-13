@@ -1,6 +1,6 @@
 import Tools from "../utils/tools";
 
-export default class News {
+export default class News<T> {
   /**
    * id
    */
@@ -12,8 +12,8 @@ export default class News {
   /**
    * 消息内容
    */
-  content: any;
-  constructor(content: any) {
+  content: T;
+  constructor(content: T) {
     this.id = Tools.random();
     this.createTime = new Date().getTime();
     this.content = content;

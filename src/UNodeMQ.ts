@@ -7,10 +7,13 @@ import { Event } from "./logs/enum";
 type Repeater = (content: any) => Promise<string[]>;
 type Option = {
   exchanges?: Exchange[];
-  queues?: Queue[];
+  queues?: Queue<any>[];
   logs?: UNodeMQ;
 };
-type Consume = (content: any) => Promise<Boolean>;
+
+type IsEqual<A, B> = (<T>() => T extends A ? 1 : 2) extends <T1>() => T1 extends B ? 1 : 2 ? true : false;
+
+type Consume<T> = (content: T) => Promise<boolean> | boolean | void;
 export { Exchange, Queue, News, Consumer };
 /**
  * 交换机和队列并没有直接的绑定关系
@@ -23,15 +26,7 @@ export default class UNodeMQ {
   /**
    * 队列列表
    */
-  queues: Queue[];
-  /**
-   * 消息列表
-   */
-  news: News[];
-  /**
-   * 消费者列表
-   */
-  consumers: Consumer[];
+  queues: Queue<any>[];
   /**
    * 日志系统
    */
@@ -43,14 +38,9 @@ export default class UNodeMQ {
    * @param repeater
    * @returns
    */
-  createExchange(name: string, routes: string[], repeater: Repeater, auto: boolean): Exchange {
+  createExchange(name: string, routes: string[], repeater?: Repeater): Exchange {
     const exchange = new Exchange({ name, routes, repeater });
     this.exchanges.push(exchange);
-    if (auto && routes) {
-      routes.forEach((item) => {
-        this.createQueue(item);
-      });
-    }
     return exchange;
   }
   /**
@@ -61,8 +51,8 @@ export default class UNodeMQ {
    * @param consumers
    * @returns
    */
-  createQueue(name: string, ask?: boolean, news?: News[], consumers?: Consumer[]) {
-    const queue = new Queue({ name, ask, news, consumers });
+  createQueue<T>(name: string, ask?: boolean, news?: News<T>[], consumers?: Consumer[]) {
+    const queue = new Queue<T>({ name, ask, news, consumers });
     this.queues.push(queue);
     return queue;
   }
@@ -131,7 +121,7 @@ export default class UNodeMQ {
    * @param queueName
    * @returns
    */
-  getQueue(queueName: string): Queue {
+  getQueue<T>(queueName: string): Queue<T> {
     return this.queues.find((item) => item.name === queueName);
   }
   /**
@@ -139,7 +129,7 @@ export default class UNodeMQ {
    * @param queueNameList
    * @returns
    */
-  getQueueList(queueNameList: string[]): Queue[] {
+  getQueueList(queueNameList: string[]): Queue<any>[] {
     return this.queues.filter((item) => queueNameList.indexOf(item.name) !== -1);
   }
   /**
@@ -156,11 +146,12 @@ export default class UNodeMQ {
    * @param exchangeName
    * @param content
    */
-  async emit(exchangeName: string, content: any) {
+  async emit<T>(exchangeName: string, content: T) {
     //获取交换机
     const exchange: Exchange = this.getExchange(exchangeName);
     if (!exchange) this.addErrLogs(`交换机${exchangeName}不存在`);
     if (!exchange) throw `交换机${exchangeName}不存在`;
+
     //获取队列列表
     const queueNameList = await exchange.getQueueNameList(content);
     const queueList = this.getQueueList(queueNameList);
@@ -172,12 +163,12 @@ export default class UNodeMQ {
   }
 
   /**
-   * 创建消费者
+   * 接受消息
    * @param queueName
    * @param consume
    * @returns
    */
-  async on(queueName: string, consume: Consume) {
+  async on<T>(queueName: string, consume: Consume<T>) {
     const queue = this.getQueue(queueName);
     if (!queue) this.addErrLogs(`队列${queueName}不存在`);
     if (!queue) throw `队列${queueName}不存在`;
@@ -190,7 +181,7 @@ export default class UNodeMQ {
    * @param consume
    * @returns
    */
-  async off(queueName: string, consume: Consume) {
+  async off<T>(queueName: string, consume: Consume<T>) {
     const queue = this.getQueue(queueName);
     if (!queue) this.addErrLogs(`队列${queueName}不存在`);
     if (!queue) throw `队列${queueName}不存在`;

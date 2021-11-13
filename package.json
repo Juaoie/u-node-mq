@@ -6,7 +6,9 @@
   "main": "dist/UNodeMQ.js",
   "repository": "https://github.com/Juaoie/u-node-mq.git",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "test": "tsc ./test/index.ts && node ./test/index.js"
+  },
   "dependencies": {},
   "devDependencies": {
     "@types/gulp": "^4.0.9",
