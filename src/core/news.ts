@@ -1,10 +1,10 @@
 import Tools from "../utils/tools";
 
-export default class News<T> {
+export default class News<D> {
   /**
    * id
    */
-  id: string;
+  readonly id: string = Tools.random();
   /**
    * 消费者创建时间戳
    */
@@ -12,9 +12,8 @@ export default class News<T> {
   /**
    * 消息内容
    */
-  content: T;
-  constructor(content: T) {
-    this.id = Tools.random();
+  content: D;
+  constructor(content: D) {
     this.createTime = new Date().getTime();
     this.content = content;
   }
