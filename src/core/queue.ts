@@ -1,5 +1,5 @@
 import News from "./news";
-import Consumer from "./consumer";
+import Consumer, { ConsumptionStatus } from "./consumer";
 import Logs from "./logs";
 interface Option<D> {
   name: string;
@@ -16,7 +16,7 @@ export default class Queue<D> {
   /**
    * 队列名字
    */
-  readonly name: string;
+  name: string;
   /**
    * 是否需要消息确认
    */
@@ -31,9 +31,9 @@ export default class Queue<D> {
   consumerList: Consumer<D>[] = [];
   constructor(option: Option<D>) {
     this.name = option.name;
-    this.ask = option.ask;
-    this.news = option.news;
-    this.consumerList = option.consumerList;
+    if (option.ask !== undefined) this.ask = option.ask;
+    if (option.news !== undefined) this.news = option.news;
+    if (option.consumerList !== undefined) this.consumerList = option.consumerList;
   }
   /**
    * 消费方法
@@ -43,35 +43,19 @@ export default class Queue<D> {
   consumeNews() {
     if (this.news.length === 0) return;
     if (this.consumerList.length === 0) return;
-    const failNews = [];
-    if (this.ask) {
-      //需要消息确认
-      this.news.forEach(async (news) => {
-        const index = Math.round(Math.random() * (this.consumerList.length - 1));
-        try {
-          const isOk = await new Promise(async (resolve, reject) => {
-            resolve(await this.consumerList[index].consume(news.content, (value: boolean) => resolve(value)));
-          });
-          if (isOk) {
-          } else {
-            //消费失败
-            failNews.push(news);
-          }
-        } catch (error) {
-          Logs.error(`${this.consumerList[index].id}消费错误了`);
-        }
-      });
-    } else {
-      //不需要消息确认
-      this.news.forEach((news) => {
-        const index = Math.round(Math.random() * (this.consumerList.length - 1));
-        try {
-          this.consumerList[index].consume(news.content);
-        } catch (error) {
-          Logs.error(`${this.consumerList[index].id}消费错误了`);
+    for (const news of this.news) {
+      const index = Math.round(Math.random() * (this.consumerList.length - 1));
+      const consumer = this.consumerList.splice(index, 1)[0];
+      consumer.consumption(news, this.ask).then((res: ConsumptionStatus<D>) => {
+        if (res.isOk) {
+          //消费成功
+          Logs.log(`队列${this.name} 消费成功`);
+        } else {
+          this.news.push(res.news);
+          Logs.log(`队列${this.name} 消费失败`);
         }
       });
     }
-    this.news = failNews;
+    this.news = [];
   }
 }

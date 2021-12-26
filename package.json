@@ -1,13 +1,14 @@
 {
   "name": "u-node-mq",
-  "version": "2.0.0",
+  "version": "2.0.2",
   "author": "hugaojie",
   "description": "一个简易的插件",
   "main": "dist/UNodeMQ.js",
   "repository": "https://github.com/Juaoie/u-node-mq.git",
   "license": "MIT",
   "scripts": {
-    "test": "tsc ./test/index.ts && node ./test/index.js"
+    "test": "tsc ./test/index.ts && node ./test/index.js",
+    "gtest":"gulp && yarn test"
   },
   "dependencies": {},
   "devDependencies": {

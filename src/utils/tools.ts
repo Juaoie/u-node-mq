@@ -9,6 +9,7 @@ export default class Tools {
   static random(): string {
     return String(Math.round(Math.random() * 10000000000));
   }
+  static promiseSetTimeout = (time = 0) => new Promise((resolve) => setTimeout(resolve, time));
 
   /**
    * 获取格式化时间
