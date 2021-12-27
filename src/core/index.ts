@@ -37,21 +37,17 @@ export default class UNodeMQ<D> {
   emit(...contentList: D[]) {
     const news = this.unmqFactory.produceNews(contentList);
     news.forEach(async (news) => {
-      try {
-        const queueNameList = await this.exchange.getQueueNameList(news.content);
-        queueNameList.forEach((queueName) => {
-          const queue = this.queueList.find((queue) => queue.name === queueName);
-          if (queue === undefined) {
-            Logs.error(`${queueName} queue not find`);
-            return this;
-          }
+      const queueNameList = await this.exchange.getQueueNameList(news.content);
+      queueNameList.forEach((queueName) => {
+        const queue = this.queueList.find((queue) => queue.name === queueName);
+        if (queue === undefined) {
+          Logs.error(`${queueName} queue not find`);
+        } else {
           queue.news.push(news);
           //消费消息
           queue.consumeNews();
-        });
-      } catch (error) {
-        Logs.error(`${this.exchange.name} exchange function getQueueNameList exception`);
-      }
+        }
+      });
     });
     return this;
   }

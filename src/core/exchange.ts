@@ -36,17 +36,22 @@ export default class Exchange<D = any> {
    * @returns
    */
   async getQueueNameList(content: D): Promise<string[]> {
-    //中继器模式
-    if (this.repeater) {
-      try {
-        const queueNameList = await this.repeater(content);
-        //记录日志分配成功的数量
-        return queueNameList;
-      } catch (error) {
-        Logs.error(`${this.name} exchange error`);
+    try {
+      //中继器模式
+      if (this.repeater) {
+        try {
+          const queueNameList = await this.repeater(content);
+          //记录日志分配成功的数量
+          return queueNameList;
+        } catch (error) {
+          Logs.error(`${this.name} exchange error`);
+        }
+      } else if (this.routes) {
+        return this.routes;
       }
-    } else if (this.routes) {
-      return this.routes;
+    } catch (error) {
+      Logs.error(`${this.name} exchange function getQueueNameList exception`);
+      return [];
     }
   }
 }
