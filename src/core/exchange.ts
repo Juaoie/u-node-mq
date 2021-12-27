@@ -39,13 +39,7 @@ export default class Exchange<D = any> {
     try {
       //中继器模式
       if (this.repeater) {
-        try {
-          const queueNameList = await this.repeater(content);
-          //记录日志分配成功的数量
-          return queueNameList;
-        } catch (error) {
-          Logs.error(`${this.name} exchange error`);
-        }
+        return await this.repeater(content);
       } else if (this.routes) {
         return this.routes;
       }

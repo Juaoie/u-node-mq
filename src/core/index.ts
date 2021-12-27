@@ -35,17 +35,14 @@ export default class UNodeMQ<D> {
     return this;
   }
   emit(...contentList: D[]) {
-    const news = this.unmqFactory.produceNews(contentList);
-    news.forEach(async (news) => {
-      const queueNameList = await this.exchange.getQueueNameList(news.content);
+    contentList.forEach(async (content) => {
+      const queueNameList = await this.exchange.getQueueNameList(content);
       queueNameList.forEach((queueName) => {
         const queue = this.queueList.find((queue) => queue.name === queueName);
         if (queue === undefined) {
           Logs.error(`${queueName} queue not find`);
         } else {
-          queue.news.push(news);
-          //消费消息
-          queue.consumeNews();
+          queue.pushNews(...this.unmqFactory.produceNews([content]));
         }
       });
     });
@@ -65,9 +62,7 @@ export default class UNodeMQ<D> {
       return () => {};
     }
     const consumerList = this.unmqFactory.produceConsumer([consume], payload);
-    queue.consumerList.push(consumerList[0]);
-    //消费消息
-    queue.consumeNews();
+    queue.pushConsumer(...consumerList);
     //直接return 需要off传递参数
     return () => this.off(queueName, consume);
   }
@@ -88,7 +83,7 @@ export default class UNodeMQ<D> {
       Logs.error(`${queueName} queue not find`);
       return this;
     }
-    queue.consumerList = queue.consumerList.filter((item) => item.consume !== consume);
+    queue.delConsumer(consume);
     return this;
   }
 }

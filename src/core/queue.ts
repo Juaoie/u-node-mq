@@ -1,5 +1,5 @@
 import News from "./news";
-import Consumer, { ConsumptionStatus } from "./consumer";
+import Consumer, { Consume, ConsumptionStatus } from "./consumer";
 import Logs from "./logs";
 interface Option<D> {
   name: string;
@@ -41,13 +41,38 @@ export default class Queue<D> {
     if (option.consumerList !== undefined) this.consumerList = option.consumerList;
     if (option.rcn !== undefined) this.rcn = option.rcn;
   }
-  pushNews(...news: News<D>[]) {
-    news.filter(item=>item.)
-    this.news.push(...news);
+  delConsumer(consume: Consume<D>) {
+    const index = this.consumerList.findIndex((item) => item.consume === consume);
+    if (index === -1) return false;
+    this.consumerList.splice(index, 1);
+    return true;
   }
+  /**
+   * 加入消费者
+   * @param consumerList
+   */
   pushConsumer(...consumerList: Consumer<D>[]) {
     this.consumerList.push(...consumerList);
+    if (this.news.length > 0 && this.consumerList.length > 0) this.consumeNews();
   }
+  /**
+   * 加入消息
+   * @param news
+   */
+  pushNews(...news: News<D>[]) {
+    this.news.push(
+      ...news.filter((item) => {
+        if (item.consumedTimes === -1) item.consumedTimes = this.rcn;
+        return item.consumedTimes > 0;
+      })
+    );
+    if (this.news.length > 0 && this.consumerList.length > 0) this.consumeNews();
+  }
+  /**
+   * 弹出一条消息
+   * @returns
+   *
+   */
   eject(): News<D> | null {
     if (this.news.length > 0) return this.news.splice(0, 1)[0];
     else null;
@@ -69,9 +94,11 @@ export default class Queue<D> {
         //消费成功
         Logs.log(`队列${this.name} 消费成功`);
       } else {
-        this.news.push(res.news);
+        res.news.consumedTimes--;
+        this.pushNews(res.news);
         Logs.log(`队列${this.name} 消费失败`);
       }
     });
+    if (this.news.length > 0) this.consumeNews();
   }
 }

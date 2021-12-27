@@ -1,6 +1,6 @@
 {
   "name": "u-node-mq",
-  "version": "2.0.11",
+  "version": "2.0.12",
   "author": "hugaojie",
   "description": "一个简易的插件",
   "main": "dist/UNodeMQ.js",
