@@ -13,6 +13,10 @@ export default class News<D> {
    * 消息内容
    */
   content: D;
+  /**
+   * 已消费次数
+   */
+  consumedTimes: number = -1;
 
   constructor(content: D) {
     this.createTime = new Date().getTime();

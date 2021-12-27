@@ -73,11 +73,11 @@ export default class UNodeMQ<D> {
   }
   once(queueName: string, consume: Consume<D>, payload?: any) {
     let consumeNum = 0;
-    const consumeProxy = (content: D, next?: Next) => {
-      if (consumeNum === 1) return; //一个消费者可能需要消耗多条消息
+    const consumeProxy = (content: D, next?: Next, payload?: any) => {
+      if (consumeNum === 1) return; //一个消费者可能需要消耗多条消息,, error 队列里面的消息被消费了，但是这里返回为未被消费
       consumeNum++;
       this.off(queueName, consumeProxy);
-      return consume(content, next);
+      return consume(content, next, payload);
     };
     this.on(queueName, consumeProxy, payload);
     return this;
