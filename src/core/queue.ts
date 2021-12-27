@@ -45,7 +45,7 @@ export default class Queue<D> {
     if (this.consumerList.length === 0) return;
     for (const news of this.news) {
       const index = Math.round(Math.random() * (this.consumerList.length - 1));
-      const consumer = this.consumerList.splice(index, 1)[0];
+      const consumer = this.consumerList.slice(index, 1)[0];
       consumer.consumption(news, this.ask).then((res: ConsumptionStatus<D>) => {
         if (res.isOk) {
           //消费成功
