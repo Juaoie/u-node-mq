@@ -3,7 +3,7 @@ import Logs from "./logs";
 import News from "./news";
 export type Next = (value: boolean) => void;
 
-export type Consume<D> = (content: D, next?: Next) => Promise<boolean> | boolean | void;
+export type Consume<D> = (content: D, next?: Next, payload?: any) => Promise<boolean> | boolean | void;
 export interface ConsumptionStatus<D> {
   isOk: boolean;
   consumer: Consumer<D>;
@@ -26,9 +26,14 @@ export default class Consumer<D> {
    * 消费方法
    */
   consume: Consume<D>;
-  constructor(consume: Consume<D>) {
+  /**
+   * 固定参数
+   */
+  payload?: any;
+  constructor(consume: Consume<D>, payload?: any) {
     this.createTime = new Date().getTime();
     this.consume = consume;
+    this.payload = payload;
   }
   consumption(news: News<D>, ask: boolean): Payload<D> {
     const then = (thenParameter: ThenParameter<D>) => {
@@ -36,7 +41,7 @@ export default class Consumer<D> {
       Tools.promiseSetTimeout().then(() => {
         try {
           const confirm: Next = (value) => thenParameter({ isOk: value, consumer: this, news });
-          const res = this.consume(news.content, ask ? confirm : undefined);
+          const res = this.consume(news.content, ask ? confirm : undefined, this.payload);
           if (ask === false) return thenParameter({ isOk: true, consumer: this, news });
           if (res instanceof Promise) {
             res

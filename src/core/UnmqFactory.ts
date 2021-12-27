@@ -9,7 +9,7 @@ export default class UnmqFactory<D> {
   produceNews(content: D[]): News<D>[] {
     return content.map((item) => new News<D>(item));
   }
-  produceConsumer(consume: Consume<D>[]): Consumer<D>[] {
-    return consume.map((item) => new Consumer(item));
+  produceConsumer(consume: Consume<D>[], payload?: any): Consumer<D>[] {
+    return consume.map((item) => new Consumer(item, payload));
   }
 }

@@ -51,25 +51,35 @@ export default class UNodeMQ<D> {
     });
     return this;
   }
-  on(queueName: string, consume: Consume<D>) {
+  /**
+   *
+   * @param queueName
+   * @param consume
+   * @param payload 固定参数，有效载荷，在每次消费的时候都传给消费者
+   * @returns
+   */
+  on(queueName: string, consume: Consume<D>, payload?: any) {
     const queue = this.queueList.find((item) => item.name === queueName);
     if (queue === undefined) {
       Logs.error(`${queueName} queue not find`);
       return () => {};
     }
-    const consumerList = this.unmqFactory.produceConsumer([consume]);
+    const consumerList = this.unmqFactory.produceConsumer([consume], payload);
     queue.consumerList.push(consumerList[0]);
     //消费消息
     queue.consumeNews();
     //直接return 需要off传递参数
     return () => this.off(queueName, consume);
   }
-  once(queueName: string, consume: Consume<D>) {
+  once(queueName: string, consume: Consume<D>, payload?: any) {
+    let consumeNum = 0;
     const consumeProxy = (content: D, next?: Next) => {
+      if (consumeNum === 1) return; //一个消费者可能需要消耗多条消息
+      consumeNum++;
       this.off(queueName, consumeProxy);
       return consume(content, next);
     };
-    this.on(queueName, consumeProxy);
+    this.on(queueName, consumeProxy, payload);
     return this;
   }
   off(queueName: string, consume: Consume<D>) {

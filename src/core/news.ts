@@ -13,6 +13,7 @@ export default class News<D> {
    * 消息内容
    */
   content: D;
+
   constructor(content: D) {
     this.createTime = new Date().getTime();
     this.content = content;
