@@ -12,7 +12,7 @@
     "git:commit": "git add -A . && git commit -am",
     "npm:publish": "node ./script/index.js && gulp && npm publish",
     "docs:dev": "vuepress dev docs",
-    "docs:build": "vuepress build docs"
+    "docs:build": "vuepress build docs && node ./script/rename.js"
   },
   "dependencies": {},
   "devDependencies": {
