@@ -10,7 +10,9 @@
     "test": "tsc ./test/index.ts && node ./test/index.js",
     "gtest": "gulp && yarn test",
     "git:commit": "git add -A . && git commit -am",
-    "npm:publish": "node ./script/index.js && gulp && npm publish"
+    "npm:publish": "node ./script/index.js && gulp && npm publish",
+    "docs:dev": "vuepress dev docs",
+    "docs:build": "vuepress build docs"
   },
   "dependencies": {},
   "devDependencies": {
@@ -19,6 +21,7 @@
     "gulp": "^4.0.2",
     "gulp-typescript": "^6.0.0-alpha.1",
     "ts-node": "^9.1.1",
-    "typescript": "^4.3.5"
+    "typescript": "^4.3.5",
+    "vuepress": "^1.9.5"
   }
 }
