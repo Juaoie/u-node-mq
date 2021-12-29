@@ -2,7 +2,7 @@ import News from "./news";
 import Consumer, { Consume, ConsumptionStatus } from "./consumer";
 import Logs from "./logs";
 interface Option<D> {
-  name: string;
+  name: string | Symbol;
   ask?: boolean;
   rcn?: number;
   news?: News<D>[];
@@ -17,7 +17,7 @@ export default class Queue<D> {
   /**
    * 队列名字
    */
-  name: string;
+  name: string | Symbol;
   /**
    * 是否需要消息确认
    */

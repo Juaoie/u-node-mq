@@ -25,6 +25,7 @@ export default class UNodeMQ<D> {
   exchange: Exchange<D>;
   queueList: Queue<D>[] = [];
   private unmqFactory = new UnmqFactory<D>();
+  [key: string]: any;
 
   constructor(option: Option) {
     this.exchange = new Exchange({ name: option.exchangeName });
@@ -55,7 +56,7 @@ export default class UNodeMQ<D> {
    * @param payload 固定参数，有效载荷，在每次消费的时候都传给消费者
    * @returns
    */
-  on(queueName: string, consume: Consume<D>, payload?: any) {
+  on(queueName: string | Symbol, consume: Consume<D>, payload?: any) {
     const queue = this.queueList.find((item) => item.name === queueName);
     if (queue === undefined) {
       Logs.error(`${queueName} queue not find`);
@@ -77,7 +78,7 @@ export default class UNodeMQ<D> {
     this.on(queueName, consumeProxy, payload);
     return this;
   }
-  off(queueName: string, consume: Consume<D>) {
+  off(queueName: string | Symbol, consume: Consume<D>) {
     const queue = this.queueList.find((item) => item.name === queueName);
     if (queue === undefined) {
       Logs.error(`${queueName} queue not find`);
