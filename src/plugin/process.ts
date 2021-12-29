@@ -1,9 +1,10 @@
 import UNodeMQ from "../core";
 import { Consume, Next } from "../core/consumer";
 import { Queue } from "../UNodeMQ";
+type NextProxy = (name: string) => void;
+type ProcessConsume<D> = (content: D, nextProxy: NextProxy, payload?: any) => void;
 export default class Process<D> {
   unmq: UNodeMQ<D>;
-  private queueNameList: symbol[] = [];
   install(unmq: UNodeMQ<D>) {
     this.unmq = unmq;
   }
@@ -11,19 +12,17 @@ export default class Process<D> {
    *
    * @param n 执行顺序，从小到大执行，相等的同时执行
    */
-  on(n: number, consume: Consume<D>, payload?: any) {
-    const queueName = Symbol(this.unmq.exchange.name);
-    this.queueNameList.push(queueName);
-    const queue = new Queue<D>({ name: queueName, ask: true });
+  on(name: string, consume: ProcessConsume<D>, payload?: any) {
+    const queue = new Queue<D>({ name, ask: true });
     this.unmq.queueList.push(queue);
-    function consumeProxy(content: D, next: Next, payload?: any) {
-      const nextProxy=(n:number)=>{
-
-      }
+    const consumeProxy = (content: D, next: Next, payload?: any) => {
+      const nextProxy = (name: string) => {
+        this.unmq.emit(); //这里要使用交换机的中继器分发数据到每个指定的队列
+      };
       consume(content, nextProxy, payload);
       next(true);
-    }
-    this.unmq.on(queueName, consumeProxy, payload);
+    };
+    this.unmq.on(name, consumeProxy, payload);
   }
   next() {}
   constructor() {}
