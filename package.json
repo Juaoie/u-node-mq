@@ -1,6 +1,6 @@
 {
   "name": "u-node-mq",
-  "version": "2.0.12",
+  "version": "2.0.13",
   "author": "hugaojie",
   "description": "一个简易的插件",
   "main": "dist/UNodeMQ.js",
@@ -10,7 +10,7 @@
     "test": "tsc ./test/index.ts && node ./test/index.js",
     "gtest": "gulp && yarn test",
     "git:commit": "git add -A . && git commit -am",
-    "npm:publish": "node ./script/index.js && gulp && npm publish",
+    "npm:publish": "gulp && node ./script/addVersion.js && gulp && npm publish",
     "docs:dev": "vuepress dev docs",
     "docs:build": "vuepress build docs && node ./script/rename.js"
   },
