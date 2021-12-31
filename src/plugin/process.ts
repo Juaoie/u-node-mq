@@ -7,10 +7,6 @@ import UnmqFactory from "../core/UnmqFactory";
 export default class Process {
   unmq: UNodeMQ<string>;
   private unmqFactory = new UnmqFactory<string>();
-  install(unmq: UNodeMQ<string>) {
-    this.unmq = unmq;
-    this.unmq.exchange.repeater = (queueName: string) => [queueName];
-  }
   /**
    *
    * @param contentList
@@ -58,6 +54,9 @@ export default class Process {
     return this;
   }
   constructor(...queueNameList: string[]) {
+    this.unmq = new UNodeMQ({ exchangeName: "process" });
+    this.unmq.exchange.repeater = (queueName: string) => [queueName];
+
     this.unmq.queueList.push(...this.unmqFactory.produceQueueList(queueNameList, true));
   }
 }
