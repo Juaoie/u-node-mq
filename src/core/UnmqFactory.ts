@@ -3,8 +3,8 @@ import News from "./news";
 import Consumer, { Consume } from "./consumer";
 
 export default class UnmqFactory<D> {
-  produceQueueList(queueName: string[]): Queue<D>[] {
-    return queueName.map((item) => new Queue({ name: item }));
+  produceQueueList(queueName: string[], ask?: boolean): Queue<D>[] {
+    return queueName.map((item) => new Queue({ name: item, ask }));
   }
   produceNews(content: D[]): News<D>[] {
     return content.map((item) => new News<D>(item));
