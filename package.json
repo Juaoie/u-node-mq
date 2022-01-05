@@ -11,7 +11,7 @@
     "gtest": "gulp && yarn test",
     "git:commit": "git add -A . && git commit -am",
     "npm:publish": "gulp && node ./script/addVersion.js && gulp && npm publish",
-    "docs:dev": "vuepress dev docs",
+    "docs:dev": "vuepress dev docs - w",
     "docs:build": "vuepress build docs && node ./script/rename.js"
   },
   "dependencies": {},

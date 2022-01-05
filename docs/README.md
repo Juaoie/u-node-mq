@@ -1,18 +1,16 @@
 ---
 home: true
-heroImage: /hero.png
-heroText: Hero 标题
-tagline: Hero 副标题
+heroImage: /unmq.png
+heroText: null
+tagline: 一个简单的工具
 actionText: 快速上手 →
-actionLink: /zh/guide/
+actionLink: /guide/README.md
 features:
-  - title: 简洁至上
-    details: 以 Markdown 为中心的项目结构，以最少的配置帮助你专注于写作。
-  - title: Vue驱动
-    details: 享受 Vue + webpack 的开发体验，在 Markdown 中使用 Vue 组件，同时可以使用 Vue 来开发自定义主题。
-  - title: 高性能
-    details: VuePress 为每个页面预渲染生成静态的 HTML，同时在页面被加载的时候，将作为 SPA 运行。
-footer: MIT Licensed | Copyright © 2018-present Evan You
+  - title: 简单易用
+    details: 简单的三个方法：emit、on、off搞定所有问题
+  - title: 异步数据传输
+    details: 类RabbitMQ的发布订阅模式
+  - title: 丰富插件系统
+    details: 在发布订阅模式基础上实现诸多插件，例如：函数执行顺序的流程控制
+footer: MIT Licensed | Copyright © 2022-present HuGaoJie
 ---
-
-fsdf
