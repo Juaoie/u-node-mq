@@ -2,9 +2,9 @@
 home: true
 heroImage: /unmq.png
 heroText: null
-tagline: 一个简单的工具
+tagline: 前端多模块通信的消息中心模型
 actionText: 快速上手 →
-actionLink: /guide/README.md
+actionLink: /guide/
 features:
   - title: 简单易用
     details: 简单的三个方法：emit、on、off搞定所有问题

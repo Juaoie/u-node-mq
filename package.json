@@ -1,8 +1,8 @@
 {
   "name": "u-node-mq",
-  "version": "2.0.15",
+  "version": "2.0.16",
   "author": "hugaojie",
-  "description": "一个简易的插件",
+  "description": "前端多模块通信的消息中心模型",
   "main": "dist/UNodeMQ.js",
   "repository": "https://github.com/Juaoie/u-node-mq.git",
   "license": "MIT",
