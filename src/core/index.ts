@@ -80,11 +80,8 @@ export default class UNodeMQ<D> {
   }
   off(queueName: string | Symbol, consume: Consume<D>) {
     const queue = this.queueList.find((item) => item.name === queueName);
-    if (queue === undefined) {
-      Logs.error(`${queueName} queue not find`);
-      return this;
-    }
-    queue.delConsumer(consume);
+    if (queue === undefined) Logs.error(`${queueName} queue not find`);
+    else queue.delConsumer(consume);
     return this;
   }
 }

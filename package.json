@@ -5,6 +5,7 @@
   "description": "前端多模块通信的消息中心模型",
   "main": "dist/UNodeMQ.js",
   "repository": "https://github.com/Juaoie/u-node-mq.git",
+  "homepage": "https://juaoie.github.io/u-node-mq/",
   "license": "MIT",
   "scripts": {
     "test": "tsc ./test/index.ts && node ./test/index.js",
