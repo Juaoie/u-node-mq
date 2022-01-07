@@ -1,6 +1,6 @@
 {
   "name": "u-node-mq",
-  "version": "2.0.16",
+  "version": "2.0.17",
   "author": "hugaojie",
   "description": "前端多模块通信的消息中心模型",
   "main": "dist/UNodeMQ.js",
@@ -11,7 +11,7 @@
     "test": "tsc ./test/index.ts && node ./test/index.js",
     "gtest": "gulp && yarn test",
     "git:commit": "git add -A . && git commit -am",
-    "npm:publish": "gulp && node ./script/addVersion.js && gulp && npm publish",
+    "npm:publish": "gulp && node ./script/addVersion.js && npm publish",
     "docs:dev": "vuepress dev docs - w",
     "docs:build": "vuepress build docs && node ./script/rename.js"
   },

@@ -7,6 +7,7 @@ import UnmqFactory from "../core/UnmqFactory";
 export default class Process {
   unmq: UNodeMQ<string>;
   private unmqFactory = new UnmqFactory<string>();
+  private consumeMappingList: { processConsume: ProcessConsume; consume: Consume<string> }[] = [];
   /**
    *
    * @param contentList
@@ -30,6 +31,10 @@ export default class Process {
       };
       consume(content, nextProxy, payload);
     };
+    this.consumeMappingList.push({
+      processConsume: consume,
+      consume: consumeProxy,
+    });
     this.unmq.on(name, consumeProxy, payload);
     return this;
   }
@@ -39,8 +44,11 @@ export default class Process {
    * @param consume
    * @returns
    */
-  off(queueName: string | Symbol, consume: Consume<string>) {
-    this.unmq.off(queueName, consume);
+  off(queueName: string | Symbol, consume: ProcessConsume) {
+    const index = this.consumeMappingList.findIndex((item) => item.processConsume === consume);
+    if (index === -1) return this;
+    this.unmq.off(queueName, this.consumeMappingList[index].consume);
+    this.consumeMappingList.splice(index, 1);
     return this;
   }
   /**
