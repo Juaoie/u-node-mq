@@ -7,7 +7,7 @@ import Logs from "./logs";
 import UnmqFactory from "./UnmqFactory";
 
 interface Option {
-  exchangeName: string;
+  exchangeName?: string;
   queueNameList?: string[];
 }
 export type PluginInstallFunction<D> = (unmq: UNodeMQ<D>, ...options: any[]) => any;
@@ -28,7 +28,7 @@ export default class UNodeMQ<D> {
   [key: string]: any;
 
   constructor(option: Option) {
-    this.exchange = new Exchange({ name: option.exchangeName });
+    this.exchange = new Exchange({ name: option.exchangeName || "exchange" });
     if (option.queueNameList !== undefined) this.queueList = this.unmqFactory.produceQueueList(option.queueNameList);
   }
   use(plugin: Plugin<D>, ...options: any[]) {
