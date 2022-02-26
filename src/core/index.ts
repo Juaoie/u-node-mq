@@ -38,19 +38,7 @@ export default class UNodeMQ<D> {
     plugin.install(this, options);
     return this;
   }
-  /**
-   * 添加队列列表，驱虫
-   * @param queueNameList
-   */
-  pushQueueList(queueNameList: string[], ask?: boolean) {
-    const currentQuestionNameList = this.queueList.map((queue) => queue.name);
-    this.queueList.push(
-      ...this.unmqFactory.produceQueueList(
-        queueNameList.filter((queueName) => currentQuestionNameList.indexOf(queueName) == -1),
-        ask
-      )
-    );
-  }
+
   emit(...contentList: D[]) {
     contentList.forEach(async (content) => {
       const queueNameList = await this.exchange.getQueueNameList(content);
