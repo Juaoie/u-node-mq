@@ -66,13 +66,57 @@ export default class QueueCollection<D> {
     const queue = this.queueList.find((queue) => queue.name === queueName);
     if (queue === undefined) return Logs.error(`${queueName} queue not find`);
     //添加消费者到队列
-    queue.pushConsumer(...this.produceConsumer([consume]));
+    queue.pushConsumer(...this.produceConsumer([consume], payload));
   }
   /**
-   * 获取所有队列名称
+   * 添加一个消费者到所有队列
+   * @param consume
+   * @param payload
+   */
+  pushConsumeToAllQueue(consume: Consume<D>, payload?: any) {
+    for (const queue of this.queueList) {
+      //添加消费者到队列
+      queue.pushConsumer(...this.produceConsumer([consume], payload));
+    }
+  }
+  /**
+   * 移除队列中的消费者
+   * @param queueName
+   * @param consume
    * @returns
    */
-  getAllQueueNameList() {
-    return this.queueList.map((queue) => queue.name);
+  removeConsumeFromQueue(queueName: QueueName, consume: Consume<D>) {
+    const queue = this.queueList.find((queue) => queue.name === queueName);
+    if (queue === undefined) return Logs.error(`${queueName} queue not find`);
+    //移除消费者
+    queue.delConsumer(consume);
+  }
+  /**
+   * 移除队列中所有消费者
+   * @param queueName
+   * @returns
+   */
+  removeAllConsumeFromQueue(queueName: QueueName) {
+    const queue = this.queueList.find((queue) => queue.name === queueName);
+    if (queue === undefined) return Logs.error(`${queueName} queue not find`);
+    //移除所有消费者
+    queue.delAllConsumer();
+  }
+  /**
+   * 移除所有队列中的指定消费者
+   * @param consume
+   */
+  removeConsumeFromAllQueue(consume: Consume<D>) {
+    for (const queue of this.queueList) {
+      queue.delConsumer(consume);
+    }
+  }
+  /**
+   * 移除所有消费者
+   */
+  removeConsume() {
+    for (const queue of this.queueList) {
+      queue.delAllConsumer();
+    }
   }
 }

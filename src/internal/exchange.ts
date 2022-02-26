@@ -82,25 +82,4 @@ export default class Exchange<D = any> extends QueueCollection<D> {
       super.pushNewsToQueue(queueName, content);
     }
   }
-  /**
-   * 向所有队列添加消费者
-   * @param queueName
-   * @param consume
-   * @param payload
-   */
-  pushConsumeToAllQueue(consume: Consume<D>, payload?: any) {
-    const allQueueName = super.getAllQueueNameList();
-    for (const queueName of allQueueName) {
-      this.pushConsumeToSingleQueue(queueName,consume,payload)
-    }
-  }
-  /**
-   * 向指定队列添加消费者
-   * @param queueName 
-   * @param consume 
-   * @param payload 
-   */
-  pushConsumeToSingleQueue(queueName:QueueName,consume:Consume<D>,payload?:any){
-    super.pushConsumeToQueue(queueName,consume,payload)
-  }
 }

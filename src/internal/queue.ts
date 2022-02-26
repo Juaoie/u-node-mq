@@ -42,10 +42,23 @@ export default class Queue<D> {
     if (option.consumerList !== undefined) this.consumerList = option.consumerList;
     if (option.rcn !== undefined) this.rcn = option.rcn;
   }
+  /**
+   * 移除指定消费者
+   * @param consume
+   * @returns
+   */
   delConsumer(consume: Consume<D>) {
     const index = this.consumerList.findIndex((item) => item.consume === consume);
     if (index === -1) return false;
     this.consumerList.splice(index, 1);
+    return true;
+  }
+  /**
+   * 移除所有消费者
+   * @returns
+   */
+  delAllConsumer() {
+    this.consumerList = [];
     return true;
   }
   /**
@@ -82,6 +95,7 @@ export default class Queue<D> {
    * 消费方法
    * 只要消费者和消息存在就会消费掉所有的消息
    * @returns
+   * TODO:配置是随机消费还是所有消费者都消费
    */
   consumeNews() {
     if (this.news.length === 0) return;
