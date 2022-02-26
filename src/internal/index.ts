@@ -63,6 +63,12 @@ export default class UNodeMQ<D> extends Exchange {
     //直接return 需要off传递参数
     // return () => this.off(queueName, consume);
   }
+  off(queueName: QueueName | null, consume: Consume<D>) {
+    const queue = this.queueList.find((item) => item.name === queueName);
+    if (queue === undefined) Logs.error(`${queueName} queue not find`);
+    else queue.delConsumer(consume); 
+    return this;
+  }
 }
 
 const unmq = new UNodeMQ<string>();
