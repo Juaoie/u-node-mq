@@ -62,9 +62,7 @@ export default class Process {
     return this;
   }
   constructor(...queueNameList: string[]) {
-    this.unmq = new UNodeMQ({ exchangeName: "process" });
+    this.unmq = new UNodeMQ({ exchangeName: "process", queueNameList, ask: true });
     this.unmq.exchange.repeater = (queueName: string) => [queueName];
-
-    this.unmq.queueList.push(...this.unmqFactory.produceQueueList(queueNameList, true));
   }
 }

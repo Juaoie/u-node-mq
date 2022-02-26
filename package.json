@@ -15,7 +15,9 @@
     "docs:dev": "vuepress dev docs - w",
     "docs:build": "vuepress build docs && node ./script/rename.js"
   },
-  "dependencies": {},
+  "dependencies": {
+    "rxjs": "^7.5.2"
+  },
   "devDependencies": {
     "@types/gulp": "^4.0.9",
     "del": "^6.0.0",
