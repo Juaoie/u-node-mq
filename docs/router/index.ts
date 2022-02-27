@@ -1,33 +1,41 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
 
 //Routes
-import Home from '../views/Home.vue'
-import About from '../views/About.vue'
-import NotFound from '../views/NotFound.vue'
+import Home from "../views/Home.vue";
+import Demo from "../views/Demo.vue";
+import About from "../views/About.vue";
+import NotFound from "../views/NotFound.vue";
 
-const routes = [
+const routes: RouteRecordRaw[] = [
   {
-    path: '/',
-    meta: { title: 'Home' },
+    path: "/Home",
+    redirect: "/",
+  },
+  {
+    path: "/",
+    meta: { title: "Home" },
     component: Home,
+    redirect: "/Home/Demo",
+    children: [
+      {
+        path: "/Home/Demo",
+        component: Demo,
+      },
+    ],
   },
   {
-    path: '/about',
-    meta: { title: 'About' },
+    path: "/about",
+    meta: { title: "About" },
     component: About,
-    // example of route level code-splitting
-    // this generates a separate chunk (About.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    // component: () => import('../views/About.vue')
   },
   {
-    path: '/:page',
+    path: "/:page",
     component: NotFound,
   },
 ];
 
 export const Router = createRouter({
   scrollBehavior: () => ({ left: 0, top: 0 }),
-  history: createWebHistory(),
+  history: createWebHashHistory(),
   routes,
 });

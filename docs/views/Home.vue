@@ -1,14 +1,19 @@
 <template>
   <el-container>
-    <el-header>Header</el-header>
+    <el-header class="df aic jcsb">
+      <img src="@a/unmq.png" class="logo" />
+      <div>
+        <span>这里放点什么好呢</span>
+      </div>
+    </el-header>
     <el-container>
-      <el-aside width="200px">Aside</el-aside>
-      <el-main>
-        <div class="body df">
-          <div class="exchange"></div>
-
-          <div class="queue"></div>
+      <el-aside class="df ffcn">
+        <div class="sidebar-link">
+          <span>演示</span>
         </div>
+      </el-aside>
+      <el-main>
+        <router-view />
       </el-main>
     </el-container>
   </el-container>
@@ -20,18 +25,20 @@
   console.log("🚀 ~ file: Home.vue ~ line 6 ~ unmq", unmq);
 </script>
 <style lang="scss" scoped>
-  .body {
-    width: 100%;
-    min-height: 100vh;
-    .exchange {
-      height: 100px;
-      min-width: 400px;
-      background: #e6a23c;
+  .el-header {
+    border-bottom: 1px solid #ccc;
+    .logo {
+      width: 100px;
     }
-    .queue {
-      height: 100%;
-      min-width: 400px;
-      background: #67c23a;
+  }
+  .el-aside {
+    width: 200px;
+    padding: 10px 20px;
+    border-right: 1px solid #ccc;
+    .sidebar-link {
+      padding: 20px 0;
+      font-size: 22px;
+      font-weight: 600;
     }
   }
 </style>
