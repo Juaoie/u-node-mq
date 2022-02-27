@@ -1,11 +1,21 @@
 {
-  "include": ["src"],
+  "include": ["src/**/*.ts", "docs/**/*.ts", "docs/**/*.d.ts", "docs/**/*.tsx", "docs/**/*.vue"],
+  "exclude": ["node_modules"],
   "compilerOptions": {
+    "types": ["element-plus/global"],
     "target": "ES5",
     "lib": ["ES6"],
     "declaration": true,
     "removeComments": true,
     "esModuleInterop": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["docs/*"],
+      "@a/*": ["docs/assets/*"],
+      "@s/*": ["docs/socket/*"],
+      "@t/*": ["docs/tools/*"],
+      "@p/*": ["docs/pages/*"]
+    }
   }
 }

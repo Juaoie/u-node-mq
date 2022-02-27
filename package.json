@@ -8,23 +8,41 @@
   "homepage": "https://juaoie.github.io/u-node-mq/",
   "license": "MIT",
   "scripts": {
+    "dev": "vite --host",
+    "build": "vue-tsc --noEmit && vite build",
+    "preview": "vite preview",
     "test": "tsc ./test/index.ts && node ./test/index.js",
     "gtest": "gulp && yarn test",
     "git:commit": "git add -A . && git commit -am",
-    "npm:publish": "gulp && node ./script/addVersion.js && npm publish",
-    "docs:dev": "vuepress dev docs - w",
-    "docs:build": "vuepress build docs && node ./script/rename.js"
+    "npm:publish": "gulp && node ./script/addVersion.js && npm publish"
   },
   "dependencies": {
     "rxjs": "^7.5.2"
   },
   "devDependencies": {
     "@types/gulp": "^4.0.9",
+    "@typescript-eslint/eslint-plugin": "^5.10.0",
+    "@typescript-eslint/parser": "^5.10.0",
+    "@vitejs/plugin-vue": "^2.0.0",
+    "@vue/eslint-config-prettier": "^7.0.0",
+    "@vue/eslint-config-typescript": "^10.0.0",
+    "autoprefixer": "^10.4.2",
     "del": "^6.0.0",
+    "element-plus": "^2.0.3",
+    "eslint": "^8.7.0",
+    "sass": "^1.49.9",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-vue": "^8.3.0",
     "gulp": "^4.0.2",
     "gulp-typescript": "^6.0.0-alpha.1",
+    "prettier": "^2.5.1",
     "ts-node": "^9.1.1",
-    "typescript": "^4.3.5",
-    "vuepress": "^1.9.5"
+    "typescript": "^4.5.5",
+    "unplugin-auto-import": "^0.6.1",
+    "unplugin-vue-components": "^0.17.21",
+    "vite": "^2.7.2",
+    "vue": "^3.2.25",
+    "vue-router": "4",
+    "vue-tsc": "^0.29.8"
   }
 }
