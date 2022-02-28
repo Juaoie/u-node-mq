@@ -2,7 +2,7 @@
   <div class="create-exchange">
     <el-button type="primary" @click="showCreateExchange = true">创建交换机</el-button>
   </div>
-
+  <exchange v-for="item in exchangeList"></exchange>
   <el-dialog v-model="showCreateExchange" title="创建交换机">
     <el-form :model="form">
       <el-form-item label="交换机名称（Exchange）">
@@ -10,7 +10,7 @@
       </el-form-item>
       <el-form-item label="静态路由（routes）">
         <el-select v-model="form.routes" multiple placeholder="请选择交换机（填写动态路由后，静态路由将失效）">
-          <el-option v-for="item in queueNameList" :key="item" :value="item"></el-option>
+          <el-option v-for="item in queueNameList" :value="item"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="动态路由（repeater）">
@@ -27,6 +27,7 @@
 </template>
 
 <script setup lang="ts">
+  import Exchange from "./Exchange.vue";
   import { queueNameList } from "../queue/QueueData";
   import { ref } from "vue";
   import UNodeMQ from "../../../src/UNodeMQ";
@@ -42,9 +43,17 @@
   const exchangeList = [];
 
   function createExchange() {
-    console.log(form);
     const unmq = new UNodeMQ({ exchangeName: form.value.exchangeName });
-    unmq.setRepeater(eval(form.value.repeater));
+    try {
+      unmq.setRepeater(eval(form.value.repeater));
+    } catch (error) {
+      ElMessage({
+        showClose: true,
+        message: error,
+        type: "error",
+      });
+      return;
+    }
     unmq.pushRoutes(form.value.routes);
 
     showCreateExchange.value = false;
