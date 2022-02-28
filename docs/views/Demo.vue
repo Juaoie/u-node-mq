@@ -7,7 +7,7 @@
 </template>
 
 <script lang="ts" setup>
-  import CreateExchange from "./Exchange/CreateExchange.vue";
+  import CreateExchange from "./exchange/CreateExchange.vue";
 </script>
 <style lang="scss" scoped>
   .body {

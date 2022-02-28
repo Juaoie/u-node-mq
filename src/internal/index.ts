@@ -24,7 +24,7 @@ export type Plugin<D> =
  * unmq：
  * 仅有emit和on方法会触发队列推送消息给消费者
  */
-export default class UNodeMQ<D> extends Exchange {
+export default class UNodeMQ<D> extends Exchange<D> {
   constructor(option?: Option) {
     //先创建交换机
     super({ name: option?.exchangeName || "exchange" });
@@ -106,5 +106,3 @@ export default class UNodeMQ<D> extends Exchange {
     return this;
   }
 }
-
-const unmq = new UNodeMQ<string>();

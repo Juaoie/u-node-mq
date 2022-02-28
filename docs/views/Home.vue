@@ -19,11 +19,7 @@
   </el-container>
 </template>
 
-<script lang="ts" setup>
-  import UNodeMQ from "../../src/UNodeMQ";
-  const unmq = new UNodeMQ();
-  console.log("🚀 ~ file: Home.vue ~ line 6 ~ unmq", unmq);
-</script>
+<script lang="ts" setup></script>
 <style lang="scss" scoped>
   .el-header {
     border-bottom: 1px solid #ccc;
