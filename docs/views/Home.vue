@@ -1,16 +1,16 @@
 <template>
   <el-container>
     <el-header class="df aic jcsb">
-      <img src="@a/unmq.png" class="logo" />
+      <!-- <img src="@a/unmq.png" class="logo" />
       <div>
         <span>这里放点什么好呢</span>
-      </div>
+      </div> -->
     </el-header>
     <el-container>
       <el-aside class="df ffcn">
-        <div class="sidebar-link">
+        <!-- <div class="sidebar-link">
           <span>演示</span>
-        </div>
+        </div> -->
       </el-aside>
       <el-main>
         <router-view />

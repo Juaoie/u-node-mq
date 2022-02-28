@@ -1,11 +1,10 @@
-import UNodeMQ from '.'
 export default class Logs {
-  static unmq = null //new UNodeMQ({ exchangeName: "logs", queueName: ["error"] });
+  static unmq = null; //new UNodeMQ({ exchangeName: "logs", queueName: ["error"] });
   static error(message: any) {
     // this.unmq.emit()
-    console.error(message)
+    console.error(message);
   }
   static log(message: any) {
-    console.log(message)
+    console.log(message);
   }
 }
