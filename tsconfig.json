@@ -12,6 +12,7 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["docs/*"],
+      "&/*": ["src/*"],
       "@a/*": ["docs/assets/*"],
       "@s/*": ["docs/socket/*"],
       "@t/*": ["docs/tools/*"],

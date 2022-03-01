@@ -23,7 +23,8 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      "@": resolve(__dirname, "docs"), // 设置 `@` 指向 `src` 目录
+      "@": resolve(__dirname, "docs"),
+      "&": resolve(__dirname, "src"),
       "@a": resolve(__dirname, "docs/assets/"),
       "@s": resolve(__dirname, "docs/socket/"),
       "@t": resolve(__dirname, "docs/tools/"),

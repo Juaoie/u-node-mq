@@ -47,12 +47,7 @@
     try {
       unmq.setRepeater(eval(form.value.repeater));
     } catch (error) {
-      ElMessage({
-        showClose: true,
-        message: error,
-        type: "error",
-      });
-      return;
+      return ElMessage({ message: error, type: "error" });
     }
     unmq.pushRoutes(form.value.routes);
 
