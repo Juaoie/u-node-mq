@@ -1,7 +1,7 @@
 <template>
   <div class="df ffcn create-exchange">
     <el-button type="primary" @click="showCreateExchange = true">创建交换机</el-button>
-    <exchange v-for="item in exchangeList" :value="item" class="mt10"></exchange>
+    <exchange v-for="item in exchangeList" :value="item" class="mt10" @removeExchange="removeExchange"></exchange>
   </div>
   <el-dialog v-model="showCreateExchange" title="创建交换机">
     <el-form :model="form">
@@ -50,8 +50,6 @@
       return ElMessage({ message: error, type: "error" });
     }
     unmq.pushExchangeRoutes(form.value.routes);
-    console.log("🚀 ~ file: CreateExchange.vue ~ line 53 ~ createExchange ~ form.value.routes", form.value.routes)
-    console.log("🚀 ~ file: CreateExchange.vue ~ line 53 ~ createExchange ~ unmq", unmq)
 
     showCreateExchange.value = false;
 
@@ -62,12 +60,19 @@
     (queueName)=>queueName;
     `;
   }
+
+  function removeExchange(exchangeId) {
+    exchangeList.value.splice(
+      exchangeList.value.findIndex(exchange => exchange.getExchangeId() === exchangeId),
+      1,
+    );
+  }
 </script>
 <style lang="scss" scoped>
   .create-exchange {
     padding: 20px;
     min-height: 100px;
-    min-width: 400px;
+    min-width: 40%;
     background: #e6a23c;
   }
 </style>

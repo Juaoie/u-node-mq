@@ -1,3 +1,4 @@
+import Tools from "../utils/tools";
 import { Consume } from "./consumer";
 import Logs from "./logs";
 import { QueueName } from "./queue";
@@ -17,6 +18,13 @@ export type Option<D> = {
  */
 export default class Exchange<D = any> extends QueueCollection<D> {
   /**
+   * id
+   */
+  readonly id: string = Tools.random();
+  getExchangeId() {
+    return this.id;
+  }
+  /**
    * 交换机名字
    */
   private readonly name: string;
@@ -32,6 +40,9 @@ export default class Exchange<D = any> extends QueueCollection<D> {
   }
   pushExchangeRoutes(routes: QueueName[]) {
     this.routes = Array.from(new Set(this.routes.concat(routes)));
+  }
+  setExchangeRoutes(routes: QueueName[]) {
+    this.routes = routes;
   }
   /**
    * 动态路由（中继器）

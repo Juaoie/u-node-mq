@@ -1,12 +1,19 @@
 <template>
-  <el-card class="exchange" :header="value.getExchangeName()">
-    <div v-if="value.getExchangeRepeater()">
+  <el-card class="exchange">
+    <template #header>
+      <div class="df aic jcsb">
+        <span>{{ value.getExchangeName() }}</span>
+        <el-button type="text" @click="removeExchange">删除</el-button>
+      </div>
+    </template>
+    <div v-if="value.getExchangeRepeater()" class="mb20">
       <span>动态路由：{{ value.getExchangeRepeater() }}</span>
     </div>
-    <div v-else class="mt20">
+    <div v-else class="mb20">
       <el-select
+        class="w24"
         :modelValue="value.getExchangeRoutes()"
-        @change="res => value.pushExchangeRoutes(res)"
+        @change="res => value.setExchangeRoutes(res)"
         multiple
         placeholder="请选择队列（填写动态路由后，静态路由将失效）"
       >
@@ -23,9 +30,10 @@
   const props = defineProps({
     value: UNodeMQ,
   });
-  console.log(props.value.getAllQueueNameList());
-</script>
-<style lang="scss" scoped>
-  .exchange {
+  const emit = defineEmits(["removeExchange"]);
+  async function removeExchange() {
+    await ElMessageBox.confirm("确定删除？");
+    emit("removeExchange", props.value.getExchangeId());
   }
-</style>
+</script>
+<style lang="scss" scoped></style>
