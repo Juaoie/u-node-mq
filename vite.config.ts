@@ -16,19 +16,16 @@ export default defineConfig({
       resolvers: [ElementPlusResolver()],
     }),
   ],
-  root: "./docs/",
+  root: "./src/",
 
   build: {
     outDir: "../",
   },
   resolve: {
     alias: {
-      "@": resolve(__dirname, "docs"),
-      "&": resolve(__dirname, "src"),
-      "@a": resolve(__dirname, "docs/assets/"),
-      "@s": resolve(__dirname, "docs/socket/"),
-      "@t": resolve(__dirname, "docs/tools/"),
-      "@p": resolve(__dirname, "docs/pages/"),
+      "@": resolve(__dirname, "src"),
+      "&": resolve(__dirname, "unmq"),
+      "@a": resolve(__dirname, "src/assets/"),
     },
   },
 });

@@ -1,6 +1,6 @@
-import { News } from '../UNodeMQ'
 import Consumer, { Consume } from './consumer'
 import Logs from './logs'
+import News from './news'
 import Queue, { QueueName } from './queue'
 
 export default class QueueCollection<D> {

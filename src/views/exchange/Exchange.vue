@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-  import UNodeMQ from "&/UNodeMQ";
+  import UNodeMQ from "&";
   const props = defineProps({
     value: UNodeMQ,
   });

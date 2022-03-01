@@ -1,0 +1,25 @@
+{
+  "name": "u-node-mq",
+  "version": "2.0.17",
+  "author": "hugaojie",
+  "description": "前端多模块通信的消息中心模型",
+  "main": "./index.ts",
+  "repository": "https://github.com/Juaoie/u-node-mq.git",
+  "homepage": "https://juaoie.github.io/u-node-mq/",
+  "license": "MIT",
+  "scripts": {
+    "test": "tsc ./test/index.ts && node ./test/index.js",
+    "gtest": "gulp && yarn test",
+    "git:commit": "git add -A . && git commit -am",
+    "npm:publish": "gulp && node ./script/addVersion.js && npm publish"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/gulp": "^4.0.9",
+    "del": "^6.0.0",
+    "gulp": "^4.0.2",
+    "gulp-typescript": "^6.0.0-alpha.1",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.5.5"
+  }
+}

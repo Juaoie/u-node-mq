@@ -1,5 +1,5 @@
 {
-  "include": ["src/**/*.ts", "docs/**/*.ts", "docs/**/*.d.ts", "docs/**/*.tsx", "docs/**/*.vue"],
+  "include": ["docs/**/*.ts", "docs/**/*.d.ts", "docs/**/*.tsx", "docs/**/*.vue"],
   "exclude": ["node_modules"],
   "compilerOptions": {
     "types": ["element-plus/global"],
@@ -11,12 +11,9 @@
     "moduleResolution": "node",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["docs/*"],
-      "&/*": ["src/*"],
-      "@a/*": ["docs/assets/*"],
-      "@s/*": ["docs/socket/*"],
-      "@t/*": ["docs/tools/*"],
-      "@p/*": ["docs/pages/*"]
+      "@/*": ["src/*"],
+      "&/*": ["unmq/*"],
+      "@a/*": ["src/assets/*"]
     }
   }
 }

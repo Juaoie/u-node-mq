@@ -1,0 +1,10 @@
+{
+  "include": ["numq"],
+  "compilerOptions": {
+    "target": "ES5",
+    "lib": ["ES6"],
+    "declaration": true,
+    "removeComments": true,
+    "esModuleInterop": true
+  }
+}

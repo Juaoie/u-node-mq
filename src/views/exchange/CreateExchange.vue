@@ -30,7 +30,7 @@
   import Exchange from "./Exchange.vue";
   import { queueNameList } from "../queue/QueueData";
   import { ref } from "vue";
-  import UNodeMQ from "../../../src/UNodeMQ";
+  import UNodeMQ from "&";
   const showCreateExchange = ref(false);
   const form = ref({
     exchangeName: "exchange",
