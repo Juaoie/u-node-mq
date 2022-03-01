@@ -4,7 +4,7 @@ import AutoImport from "unplugin-auto-import/vite";
 import Components from "unplugin-vue-components/vite";
 import { ElementPlusResolver } from "unplugin-vue-components/resolvers";
 import { resolve } from "path";
-
+console.log(resolve(__dirname, "src/"));
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
@@ -23,8 +23,8 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      "@": resolve(__dirname, "src"),
-      "&": resolve(__dirname, "unmq"),
+      "@": resolve(__dirname, "src/"),
+      "&": resolve(__dirname, "unmq/"),
       "@a": resolve(__dirname, "src/assets/"),
     },
   },

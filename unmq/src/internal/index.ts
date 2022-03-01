@@ -33,7 +33,7 @@ export default class UNodeMQ<D> extends Exchange<D> {
       //添加队列列表
       super.pushQueueList(option.queueNameList, option.ask);
       //添加静态路由
-      super.pushRoutes(option.queueNameList);
+      super.pushExchangeRoutes(option.queueNameList);
     }
   }
   /**

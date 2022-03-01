@@ -20,14 +20,29 @@ export default class Exchange<D = any> extends QueueCollection<D> {
    * 交换机名字
    */
   private readonly name: string;
+  getExchangeName() {
+    return this.name;
+  }
   /**
    * 静态路由
    */
   private routes: QueueName[] = [];
+  getExchangeRoutes() {
+    return this.routes;
+  }
+  pushExchangeRoutes(routes: QueueName[]) {
+    this.routes = Array.from(new Set(this.routes.concat(routes)));
+  }
   /**
    * 动态路由（中继器）
    */
   private repeater: Repeater<D>;
+  getExchangeRepeater() {
+    return this.repeater;
+  }
+  setExchangeRepeater(repeater: Repeater<D>) {
+    this.repeater = repeater;
+  }
 
   constructor(option: Option<D>) {
     super();
@@ -35,16 +50,10 @@ export default class Exchange<D = any> extends QueueCollection<D> {
     if (option.routes !== undefined) this.routes = option.routes;
     if (option.repeater !== undefined) this.repeater = option.repeater;
   }
-  /**
-   * 添加静态路由，驱虫
-   * @param routes
-   */
-  pushRoutes(routes: QueueName[]) {
-    this.routes = Array.from(new Set(this.routes.concat(routes)));
-  }
+
   /**
    * 删除routes
-   * @param routes 
+   * @param routes
    */
   removeRoutes(routes?: QueueName[]) {
     if (routes === undefined) this.routes = [];
