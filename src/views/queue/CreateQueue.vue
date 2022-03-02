@@ -28,7 +28,7 @@
   import { Queue } from "../../../unmq";
   import { ref } from "vue";
   import QueueInstance from "./QueueInstance.vue";
-  const queueList = ref([]);
+  const queueList = ref<Queue<any>[]>([]);
 
   const showCreateQueue = ref(false);
   const form = ref({

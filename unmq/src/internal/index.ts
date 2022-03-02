@@ -3,13 +3,12 @@ import Queue, { QueueName } from "./queue";
 import News from "./news";
 import Consumer, { Next } from "./consumer";
 import { Consume } from "./consumer";
-import Logs from "./logs";
-import UnmqFactory from "./UnmqFactory";
 
 interface Option {
   exchangeName?: string;
   queueNameList?: string[];
   ask?: boolean;
+  ex;
 }
 export type PluginInstallFunction<D> = (unmq: UNodeMQ<D>, ...options: any[]) => any;
 export type Plugin<D> =
@@ -24,16 +23,23 @@ export type Plugin<D> =
  * unmq：
  * 仅有emit和on方法会触发队列推送消息给消费者
  */
-export default class UNodeMQ<D> extends Exchange<D> {
+export default class UNodeMQ<D = any> {
+  private exchange: Exchange<D>;
+  getExchange() {
+    return this.exchange;
+  }
+  setExchange(exchange: Exchange<D>) {
+    this.exchange = exchange;
+  }
   constructor(option?: Option) {
     //先创建交换机
-    super({ name: option?.exchangeName || "exchange" });
+    if (option?.exchangeName !== undefined) new Exchange({ name: option?.exchangeName });
 
     if (option?.queueNameList !== undefined) {
       //添加队列列表
-      super.pushQueueList(option.queueNameList, option.ask);
+      this.exchange.pushQueueList(option.queueNameList, option.ask);
       //添加静态路由
-      super.pushRoutes(option.queueNameList);
+      this.exchange.pushRoutes(option.queueNameList);
     }
   }
   /**
@@ -44,7 +50,7 @@ export default class UNodeMQ<D> extends Exchange<D> {
   emit(...contentList: D[]) {
     for (const content of contentList) {
       //分别发送每一条消息
-      super.pushNewsToQueueList(content);
+      this.exchange.pushNewsToQueueList(content);
     }
     return this;
   }
@@ -63,35 +69,35 @@ export default class UNodeMQ<D> extends Exchange<D> {
   on(x: QueueName | Consume<D>, y?: Consume<D> | any, z?: any) {
     if (typeof x === "string" || typeof x === "symbol") {
       //订阅一个队列
-      super.pushConsumeToQueue(x, y, z);
+      this.exchange.pushConsumeToQueue(x, y, z);
       return () => this.off(x, y);
     } else if (typeof x === "function") {
       //订阅所有队列
-      super.pushConsumeToAllQueue(x, y);
+      this.exchange.pushConsumeToAllQueue(x, y);
       return () => this.off(x);
     }
   }
 
-  off(queueName: QueueName, consume: Consume<D>): Exchange;
-  off(queueName: QueueName): Exchange;
-  off(consume: Consume<D>): Exchange;
-  off(): Exchange;
+  off(queueName: QueueName, consume: Consume<D>): Exchange<D>;
+  off(queueName: QueueName): Exchange<D>;
+  off(consume: Consume<D>): Exchange<D>;
+  off(): Exchange<D>;
   off(x?: QueueName | Consume<D>, y?: Consume<D>) {
     if ((typeof x === "string" || typeof x === "symbol") && typeof y === "function") {
       //移除指定队列的指定消费者
-      super.removeConsumeFromQueue(x, y);
+      this.exchange.removeConsumeFromQueue(x, y);
     } else if ((typeof x === "string" || typeof x === "symbol") && typeof y === "undefined") {
       //移除指定队列的所有消费者
-      super.removeAllConsumeFromQueue(x);
+      this.exchange.removeAllConsumeFromQueue(x);
     } else if (typeof x === "function" && typeof y === "undefined") {
       //移除所有队列的指定消费者
-      super.removeConsumeFromAllQueue(x);
+      this.exchange.removeConsumeFromAllQueue(x);
     } else if (typeof x === "undefined" && typeof y === "undefined") {
       //移除所有消费者
-      super.removeConsume();
+      this.exchange.removeConsume();
     }
 
-    return this;
+    return this.exchange;
   }
 
   once(queueName: QueueName, consume: Consume<D>, payload?: any) {

@@ -2,19 +2,19 @@
   <el-card class="exchange">
     <template #header>
       <div class="df aic jcsb">
-        <span>{{ value.getName() }}</span>
+        <span>{{ modelValue.getName() }}</span>
         <el-button type="text" @click="removeExchange">删除</el-button>
       </div>
     </template>
-    <div v-if="value.getRepeater()" class="mb20">
-      <span>动态路由：{{ value.getRepeater() }}</span>
+    <div v-if="modelValue.getRepeater()" class="mb20">
+      <span>动态路由：{{ modelValue.getRepeater() }}</span>
     </div>
     <div v-else class="mb20 df aic">
-      <span style="width: 100px;">静态路由：</span>
+      <span style="width: 100px">静态路由：</span>
       <el-select
         class="w24"
-        :modelValue="value.getRoutes()"
-        @change="res => value.setRoutes(res)"
+        :modelValue="modelValue.getRoutes()"
+        @change="res => modelValue.setRoutes(res)"
         allow-create
         filterable
         default-first-option
@@ -26,14 +26,16 @@
 </template>
 
 <script setup lang="ts">
-  import UNodeMQ from "../../../unmq";
-  const props = defineProps({
-    value: UNodeMQ,
-  });
+  import { Exchange } from "../../../unmq";
+  interface Props {
+    modelValue: Exchange<number>;
+  }
+
+  const props = defineProps<Props>();
   const emit = defineEmits(["removeExchange"]);
   async function removeExchange() {
     await ElMessageBox.confirm("确定删除？");
-    emit("removeExchange", props.value.getId());
+    emit("removeExchange", props.modelValue.getId());
   }
 </script>
 <style lang="scss" scoped></style>

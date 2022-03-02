@@ -14,10 +14,10 @@
   const props = defineProps({
     value: Queue,
   });
-  const emit = defineEmits(["removeExchange"]);
+  const emit = defineEmits(["removeQueue"]);
   async function removeExchange() {
     await ElMessageBox.confirm("确定删除？");
-    emit("removeExchange", props.value.getId());
+    emit("removeQueue", props.value.getId());
   }
 </script>
 <style lang="scss" scoped></style>

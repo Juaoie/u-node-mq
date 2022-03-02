@@ -1,5 +1,4 @@
 import Tools from "../utils/tools";
-import { Consume } from "./consumer";
 import Logs from "./logs";
 import { QueueName } from "./queue";
 import QueueCollection from "./queueCollection";
@@ -16,7 +15,7 @@ export type Option<D> = {
 /**
  * 交换机
  */
-export default class Exchange<D = any> extends QueueCollection<D> {
+export default class Exchange<D> extends QueueCollection<D> {
   /**
    * id
    */
