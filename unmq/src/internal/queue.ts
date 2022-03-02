@@ -50,6 +50,9 @@ export default class Queue<D> {
    * 消费者 list
    */
   private consumerList: Consumer<D>[] = [];
+  getConsumerList() {
+    return this.consumerList;
+  }
   constructor(option: Option<D>) {
     this.name = option.name;
     if (option.ask !== undefined) this.ask = option.ask;
@@ -59,11 +62,11 @@ export default class Queue<D> {
     queueCollection.pushQueue(this);
   }
   /**
-   * 移除指定消费者
+   * 通过消费方法移除指定消费者
    * @param consume
    * @returns
    */
-  delConsumer(consume: Consume<D>) {
+  removeConsumer(consume: Consume<D>) {
     const index = this.consumerList.findIndex(item => item.consume === consume);
     if (index === -1) return false;
     this.consumerList.splice(index, 1);
@@ -73,8 +76,19 @@ export default class Queue<D> {
    * 移除所有消费者
    * @returns
    */
-  delAllConsumer() {
+  removeAllConsumer() {
     this.consumerList = [];
+    return true;
+  }
+  /**
+   * 通过id移除指定消费者
+   * @param consumerId
+   * @returns
+   */
+  removeConsumerById(consumerId: string) {
+    const index = this.consumerList.findIndex(item => item.getId() === consumerId);
+    if (index === -1) return false;
+    this.consumerList.splice(index, 1);
     return true;
   }
   /**

@@ -17,7 +17,10 @@ export default class Consumer<D> {
   /**
    * id
    */
-  readonly id: string = Tools.random();
+  private readonly id: string = Tools.random();
+  getId() {
+    return this.id;
+  }
   /**
    * 消费者创建时间戳
    */
@@ -45,7 +48,7 @@ export default class Consumer<D> {
     const then = (thenParameter: ThenParameter<D>) => {
       //不加入任务队列，会导致消费失败的数据重写到队列失败
       try {
-        const confirm: Next = value => thenParameter({ isOk: value, consumer: this, news });
+        const confirm: Next = (value = true) => thenParameter({ isOk: value, consumer: this, news });
         const res = this.consume(news.content, ask ? confirm : undefined, this.payload);
         if (ask === false) return thenParameter({ isOk: true, consumer: this, news });
         if (res instanceof Promise) {

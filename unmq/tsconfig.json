@@ -3,7 +3,7 @@
   "exclude": ["node_modules"],
   "compilerOptions": {
     "target": "ES5",
-    "lib": ["ES6"],
+    "lib": ["ES6", "dom"],
     "declaration": true,
     "removeComments": true,
     "esModuleInterop": true

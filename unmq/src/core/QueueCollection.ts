@@ -105,7 +105,7 @@ export default class QueueCollection<D> {
     const queue = this.queueList.find(queue => queue.getName() === queueName);
     if (queue === undefined) return Logs.error(`${queueName} queue not find`);
     //移除消费者
-    queue.delConsumer(consume);
+    queue.removeConsumer(consume);
   }
   /**
    * 移除队列中所有消费者
@@ -116,7 +116,7 @@ export default class QueueCollection<D> {
     const queue = this.queueList.find(queue => queue.getName() === queueName);
     if (queue === undefined) return Logs.error(`${queueName} queue not find`);
     //移除所有消费者
-    queue.delAllConsumer();
+    queue.removeAllConsumer();
   }
   /**
    * 移除所有队列中的指定消费者
@@ -124,7 +124,7 @@ export default class QueueCollection<D> {
    */
   removeConsumeFromAllQueue(consume: Consume<D>) {
     for (const queue of this.queueList) {
-      queue.delConsumer(consume);
+      queue.removeConsumer(consume);
     }
   }
   /**
@@ -132,7 +132,7 @@ export default class QueueCollection<D> {
    */
   removeConsume() {
     for (const queue of this.queueList) {
-      queue.delAllConsumer();
+      queue.removeAllConsumer();
     }
   }
   /**
