@@ -1,13 +1,19 @@
-import Consumer, { Consume } from "./consumer";
-import Logs from "./logs";
-import News from "./news";
-import Queue, { QueueName } from "./queue";
+import Consumer, { Consume } from "../internal/Consumer";
+import Logs from "../internal/Logs";
+import News from "../internal/News";
+import Queue, { QueueName } from "../internal/Queue";
 
 /**
  * 队列集合
  */
 export default class QueueCollection<D> {
   private queueList: Queue<D>[] = [];
+  getQueueList() {
+    return this.queueList;
+  }
+  pushQueue(queue: Queue<D>) {
+    this.queueList.push(queue);
+  }
   /**
    * 获取所有队列name列表
    * @returns
@@ -42,7 +48,7 @@ export default class QueueCollection<D> {
     return consume.map(item => new Consumer(item, payload));
   }
   /**
-   * 添加队列列表，驱虫
+   * 通过队列名称生成队列，驱虫添加队列
    * @param queueNameList
    */
   pushQueueList(queueNameList: QueueName[], ask?: boolean) {
@@ -127,6 +133,34 @@ export default class QueueCollection<D> {
   removeConsume() {
     for (const queue of this.queueList) {
       queue.delAllConsumer();
+    }
+  }
+  /**
+   *根据名称删除队列
+   * @param queueName
+   */
+  removeQueueByName(queueName?: QueueName) {
+    if (queueName) {
+      const queue = this.queueList.find(queue => queue.getName() === queueName);
+      if (queue === undefined) return Logs.error(`${queueName} queue not find`);
+      this.queueList.splice(
+        this.queueList.findIndex(item => item.getName() === queueName),
+        1,
+      );
+    } else {
+      this.queueList = [];
+    }
+  }
+  removeQueueById(queueId?: string) {
+    if (queueId) {
+      const queue = this.queueList.find(queue => queue.getId() === queueId);
+      if (queue === undefined) return Logs.error(`${queueId} queue not find`);
+      this.queueList.splice(
+        this.queueList.findIndex(item => item.getId() === queueId),
+        1,
+      );
+    } else {
+      this.queueList = [];
     }
   }
 }

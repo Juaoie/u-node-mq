@@ -1,7 +1,7 @@
 import Tools from "../utils/tools";
-import Logs from "./logs";
-import { QueueName } from "./queue";
-import QueueCollection from "./queueCollection";
+import Logs from "./Logs";
+import { QueueName } from "./Queue";
+import { queueCollection } from "../core";
 /**
  * 中继器类型
  */
@@ -15,11 +15,11 @@ export type Option<D> = {
 /**
  * 交换机
  */
-export default class Exchange<D> extends QueueCollection<D> {
+export default class Exchange<D> {
   /**
    * id
    */
-  readonly id: string = Tools.random();
+  private readonly id: string = Tools.random();
   getId() {
     return this.id;
   }
@@ -55,7 +55,6 @@ export default class Exchange<D> extends QueueCollection<D> {
   }
 
   constructor(option: Option<D>) {
-    super();
     this.name = option.name;
     if (option.routes !== undefined) this.routes = option.routes;
     if (option.repeater !== undefined) this.repeater = option.repeater;
@@ -98,7 +97,7 @@ export default class Exchange<D> extends QueueCollection<D> {
     const queueNameList = await this.getQueueNameList(content);
     for (const queueName of queueNameList) {
       //分别向每一条队列发送一条消息
-      super.pushNewsToQueue(queueName, content);
+      queueCollection.pushNewsToQueue(queueName, content);
     }
   }
 }

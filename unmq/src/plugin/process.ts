@@ -1,6 +1,6 @@
 import UNodeMQ from "../internal";
-import { Consume, Next } from "../internal/consumer";
-import Queue from "../internal/queue";
+import { Consume, Next } from "../internal/Consumer";
+import Queue from "../internal/Queue";
 export type NextProxy = (...queueNameList: string[]) => void;
 export type ProcessConsume = (queueName: string, nextProxy: NextProxy, payload?: any) => void;
 export default class Process {

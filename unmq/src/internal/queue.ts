@@ -1,7 +1,8 @@
-import News from "./news";
-import Consumer, { Consume, ConsumptionStatus } from "./consumer";
-import Logs from "./logs";
+import News from "./News";
+import Consumer, { Consume, ConsumptionStatus } from "./Consumer";
+import Logs from "./Logs";
 import Tools from "../utils/tools";
+import { queueCollection } from "../core";
 export type QueueName = string | Symbol;
 interface Option<D> {
   name: QueueName;
@@ -52,6 +53,7 @@ export default class Queue<D> {
     if (option.news !== undefined) this.news = option.news;
     if (option.consumerList !== undefined) this.consumerList = option.consumerList;
     if (option.rcn !== undefined) this.rcn = option.rcn;
+    queueCollection.pushQueue(this);
   }
   /**
    * 移除指定消费者

@@ -1,6 +1,6 @@
 import Tools from '../utils/tools'
-import Logs from './logs'
-import News from './news'
+import Logs from './Logs'
+import News from './News'
 export type Next = (value: boolean) => void
 
 export type Consume<D> = (

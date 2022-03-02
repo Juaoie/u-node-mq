@@ -1,7 +1,13 @@
 <template>
   <div class="df ffcn create-exchange">
     <el-button type="primary" @click="showCreateExchange = true">创建交换机</el-button>
-    <exchange-instance v-for="item in exchangeList" :modelValue="item" class="mt10" @removeExchange="removeExchange"></exchange-instance>
+    <exchange-instance
+      v-for="item in exchangeList"
+      :key="item.getId()"
+      :exchange="item"
+      class="mt10"
+      @removeExchange="removeExchange"
+    ></exchange-instance>
   </div>
   <el-dialog v-model="showCreateExchange" title="创建交换机">
     <el-form :model="form">
@@ -34,7 +40,7 @@
 <script setup lang="ts">
   import ExchangeInstance from "./ExchangeInstance.vue";
   import { ref } from "vue";
-  import { Exchange } from "../../../unmq/dist";
+  import { Exchange } from "../../../unmq/src";
   const showCreateExchange = ref(false);
   const form = ref({
     exchangeName: "",
@@ -49,7 +55,7 @@
   function createExchange() {
     if (form.value.exchangeName === "") return ElNotification.error({ title: "错误", message: "请输入交换机名称" });
 
-    const exchange = new Exchange({ name: form.value.exchangeName });
+    const exchange = new Exchange<string>({ name: form.value.exchangeName });
     try {
       exchange.setRepeater(eval(form.value.repeater));
     } catch (error) {

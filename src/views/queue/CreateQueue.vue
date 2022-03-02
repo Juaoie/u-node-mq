@@ -1,7 +1,7 @@
 <template>
   <div class="df ffcn create-queue">
-    <el-button type="primary" @click="showCreateQueue = true">创建交换机</el-button>
-    <queue-instance v-for="item in queueList"></queue-instance>
+    <el-button type="primary" @click="showCreateQueue = true">创建队列</el-button>
+    <queue-instance v-for="item in queueCollectionRef.getQueueList()" :key="item.getId()" :queue="item" class="mt10"></queue-instance>
   </div>
   <el-dialog v-model="showCreateQueue" title="创建交换机">
     <el-form :model="form">
@@ -25,10 +25,11 @@
 </template>
 
 <script setup lang="ts">
-  import { Queue } from "../../../unmq";
+  import { Consumer, Queue } from "&/src";
   import { ref } from "vue";
   import QueueInstance from "./QueueInstance.vue";
-  const queueList = ref<Queue<any>[]>([]);
+  import { queueCollection } from "&/src/core";
+  const queueCollectionRef = ref(queueCollection);
 
   const showCreateQueue = ref(false);
   const form = ref({
@@ -40,7 +41,11 @@
   function createQueue() {
     if (form.value.queueName === "") return ElNotification.error({ title: "错误", message: "请输入队列名称" });
     const queue = new Queue({ name: form.value.queueName, ask: form.value.ask, rcn: form.value.rcn });
-    queueList.value.push(queue);
+    queueCollectionRef.value.pushQueue(queue);
+    const consumer = new Consumer(data => {
+      console.log(data);
+    });
+    queue.pushConsumer(consumer);
     showCreateQueue.value = false;
   }
 </script>

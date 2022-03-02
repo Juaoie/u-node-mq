@@ -1,8 +1,9 @@
-import Exchange from "./exchange";
-import Queue, { QueueName } from "./queue";
-import News from "./news";
-import Consumer, { Next } from "./consumer";
-import { Consume } from "./consumer";
+import Exchange from "./Exchange";
+import Queue, { QueueName } from "./Queue";
+import News from "./News";
+import Consumer, { Next } from "./Consumer";
+import { Consume } from "./Consumer";
+import { queueCollection } from "../core";
 
 interface Option {
   exchangeName?: string;
@@ -17,7 +18,6 @@ export type Plugin<D> =
   | {
       install: PluginInstallFunction<D>;
     };
-
 /**
  * unmq：
  * 仅有emit和on方法会触发队列推送消息给消费者
@@ -36,7 +36,7 @@ export default class UNodeMQ<D = any> {
 
     if (option?.queueNameList !== undefined) {
       //添加队列列表
-      this.exchange.pushQueueList(option.queueNameList, option.ask);
+      queueCollection.pushQueueList(option.queueNameList, option.ask);
       //添加静态路由
       this.exchange.pushRoutes(option.queueNameList);
     }
@@ -68,11 +68,11 @@ export default class UNodeMQ<D = any> {
   on(x: QueueName | Consume<D>, y?: Consume<D> | any, z?: any) {
     if (typeof x === "string" || typeof x === "symbol") {
       //订阅一个队列
-      this.exchange.pushConsumeToQueue(x, y, z);
+      queueCollection.pushConsumeToQueue(x, y, z);
       return () => this.off(x, y);
     } else if (typeof x === "function") {
       //订阅所有队列
-      this.exchange.pushConsumeToAllQueue(x, y);
+      queueCollection.pushConsumeToAllQueue(x, y);
       return () => this.off(x);
     }
   }
@@ -84,16 +84,16 @@ export default class UNodeMQ<D = any> {
   off(x?: QueueName | Consume<D>, y?: Consume<D>) {
     if ((typeof x === "string" || typeof x === "symbol") && typeof y === "function") {
       //移除指定队列的指定消费者
-      this.exchange.removeConsumeFromQueue(x, y);
+      queueCollection.removeConsumeFromQueue(x, y);
     } else if ((typeof x === "string" || typeof x === "symbol") && typeof y === "undefined") {
       //移除指定队列的所有消费者
-      this.exchange.removeAllConsumeFromQueue(x);
+      queueCollection.removeAllConsumeFromQueue(x);
     } else if (typeof x === "function" && typeof y === "undefined") {
       //移除所有队列的指定消费者
-      this.exchange.removeConsumeFromAllQueue(x);
+      queueCollection.removeConsumeFromAllQueue(x);
     } else if (typeof x === "undefined" && typeof y === "undefined") {
       //移除所有消费者
-      this.exchange.removeConsume();
+      queueCollection.removeConsume();
     }
 
     return this.exchange;
