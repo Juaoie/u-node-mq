@@ -6,7 +6,9 @@
         <el-button type="text" @click="removeExchange">删除</el-button>
       </div>
     </template>
-    <el-button @click="sendNews" class="mb20">发送固定消息</el-button>
+    <div class="mb20">
+      <el-button @click="sendNews">发送固定消息</el-button>
+    </div>
     <div v-if="exchange.getRepeater()" class="mb20">
       <span>动态路由：{{ exchange.getRepeater() }}</span>
     </div>

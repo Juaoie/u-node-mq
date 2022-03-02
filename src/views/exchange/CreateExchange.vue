@@ -79,7 +79,7 @@
   .create-exchange {
     padding: 20px;
     min-height: 100px;
-    min-width: 40%;
+    width: 40%;
     background: #e6a23c;
     border-radius: 8px;
   }

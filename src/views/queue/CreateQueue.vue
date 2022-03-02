@@ -41,11 +41,10 @@
   function createQueue() {
     if (form.value.queueName === "") return ElNotification.error({ title: "错误", message: "请输入队列名称" });
     const queue = new Queue({ name: form.value.queueName, ask: form.value.ask, rcn: form.value.rcn });
-    queueCollectionRef.value.pushQueue(queue);
-    const consumer = new Consumer(data => {
-      console.log(data);
-    });
-    queue.pushConsumer(consumer);
+    // const consumer = new Consumer(data => {
+    //   console.log(data);
+    // });
+    // queue.pushConsumer(consumer);
     showCreateQueue.value = false;
   }
 </script>
@@ -53,7 +52,7 @@
   .create-queue {
     padding: 20px;
     min-height: 100px;
-    min-width: 40%;
+    width: 40%;
     background: #67c23a;
     border-radius: 8px;
   }

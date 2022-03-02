@@ -20,7 +20,7 @@ export default class Queue<D> {
   /**
    * id
    */
-  readonly id: string = Tools.random();
+  private readonly id: string = Tools.random();
   getId() {
     return this.id;
   }
@@ -43,6 +43,9 @@ export default class Queue<D> {
    * 消息 list
    */
   private news: News<D>[] = [];
+  getNews() {
+    return this.news;
+  }
   /**
    * 消费者 list
    */
