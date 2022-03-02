@@ -3,7 +3,7 @@
   "version": "2.0.17",
   "author": "hugaojie",
   "description": "前端多模块通信的消息中心模型",
-  "main": "./index.ts",
+  "main": "./src/index.ts",
   "repository": "https://github.com/Juaoie/u-node-mq.git",
   "homepage": "https://juaoie.github.io/u-node-mq/",
   "license": "MIT",

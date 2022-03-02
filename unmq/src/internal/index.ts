@@ -8,7 +8,6 @@ interface Option {
   exchangeName?: string;
   queueNameList?: string[];
   ask?: boolean;
-  ex;
 }
 export type PluginInstallFunction<D> = (unmq: UNodeMQ<D>, ...options: any[]) => any;
 export type Plugin<D> =

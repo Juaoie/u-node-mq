@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-  import { Exchange } from "../../../unmq";
+  import { Exchange } from "../../../unmq/dist";
   interface Props {
     modelValue: Exchange<number>;
   }
