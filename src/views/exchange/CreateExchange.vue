@@ -1,7 +1,7 @@
 <template>
   <div class="df ffcn create-exchange">
     <el-button type="primary" @click="showCreateExchange = true">创建交换机</el-button>
-    <exchange v-for="item in exchangeList" :value="item" class="mt10" @removeExchange="removeExchange"></exchange>
+    <exchange-instance v-for="item in exchangeList" :value="item" class="mt10" @removeExchange="removeExchange"></exchange-instance>
   </div>
   <el-dialog v-model="showCreateExchange" title="创建交换机">
     <el-form :model="form">
@@ -9,9 +9,14 @@
         <el-input v-model="form.exchangeName" placeholder="请输入交换机名称"></el-input>
       </el-form-item>
       <el-form-item label="静态路由（routes）">
-        <el-select v-model="form.routes" multiple placeholder="请选择队列（填写动态路由后，静态路由将失效）">
-          <el-option v-for="item in queueNameList" :value="item"></el-option>
-        </el-select>
+        <el-select
+          v-model="form.routes"
+          allow-create
+          filterable
+          default-first-option
+          multiple
+          placeholder="请输入队列名称（填写动态路由后，静态路由将失效）"
+        ></el-select>
       </el-form-item>
       <el-form-item label="动态路由（repeater）">
         <el-input type="textarea" v-model="form.repeater" placeholder="请填写动态路由代码（填写动态路由后，静态路由将失效）"></el-input>
@@ -27,10 +32,9 @@
 </template>
 
 <script setup lang="ts">
-  import Exchange from "./Exchange.vue";
-  import { queueNameList } from "../queue/QueueData";
+  import ExchangeInstance from "./ExchangeInstance.vue";
   import { ref } from "vue";
-  import UNodeMQ from "../../../unmq/index";
+  import UNodeMQ from "../../../unmq";
   const showCreateExchange = ref(false);
   const form = ref({
     exchangeName: "",
@@ -49,16 +53,11 @@
     } catch (error) {
       return ElMessage({ message: error, type: "error" });
     }
-    unmq.pushExchangeRoutes(form.value.routes);
+    unmq.pushRoutes(form.value.routes);
 
     showCreateExchange.value = false;
 
     exchangeList.value.push(unmq);
-    form.value.exchangeName = "";
-    form.value.routes = [];
-    form.value.repeater = `
-    (queueName)=>queueName;
-    `;
   }
 
   function removeExchange(exchangeId) {
@@ -74,5 +73,6 @@
     min-height: 100px;
     min-width: 40%;
     background: #e6a23c;
+    border-radius: 8px;
   }
 </style>

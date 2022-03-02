@@ -20,13 +20,16 @@ export default class Queue<D> {
    * id
    */
   readonly id: string = Tools.random();
-  getQueueId() {
+  getId() {
     return this.id;
   }
   /**
    * 队列名字
    */
-  name: QueueName;
+  private readonly name: QueueName;
+  getName() {
+    return this.name;
+  }
   /**
    * 是否需要消息确认
    */

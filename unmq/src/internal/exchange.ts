@@ -21,37 +21,37 @@ export default class Exchange<D = any> extends QueueCollection<D> {
    * id
    */
   readonly id: string = Tools.random();
-  getExchangeId() {
+  getId() {
     return this.id;
   }
   /**
    * 交换机名字
    */
   private readonly name: string;
-  getExchangeName() {
+  getName() {
     return this.name;
   }
   /**
    * 静态路由
    */
   private routes: QueueName[] = [];
-  getExchangeRoutes() {
+  getRoutes() {
     return this.routes;
   }
-  pushExchangeRoutes(routes: QueueName[]) {
+  pushRoutes(routes: QueueName[]) {
     this.routes = Array.from(new Set(this.routes.concat(routes)));
   }
-  setExchangeRoutes(routes: QueueName[]) {
+  setRoutes(routes: QueueName[]) {
     this.routes = routes;
   }
   /**
    * 动态路由（中继器）
    */
   private repeater: Repeater<D>;
-  getExchangeRepeater() {
+  getRepeater() {
     return this.repeater;
   }
-  setExchangeRepeater(repeater: Repeater<D>) {
+  setRepeater(repeater: Repeater<D>) {
     this.repeater = repeater;
   }
 
@@ -69,13 +69,6 @@ export default class Exchange<D = any> extends QueueCollection<D> {
   removeRoutes(routes?: QueueName[]) {
     if (routes === undefined) this.routes = [];
     else this.routes = this.routes.filter(item => routes.indexOf(item) !== -1);
-  }
-  /**
-   * 设置中继器
-   * @param repeater
-   */
-  setRepeater(repeater: Repeater<D>) {
-    this.repeater = repeater;
   }
 
   /**

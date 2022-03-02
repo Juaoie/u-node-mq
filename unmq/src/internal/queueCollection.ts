@@ -13,7 +13,7 @@ export default class QueueCollection<D> {
    * @returns
    */
   getAllQueueNameList() {
-    return this.queueList.map(queue => queue.name);
+    return this.queueList.map(queue => queue.getName());
   }
   /**
    * 生产队列列表
@@ -46,7 +46,7 @@ export default class QueueCollection<D> {
    * @param queueNameList
    */
   pushQueueList(queueNameList: QueueName[], ask?: boolean) {
-    const currentQuestionNameList = this.queueList.map(queue => queue.name);
+    const currentQuestionNameList = this.queueList.map(queue => queue.getName());
     //驱虫
     this.queueList.push(
       ...this.produceQueueList(
@@ -61,7 +61,7 @@ export default class QueueCollection<D> {
    * @param news
    */
   pushNewsToQueue(queueName: QueueName, contentList: D) {
-    const queue = this.queueList.find(queue => queue.name === queueName);
+    const queue = this.queueList.find(queue => queue.getName() === queueName);
     if (queue === undefined) return Logs.error(`${queueName} queue not find`);
     //生产消息，然后加入队列
     queue.pushNews(...this.produceNews([contentList]));
@@ -73,7 +73,7 @@ export default class QueueCollection<D> {
    * @param payload
    */
   pushConsumeToQueue(queueName: QueueName, consume: Consume<D>, payload?: any) {
-    const queue = this.queueList.find(queue => queue.name === queueName);
+    const queue = this.queueList.find(queue => queue.getName() === queueName);
     if (queue === undefined) return Logs.error(`${queueName} queue not find`);
     //添加消费者到队列
     queue.pushConsumer(...this.produceConsumer([consume], payload));
@@ -96,7 +96,7 @@ export default class QueueCollection<D> {
    * @returns
    */
   removeConsumeFromQueue(queueName: QueueName, consume: Consume<D>) {
-    const queue = this.queueList.find(queue => queue.name === queueName);
+    const queue = this.queueList.find(queue => queue.getName() === queueName);
     if (queue === undefined) return Logs.error(`${queueName} queue not find`);
     //移除消费者
     queue.delConsumer(consume);
@@ -107,7 +107,7 @@ export default class QueueCollection<D> {
    * @returns
    */
   removeAllConsumeFromQueue(queueName: QueueName) {
-    const queue = this.queueList.find(queue => queue.name === queueName);
+    const queue = this.queueList.find(queue => queue.getName() === queueName);
     if (queue === undefined) return Logs.error(`${queueName} queue not find`);
     //移除所有消费者
     queue.delAllConsumer();

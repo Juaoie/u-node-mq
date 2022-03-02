@@ -1,21 +1,17 @@
 <template>
-  <div class="body df">
+  <div class="body df jcsb">
     <create-exchange></create-exchange>
 
-    <div class="queue"></div>
+    <create-queue></create-queue>
   </div>
 </template>
 
 <script lang="ts" setup>
   import CreateExchange from "./exchange/CreateExchange.vue";
+  import CreateQueue from "./queue/CreateQueue.vue";
 </script>
 <style lang="scss" scoped>
   .body {
     width: 100%;
-    .queue {
-      height: 100%;
-      min-width: 400px;
-      background: #67c23a;
-    }
   }
 </style>
