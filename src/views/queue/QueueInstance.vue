@@ -8,7 +8,11 @@
     </template>
 
     <div class="mb20">
-      <el-button @click="sendNews">发送固定消息</el-button>
+      <el-input v-model="newsContent" placeholder="填写消息内容，点击发送">
+        <template #append>
+          <el-button @click="sendNews">发送消息</el-button>
+        </template>
+      </el-input>
     </div>
 
     <div class="mb20">
@@ -16,7 +20,7 @@
       <el-switch v-model="queue.ask" />
     </div>
     <div class="mb20">
-      <span>是否需要消息确定</span>
+      <span>消息可消费次数</span>
       <el-input-number v-model="queue.rcn" :min="0" />
     </div>
 
@@ -59,8 +63,9 @@
     queueCollection.removeQueueById(props.queue.getId());
   }
 
+  const newsContent = ref("消息内容");
   function sendNews() {
-    const news = new News<string>("来自直接发送给队列的消息");
+    const news = new News<string>(newsContent.value);
     props.queue.pushNews(news);
   }
 

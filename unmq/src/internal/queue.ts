@@ -133,7 +133,7 @@ export default class Queue<D> {
     const news = this.eject();
     //随机消费者的索引
     const index = Math.round(Math.random() * (this.consumerList.length - 1));
-    const consumer = this.consumerList.slice(index, 1)[0];
+    const consumer = this.consumerList.slice(index, index + 1)[0];
     consumer.consumption(news, this.ask).then((res: ConsumptionStatus<D>) => {
       if (res.isOk) {
         //消费成功
