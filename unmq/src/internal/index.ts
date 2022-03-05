@@ -77,6 +77,11 @@ export default class UNodeMQ<D = any> {
     }
   }
 
+  /**
+   * 移除消费者
+   * @param queueName
+   * @param consume
+   */
   off(queueName: QueueName, consume: Consume<D>): Exchange<D>;
   off(queueName: QueueName): Exchange<D>;
   off(consume: Consume<D>): Exchange<D>;
@@ -99,6 +104,13 @@ export default class UNodeMQ<D = any> {
     return this.exchange;
   }
 
+  /**
+   * 一次性订阅消息
+   * @param queueName
+   * @param consume
+   * @param payload
+   * @returns
+   */
   once(queueName: QueueName, consume: Consume<D>, payload?: any) {
     let consumeNum = 0;
     const consumeProxy = (content: D, next?: Next, payload?: any) => {

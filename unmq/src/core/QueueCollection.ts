@@ -14,6 +14,9 @@ export default class QueueCollection<D> {
   pushQueue(queue: Queue<D>) {
     this.queueList.push(queue);
   }
+  getQueueById(queueId: string) {
+    return this.queueList.find(item => item.getId() === queueId);
+  }
   /**
    * 获取所有队列name列表
    * @returns

@@ -46,7 +46,7 @@
     exchangeName: "",
     routes: [],
     repeater: `
-    (queueName)=>queueName;
+    (news)=>[];
     `,
   });
 

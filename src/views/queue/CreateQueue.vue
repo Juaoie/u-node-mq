@@ -1,7 +1,7 @@
 <template>
   <div class="df ffcn create-queue">
     <el-button type="primary" @click="showCreateQueue = true">创建队列</el-button>
-    <queue-instance v-for="item in queueCollectionRef.getQueueList()" :key="item.getId()" :queue="item" class="mt10"></queue-instance>
+    <queue-instance v-for="item in queueCollectionRef.getQueueList()" :key="item.getId()" :queueId="item.getId()" class="mt10"></queue-instance>
   </div>
   <el-dialog v-model="showCreateQueue" title="创建交换机">
     <el-form :model="form">
@@ -40,7 +40,7 @@
 
   function createQueue() {
     if (form.value.queueName === "") return ElNotification.error({ title: "错误", message: "请输入队列名称" });
-    const queue = new Queue({ name: form.value.queueName, ask: form.value.ask, rcn: form.value.rcn });
+    const queue = new Queue<string>({ name: form.value.queueName, ask: form.value.ask, rcn: form.value.rcn });
     // const consumer = new Consumer(data => {
     //   console.log(data);
     // });

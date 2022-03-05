@@ -55,18 +55,20 @@
   import { ref } from "vue";
 
   interface Props {
-    queue: Queue<string>;
+    queueId: string;
   }
   const props = defineProps<Props>();
+  const queue = ref(queueCollection.getQueueById(props.queueId));
+
   async function removeExchange() {
     await ElMessageBox.confirm("确定删除？");
-    queueCollection.removeQueueById(props.queue.getId());
+    queueCollection.removeQueueById(queue.value.getId());
   }
 
   const newsContent = ref("消息内容");
   function sendNews() {
     const news = new News<string>(newsContent.value);
-    props.queue.pushNews(news);
+    queue.value.pushNews(news);
   }
 
   const code = ref("()=>{}");
@@ -76,7 +78,7 @@
       const consume = eval(code.value);
       if (typeof consume !== "function") return ElNotification.error({ title: "错误", message: "请填入消费者方法，接受消息和固定载体值" });
       const consuemr = new Consumer<string>(consume, payload.value);
-      props.queue.pushConsumer(consuemr);
+      queue.value.pushConsumer(consuemr);
       code.value = "()=>{}";
       payload.value = "";
     } catch (error) {
@@ -84,7 +86,7 @@
     }
   }
   function removeConsumer(consumerId) {
-    props.queue.removeConsumerById(consumerId);
+    queue.value.removeConsumerById(consumerId);
   }
 </script>
 <style lang="scss" scoped>

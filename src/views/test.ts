@@ -1,24 +1,11 @@
-interface FooParams {
-  type: 'foo';
-  value: string;
-}
 
-interface BarParams {
-  type: 'bar';
-  value: number;
-}
+import UNodeMQ, { Exchange, Queue } from "&/src";
 
-type Params = FooParams | BarParams;
+const e = new UNodeMQ<string>();
 
-function test<TParams extends Params>(
-  type: TParams['type'],
-  value: TParams['value'],
-): void {}
-
-function test1<TType extends Params['type']>(
-  type: TType,
-  value: Extract<Params, {type: TType}>['value'],
-): void {}
+type A = typeof UNodeMQ;
 
 
-test1("foo","213")
+const a =new Array<string>()
+
+const s = new Set()
