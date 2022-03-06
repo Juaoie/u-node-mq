@@ -1,30 +1,34 @@
-import { Exchange, Queue, News, Consume } from "..";
+import { Exchange, Queue, News } from "..";
 import { queueCollection } from "../core";
 import Collection from "./Collection";
-export interface Option {
-  exchange: Record<string, Exchange<unknown>>;
-  queue: Record<string, Queue<unknown>>;
+export interface AbstractCollection<T> {
+  [k: string]: T;
 }
-
+export type N = unknown[];
 /**
  * unmq：
  * 仅有emit和on方法会触发队列推送消息给消费者
  */
-export default class UNodeMQ extends Collection {
-  constructor(option: Option) {
-    super(option);
+export default class UNodeMQ<
+  E extends AbstractCollection<Exchange<unknown>>,
+  Q extends AbstractCollection<Queue<unknown>>,
+  J extends keyof E,
+  O extends keyof Q,
+> extends Collection<E, Q> {
+  constructor(exchangeCollection: E, queueCollection: Q) {
+    super(exchangeCollection, queueCollection);
   }
   /**
    * 发射数据
    * @param contentList 消息体列表
    * @returns
    */
-  emit();
-  emit(...contentList: D[]) {
-    for (const content of contentList) {
-      //分别发送每一条消息
-      this.exchange.pushNewsToQueueList(content);
-    }
+  emit(exchangeName: J, ...contentList: N) {
+    super.pushNewsToExchange(exchangeName, contentList);
+
+    return this;
+  }
+  emitToQueue(queueName: O, ...contentList: N) {
     return this;
   }
 

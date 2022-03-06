@@ -1,30 +1,32 @@
-import { Exchange } from "..";
+import { Exchange, Queue } from "..";
 import ExchangeCollection from "./ExchangeCollection";
 import QueueCollection from "./QueueCollection";
-import { Option } from "./UNodeMQ";
+import { AbstractCollection, N } from "./UNodeMQ";
 
-export default class Collection {
-  private readonly exchangeCollection: ExchangeCollection<unknown>;
-  private readonly queueCollection: QueueCollection<unknown>;
-  constructor(option: Option) {
-    this.exchangeCollection.setExchangeCollection(option.exchange);
+export default class Collection<E extends AbstractCollection<Exchange<unknown>>, Q extends AbstractCollection<Queue<unknown>>> {
+  private readonly exchangeCollection: ExchangeCollection<E>;
+  private readonly queueCollection: QueueCollection<E>;
+  constructor(exchangeCollection: E, queueCollection: Q) {
+    this.exchangeCollection.setExchangeCollection(exchangeCollection);
   }
-  getExchageByName() {
-    // const obj =this.exchangeCollection.getExchangeCollection()
-    // const obj= this.exchangeCollection.setExchangeCollection({
-    //   ex:new Exchange({ name: "ex1" })
-    // });
-    const obj = {
-      ex:new Exchange({ name: "ex1" })
+  /**
+   * 发送消息到交换机
+   * @param exchangeName
+   * @param contentList
+   */
+  async pushNewsToExchange(exchangeName: string, ...contentList: N) {
+    for (const content of contentList) {
+      //分别发送每一条消息
+      const queueNameList = await this.exchangeCollection.getQueueNameList(exchangeName, content);
+      for (const queueName in queueNameList) {
+        this.pushNewsToQueue(queueName, content);
+      }
     }
-    // const obj = this.exchangeCollection.getExchangeCollection();
-
-    // const obj= Object.assign(obj1, { a: 1 });
-    type Obj = typeof obj;
-    let key: keyof Obj;
-    key = "a";
-
-    this.exchangeCollection.getExchangeCollection();
-    // return this.exchangeCollection.getExchangeByName(exchangeName);
+  }
+  pushNewsToQueue(queueName: string, ...contentList: N) {
+    for (const content of contentList) {
+      //分别发送每一条消息
+      
+    }
   }
 }
