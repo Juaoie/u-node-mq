@@ -9,7 +9,7 @@ type Repeater<D> = (content: D) => Promise<QueueName[]> | QueueName[];
 
 export type Option<D> = {
   name: string;
-  routes?: string[];
+  routes?: QueueName[];
   repeater?: Repeater<D>;
 };
 /**
