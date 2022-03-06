@@ -1,46 +1,26 @@
-import { Exchange } from ".";
+import { Exchange, Queue } from ".";
 import UNodeMQ from "./core/UNodeMQ";
 
-const unmq = new UNodeMQ({
-  exchange: {
-    ex: new Exchange({ name: "ex" }),
+const unmq = new UNodeMQ(
+  {
+    1: new Exchange({}),
   },
-  queue: {},
-});
+  {
+    que1: new Queue({}),
+  },
+);
 
-// function getUser() {
-//   return {name: 'xxx', age: 10}
-// }
+unmq.emit(1, 1);
+unmq.emitToQueue("que2", 2);
 
-// type GetUserType = typeof getUser;
-// type ReturnUser = ReturnType<GetUserType>
+const o = {
+  a: 1,
+  b: 2,
+};
+type O = typeof o;
 
-function getUser({ a }) {
-  return { name: "xxx", age: 10 };
-  type GetUserType = typeof getUser;
-  type ReturnUser = Parameters<GetUserType>;
-}
+type A<K extends keyof O> = { k: K };
 
-interface Data extends Record<string, number> {
-  a: number;
-  b: number;
-}
-interface DT {
-  [k: string]: boolean;
-}
-class A {
-  constructor(private data: Data) {}
-  getData() {
-    return this.data;
-  }
-  create<D extends DT>(data: D) {
-    type K = keyof typeof data;
-    return <J extends K>(d: J) => {
-      return d;
-    };
-  }
-  test() {
-    const app = this.create({ a: false });
-    app("c");
-  }
-}
+const a: A<"a"> = {
+  k:"a"
+};

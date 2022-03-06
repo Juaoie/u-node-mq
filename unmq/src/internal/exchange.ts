@@ -1,14 +1,12 @@
 import Tools from "../utils/tools";
 import Logs from "./Logs";
-import { QueueName } from "./Queue";
 /**
  * 中继器类型
  */
-type Repeater<D> = (content: D) => Promise<QueueName[]> | QueueName[];
+type Repeater<D> = (content: D) => Promise<string[]> | string[];
 
 export type Option<D> = {
-  name: string;
-  routes?: QueueName[];
+  routes?: string[];
   repeater?: Repeater<D>;
 };
 /**
@@ -25,14 +23,14 @@ export default class Exchange<D> {
   /**
    * 静态路由
    */
-  private routes: QueueName[] = [];
+  private routes: string[] = [];
   getRoutes() {
     return this.routes;
   }
-  pushRoutes(routes: QueueName[]) {
+  pushRoutes(routes: string[]) {
     this.routes = Array.from(new Set(this.routes.concat(routes)));
   }
-  setRoutes(routes: QueueName[]) {
+  setRoutes(routes: string[]) {
     this.routes = routes;
   }
   /**
@@ -55,7 +53,7 @@ export default class Exchange<D> {
    * 删除routes
    * @param routes
    */
-  removeRoutes(routes?: QueueName[]) {
+  removeRoutes(routes?: string[]) {
     if (routes === undefined) this.routes = [];
     else this.routes = this.routes.filter(item => routes.indexOf(item) !== -1);
   }
@@ -65,7 +63,7 @@ export default class Exchange<D> {
    * @param content
    * @returns
    */
-  async getQueueNameList(content: D): Promise<QueueName[]> {
+  async getQueueNameList(content: D): Promise<string[]> {
     try {
       //中继器模式
       if (this.repeater) {
@@ -74,7 +72,7 @@ export default class Exchange<D> {
         return this.routes;
       }
     } catch (error) {
-      Logs.error(`exchange function getQueueNameList exception`);
+      Logs.error(`exchange function getstringList exception`);
       return [];
     }
   }

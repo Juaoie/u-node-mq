@@ -1,4 +1,4 @@
-import QueueCollection from "./QueueCollection";
+import QueueCollection from "./QueueCollectionHandle";
 
 const queueCollection = new QueueCollection();
 

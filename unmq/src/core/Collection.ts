@@ -1,32 +1,41 @@
 import { Exchange, Queue } from "..";
-import ExchangeCollection from "./ExchangeCollection";
-import QueueCollection from "./QueueCollection";
-import { AbstractCollection, N } from "./UNodeMQ";
+import ExchangeCollectionHandle from "./ExchangeCollectionHandle";
+import QueueCollectionHandle from "./QueueCollectionHandle";
+import { N } from "./UNodeMQ";
 
-export default class Collection<E extends AbstractCollection<Exchange<unknown>>, Q extends AbstractCollection<Queue<unknown>>> {
-  private readonly exchangeCollection: ExchangeCollection<E>;
-  private readonly queueCollection: QueueCollection<E>;
-  constructor(exchangeCollection: E, queueCollection: Q) {
+export default class Collection<
+  ExchangeCollection extends Record<string, Exchange<unknown>>,
+  QueueCollection extends Record<string, Queue<unknown>>,
+> {
+  private readonly exchangeCollection: ExchangeCollectionHandle<ExchangeCollection>;
+  private readonly queueCollection: QueueCollectionHandle<QueueCollection>;
+  constructor(exchangeCollection: ExchangeCollection, queueCollection: QueueCollection) {
     this.exchangeCollection.setExchangeCollection(exchangeCollection);
+    this.queueCollection.setQueueCollection(queueCollection);
   }
   /**
    * 发送消息到交换机
    * @param exchangeName
    * @param contentList
    */
-  async pushNewsToExchange(exchangeName: string, ...contentList: N) {
+  async pushContentToExchange(exchangeName: string, ...contentList: N) {
     for (const content of contentList) {
       //分别发送每一条消息
       const queueNameList = await this.exchangeCollection.getQueueNameList(exchangeName, content);
       for (const queueName in queueNameList) {
-        this.pushNewsToQueue(queueName, content);
+        this.pushContentListToQueue(queueName, content);
       }
     }
   }
-  pushNewsToQueue(queueName: string, ...contentList: N) {
+  /**
+   *
+   * @param queueName
+   * @param contentList
+   */
+  pushContentListToQueue(queueName: string, ...contentList: N) {
     for (const content of contentList) {
       //分别发送每一条消息
-      
+      this.queueCollection.pushContentToQueue(queueName, content);
     }
   }
 }

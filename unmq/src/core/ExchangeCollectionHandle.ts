@@ -1,10 +1,9 @@
 import { Exchange } from "..";
 import Logs from "../internal/Logs";
-import { AbstractCollection } from "./UNodeMQ";
 
-export default class ExchangeCollection<E extends AbstractCollection<Exchange<unknown>>> {
-  private exchangeCollection: E;
-  setExchangeCollection(exchangeCollection: E) {
+export default class ExchangeCollectionHandle<ExchangeCollection extends Record<string, Exchange<unknown>>> {
+  private exchangeCollection: ExchangeCollection;
+  setExchangeCollection(exchangeCollection: ExchangeCollection) {
     this.exchangeCollection = exchangeCollection;
   }
   /**

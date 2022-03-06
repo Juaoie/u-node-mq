@@ -2,10 +2,7 @@ import News from "./News";
 import Consumer, { Consume, ConsumptionStatus } from "./Consumer";
 import Logs from "./Logs";
 import Tools from "../utils/tools";
-import { queueCollection } from "../core";
-export type QueueName = string | Symbol;
 interface Option<D> {
-  name: QueueName;
   ask?: boolean;
   rcn?: number;
   news?: News<D>[];
@@ -13,8 +10,6 @@ interface Option<D> {
 }
 /**
  * 队列，理论上一个队列的数据格式应该具有一致性
- *
- *
  */
 export default class Queue<D> {
   /**
@@ -23,13 +18,6 @@ export default class Queue<D> {
   private readonly id: string = Tools.random();
   getId() {
     return this.id;
-  }
-  /**
-   * 队列名字
-   */
-  private readonly name: QueueName;
-  getName() {
-    return this.name;
   }
   /**
    * 是否需要消息确认
@@ -54,12 +42,10 @@ export default class Queue<D> {
     return this.consumerList;
   }
   constructor(option: Option<D>) {
-    this.name = option.name;
     if (option.ask !== undefined) this.ask = option.ask;
     if (option.news !== undefined) this.news = option.news;
     if (option.consumerList !== undefined) this.consumerList = option.consumerList;
     if (option.rcn !== undefined) this.rcn = option.rcn;
-    queueCollection.pushQueue(this);
   }
   /**
    * 通过消费方法移除指定消费者
@@ -103,14 +89,20 @@ export default class Queue<D> {
    * 加入消息
    * @param news
    */
-  pushNews(...news: News<D>[]) {
-    this.news.push(
-      ...news.filter(item => {
-        if (item.consumedTimes === -1) item.consumedTimes = this.rcn;
-        return item.consumedTimes > 0;
-      }),
-    );
+  pushNews(news: News<D>) {
+    if (news.consumedTimes === -1) news.consumedTimes === this.rcn;
+
+    if (news.consumedTimes > 0) this.news.push(news);
+
     if (this.news.length > 0 && this.consumerList.length > 0) this.consumeNews();
+  }
+  /**
+   * 加入消息内容
+   * @param content
+   */
+  pushContent(content: D) {
+    const news = new News(content);
+    this.pushNews(news);
   }
   /**
    * 弹出一条消息
@@ -137,11 +129,11 @@ export default class Queue<D> {
     consumer.consumption(news, this.ask).then((res: ConsumptionStatus<D>) => {
       if (res.isOk) {
         //消费成功
-        Logs.log(`队列${this.name} 消费成功`);
+        Logs.log(`队列 消费成功`);
       } else {
         res.news.consumedTimes--;
         this.pushNews(res.news);
-        Logs.log(`队列${this.name} 消费失败`);
+        Logs.log(`队列 消费失败`);
       }
     });
     if (this.news.length > 0) this.consumeNews();
