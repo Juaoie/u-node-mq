@@ -33,7 +33,7 @@ class A {
   getData() {
     return this.data;
   }
-  create(data: DT) {
+  create<D>(data: D) {
     type K = keyof typeof data;
     return <J extends K>(d: J) => {
       return d
@@ -43,6 +43,5 @@ class A {
 
     const app = this.create({ a: false });
     app("c");
-    type T = ReturnType<typeof app>
   }
 }
