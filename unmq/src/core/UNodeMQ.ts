@@ -2,14 +2,17 @@ import { Exchange, Queue, News } from "..";
 import { queueCollection } from "../core";
 import Collection from "./Collection";
 export type N = unknown[];
+//TODO:组合它两
+type ReturnPanShape1<T> = T extends Exchange<infer U> ? U : never;
+type ReturnPanShape2<T> = T extends Queue<infer U> ? U : never;
 /**
  * unmq：
  * 仅有emit和on方法会触发队列推送消息给消费者
  */
 export default class UNodeMQ<
   ExchangeCollection extends Record<string, Exchange<unknown>>,
-  QueueCollection extends Record<string, Queue<unknown>>,
   ExchangeName extends keyof ExchangeCollection,
+  QueueCollection extends Record<string, Queue<unknown>>,
   QueueName extends keyof QueueCollection,
 > extends Collection<ExchangeCollection, QueueCollection> {
   constructor(exchangeCollection: ExchangeCollection, queueCollection: QueueCollection) {
@@ -20,7 +23,8 @@ export default class UNodeMQ<
    * @param contentList 消息体列表
    * @returns
    */
-  emit(exchangeName: ExchangeName, ...contentList: N) {
+  emit<E extends ExchangeName>(exchangeName: E, ...contentList: ReturnPanShape1<ExchangeCollection[E]>[]) {
+    type a = ExchangeCollection[ExchangeName];
     super.pushContentToExchange(exchangeName as string, contentList);
     return this;
   }
@@ -30,7 +34,7 @@ export default class UNodeMQ<
    * @param contentList
    * @returns
    */
-  emitToQueue(queueName: QueueName, ...contentList: N) {
+  emitToQueue<Q extends QueueName>(queueName: Q, ...contentList: ReturnPanShape2<QueueCollection[Q]>[]) {
     super.pushContentListToQueue(queueName as string, contentList);
     return this;
   }
