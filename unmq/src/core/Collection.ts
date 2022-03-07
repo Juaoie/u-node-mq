@@ -1,7 +1,6 @@
-import { Exchange, Queue } from "..";
+import { Exchange, Queue, Consume } from "..";
 import ExchangeCollectionHandle from "./ExchangeCollectionHandle";
 import QueueCollectionHandle from "./QueueCollectionHandle";
-import { N } from "./UNodeMQ";
 
 export default class Collection<
   ExchangeCollection extends Record<string, Exchange<unknown>>,
@@ -18,24 +17,40 @@ export default class Collection<
    * @param exchangeName
    * @param contentList
    */
-  async pushContentToExchange(exchangeName: string, ...contentList: N) {
+  pushContentListToExchange(exchangeName: string, ...contentList: unknown[]) {
     for (const content of contentList) {
       //分别发送每一条消息
-      const queueNameList = await this.exchangeCollection.getQueueNameList(exchangeName, content);
-      for (const queueName in queueNameList) {
-        this.pushContentListToQueue(queueName, content);
-      }
+      this.exchangeCollection.getQueueNameList(exchangeName, content).then(queueNameList => {
+        for (const queueName in queueNameList) {
+          this.pushContentListToQueue(queueName, content);
+        }
+      });
     }
   }
   /**
-   *
+   *  发送消息到队列
    * @param queueName
    * @param contentList
    */
-  pushContentListToQueue(queueName: string, ...contentList: N) {
+  pushContentListToQueue(queueName: string, ...contentList: unknown[]) {
     for (const content of contentList) {
       //分别发送每一条消息
       this.queueCollection.pushContentToQueue(queueName, content);
     }
+  }
+  /**
+   * 订阅队列
+   * @param queueName
+   * @param consume
+   * @param payload
+   */
+  subscribeQueue(queueName: string, consume: Consume<unknown>, payload?: any) {
+    this.queueCollection.subscribeQueue(queueName, consume, payload);
+  }
+  /**
+   * 取消订阅队列
+   */
+  unsubscribeQueue(queueName: string, consume?: Consume<unknown>) {
+    this.queueCollection.unsubscribeQueue(queueName, consume);
   }
 }

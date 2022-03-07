@@ -1,4 +1,4 @@
-import UNodeMQ from "../internal";
+import UNodeMQ from "..";
 import { Consume, Next } from "../internal/Consumer";
 import Queue from "../internal/Queue";
 export type NextProxy = (...queueNameList: string[]) => void;

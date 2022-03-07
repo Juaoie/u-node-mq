@@ -15,7 +15,7 @@ export default class ExchangeCollectionHandle<ExchangeCollection extends Record<
   getQueueNameList(exchangeName: string, content: unknown) {
     if (this.exchangeCollection[exchangeName] === undefined) {
       Logs.error(`${exchangeName} not find`);
-      return [];
+      throw `${exchangeName} not find`;
     }
     return this.exchangeCollection[exchangeName].getQueueNameList(content);
   }

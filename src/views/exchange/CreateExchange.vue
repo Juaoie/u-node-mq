@@ -55,7 +55,7 @@
   function createExchange() {
     if (form.value.exchangeName === "") return ElNotification.error({ title: "错误", message: "请输入交换机名称" });
 
-    const exchange = new Exchange<string>({ name: form.value.exchangeName });
+    const exchange = new Exchange<string>({});
     try {
       exchange.setRepeater(eval(form.value.repeater));
     } catch (error) {

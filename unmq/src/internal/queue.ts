@@ -81,9 +81,18 @@ export default class Queue<D> {
    * 加入消费者
    * @param consumerList
    */
-  pushConsumer(...consumerList: Consumer<D>[]) {
-    this.consumerList.push(...consumerList);
+  pushConsumer(consumer: Consumer<D>) {
+    this.consumerList.push(consumer);
     if (this.news.length > 0 && this.consumerList.length > 0) this.consumeNews();
+  }
+  /**
+   * 加入消费者消费主体
+   * @param consume
+   * @param payload
+   */
+  pushConsume(consume: Consume<D>, payload?: any) {
+    const consumer = new Consumer(consume, payload);
+    this.pushConsumer(consumer);
   }
   /**
    * 加入消息
@@ -104,6 +113,7 @@ export default class Queue<D> {
     const news = new News(content);
     this.pushNews(news);
   }
+
   /**
    * 弹出一条消息
    * @returns
