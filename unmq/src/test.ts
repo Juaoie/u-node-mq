@@ -5,6 +5,8 @@ const unmq = new UNodeMQ(
   {
     ex1: new Exchange<string>({}),
     ex2: new Exchange<number>({}),
+    1: new Exchange<number>({}),
+    [Symbol()]: new Exchange<number>({}),
   },
   {
     que1: new Queue<string>({}),
@@ -12,21 +14,19 @@ const unmq = new UNodeMQ(
 );
 
 unmq.emit("ex1", 2);
+unmq.emit(1, 2);
 unmq.emitToQueue("que1", 2);
 
-const o = {
-  a: 1,
-  b: 2,
+type Record<T> = {
+  [P: string]: T;
 };
-type O = typeof o;
+class Test<T extends Record<any>> {
+  constructor(t: T) {}
+}
 
-type A<K extends keyof O> = { k: K };
-
-const a: A<"a"> = {
-  k: "a",
+const a = {
+  [1]: 1,
 };
-
-type Flatten<T> = T extends Array<infer U> ? U : never;
-
-type T0 = ["12", "32"];
-type T1 = Flatten<T0>; // string | number
+type A = typeof a;
+type B = keyof A;
+new Test(a);
