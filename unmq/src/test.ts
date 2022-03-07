@@ -21,12 +21,11 @@ type Record<T> = {
   [P: string]: T;
 };
 class Test<T extends Record<any>> {
-  constructor(t: T) {}
+  constructor(t: T) {
+    let a: T = { aaa: 1 };
+  }
 }
 
-const a = {
-  [1]: 1,
-};
-type A = typeof a;
-type B = keyof A;
-new Test(a);
+new Test({
+  1: 1,
+});
