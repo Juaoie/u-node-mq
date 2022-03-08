@@ -10,11 +10,7 @@
   "scripts": {
     "dev": "vite --host",
     "build": "vue-tsc --noEmit && vite build",
-    "preview": "vite preview",
-    "test": "tsc ./test/index.ts && node ./test/index.js",
-    "gtest": "gulp && yarn test",
-    "git:commit": "git add -A . && git commit -am",
-    "npm:publish": "gulp && node ./script/addVersion.js && npm publish"
+    "preview": "vite preview"
   },
   "devDependencies": {
     "@types/node": "^17.0.21",

@@ -8,3 +8,5 @@ import UNodeMQ from "./core/UNodeMQ";
 export default UNodeMQ;
 
 export { Exchange, Queue, Consumer, News, Logs };
+
+export { Consume, Next };
