@@ -48,9 +48,17 @@ export default class Consumer<D> {
     const then = (thenParameter: ThenParameter<D>) => {
       //不加入任务队列，会导致消费失败的数据重写到队列失败
       try {
+        if (!ask) {
+          //不需要确认的消费方法
+          const res = this.consume(news.content, this.payload);
+        }
+        //构建消息确认的方法
         const confirm: Next = (value = true) => thenParameter({ isOk: value, consumer: this, news });
+        //真实消费方法
         const res = this.consume(news.content, ask ? confirm : undefined, this.payload);
+        //如果消息不需要确认，将直接返回 isOk：true
         if (ask === false) return thenParameter({ isOk: true, consumer: this, news });
+        //如果消息需要确认，且返回的内容为Promise
         if (res instanceof Promise) {
           res
             .then(onfulfilled => {
