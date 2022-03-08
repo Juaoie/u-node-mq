@@ -1,7 +1,4 @@
-import Consumer, { Consume } from "../internal/Consumer";
-import Logs from "../internal/Logs";
-import News from "../internal/News";
-import Queue from "../internal/Queue";
+import { Consume ,Logs,Queue} from "..";
 
 /**
  * 队列集合

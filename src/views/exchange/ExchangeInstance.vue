@@ -2,13 +2,10 @@
   <el-card class="exchange">
     <template #header>
       <div class="df aic jcsb">
-        <span>{{ exchange.getName() }}</span>
+        <span>ID:{{ exchange.getId() }}</span>
         <el-button type="text" @click="removeExchange">删除</el-button>
       </div>
     </template>
-    <div class="mb20">
-      <el-button @click="sendNews">发送固定消息</el-button>
-    </div>
     <div v-if="exchange.getRepeater()" class="mb20">
       <span>动态路由：{{ exchange.getRepeater() }}</span>
     </div>
@@ -29,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-  import { Exchange } from "../../../unmq/src";
+  import { Exchange } from "&/src";
   interface Props {
     exchange: Exchange<string>;
   }
@@ -39,10 +36,6 @@
   async function removeExchange() {
     await ElMessageBox.confirm("确定删除？");
     emit("removeExchange", props.exchange.getId());
-  }
-
-  function sendNews() {
-    props.exchange.pushNewsToQueueList("来自直接发送给交换机的消息");
   }
 </script>
 <style lang="scss" scoped></style>

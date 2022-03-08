@@ -1,13 +1,10 @@
 <template>
   <div class="df ffcn create-queue">
     <el-button type="primary" @click="showCreateQueue = true">创建队列</el-button>
-    <queue-instance v-for="item in queueCollectionRef.getQueueList()" :key="item.getId()" :queueId="item.getId()" class="mt10"></queue-instance>
+    <queue-instance v-for="item in queueList" :key="item.getId()" :queue="item" class="mt10" @removeQueue="removeQueue"></queue-instance>
   </div>
   <el-dialog v-model="showCreateQueue" title="创建交换机">
     <el-form :model="form">
-      <el-form-item label="交换机名称（Exchange）">
-        <el-input v-model="form.queueName" placeholder="请输入交换机名称"></el-input>
-      </el-form-item>
       <el-form-item label="是否需要消息确定">
         <el-switch v-model="form.ask" />
       </el-form-item>
@@ -25,11 +22,10 @@
 </template>
 
 <script setup lang="ts">
-  import { Consumer, Queue } from "&/src";
+  import { Queue } from "&/src";
   import { ref } from "vue";
   import QueueInstance from "./QueueInstance.vue";
-  import { queueCollection } from "&/src/core";
-  const queueCollectionRef = ref(queueCollection);
+  const queueList = ref<Queue<string>[]>([]);
 
   const showCreateQueue = ref(false);
   const form = ref({
@@ -39,13 +35,16 @@
   });
 
   function createQueue() {
-    if (form.value.queueName === "") return ElNotification.error({ title: "错误", message: "请输入队列名称" });
-    const queue = new Queue<string>({ name: form.value.queueName, ask: form.value.ask, rcn: form.value.rcn });
-    // const consumer = new Consumer(data => {
-    //   console.log(data);
-    // });
-    // queue.pushConsumer(consumer);
+    const queue = new Queue<string>({ ask: form.value.ask, rcn: form.value.rcn });
+    queueList.value.push(queue);
     showCreateQueue.value = false;
+  }
+
+  function removeQueue(queueId) {
+    queueList.value.splice(
+      queueList.value.findIndex(queue => queue.getId() === queueId),
+      1,
+    );
   }
 </script>
 <style lang="scss" scoped>

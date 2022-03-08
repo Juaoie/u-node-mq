@@ -41,11 +41,11 @@ export default class Queue<D> {
   getConsumerList() {
     return this.consumerList;
   }
-  constructor(option: Option<D>) {
-    if (option.ask !== undefined) this.ask = option.ask;
-    if (option.news !== undefined) this.news = option.news;
-    if (option.consumerList !== undefined) this.consumerList = option.consumerList;
-    if (option.rcn !== undefined) this.rcn = option.rcn;
+  constructor(option?: Option<D>) {
+    if (option?.ask !== undefined) this.ask = option.ask;
+    if (option?.news !== undefined) this.news = option.news;
+    if (option?.consumerList !== undefined) this.consumerList = option.consumerList;
+    if (option?.rcn !== undefined) this.rcn = option.rcn;
   }
   /**
    * 通过消费方法移除指定消费者

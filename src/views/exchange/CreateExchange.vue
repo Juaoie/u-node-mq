@@ -11,9 +11,6 @@
   </div>
   <el-dialog v-model="showCreateExchange" title="创建交换机">
     <el-form :model="form">
-      <el-form-item label="交换机名称（Exchange）">
-        <el-input v-model="form.exchangeName" placeholder="请输入交换机名称"></el-input>
-      </el-form-item>
       <el-form-item label="静态路由（routes）">
         <el-select
           v-model="form.routes"
@@ -43,7 +40,6 @@
   import { Exchange } from "../../../unmq/src";
   const showCreateExchange = ref(false);
   const form = ref({
-    exchangeName: "",
     routes: [],
     repeater: `
     (news)=>[];
@@ -53,9 +49,7 @@
   const exchangeList = ref<Exchange<string>[]>([]);
 
   function createExchange() {
-    if (form.value.exchangeName === "") return ElNotification.error({ title: "错误", message: "请输入交换机名称" });
-
-    const exchange = new Exchange<string>({});
+    const exchange = new Exchange<string>();
     try {
       exchange.setRepeater(eval(form.value.repeater));
     } catch (error) {

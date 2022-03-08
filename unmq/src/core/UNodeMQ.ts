@@ -1,5 +1,4 @@
-import { Exchange, Queue, News, Consume } from "..";
-import { Next } from "../internal/Consumer";
+import { Exchange, Queue, News, Consume, Next } from "..";
 import Collection from "./Collection";
 //TODO:组合它两
 type ReturnPanShapeExchange<T> = T extends Exchange<infer U> ? U : never;

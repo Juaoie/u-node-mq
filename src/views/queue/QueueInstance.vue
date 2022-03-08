@@ -2,8 +2,8 @@
   <el-card class="queue">
     <template #header>
       <div class="df aic jcsb">
-        <span>{{ queue.getName() }}</span>
-        <el-button type="text" @click="removeExchange">删除</el-button>
+        <span>ID：{{ queue.getId() }}</span>
+        <el-button type="text" @click="removeQueue">删除</el-button>
       </div>
     </template>
 
@@ -51,24 +51,22 @@
 
 <script setup lang="ts">
   import { Consumer, News, Queue } from "&/src";
-  import { queueCollection } from "&/src/core";
   import { ref } from "vue";
+  const emit = defineEmits(["removeQueue"]);
 
   interface Props {
-    queueId: string;
+    queue: Queue<string>;
   }
   const props = defineProps<Props>();
-  const queue = ref(queueCollection.getQueueById(props.queueId));
-
-  async function removeExchange() {
+  async function removeQueue() {
     await ElMessageBox.confirm("确定删除？");
-    queueCollection.removeQueueById(queue.value.getId());
+    emit("removeQueue", props.queue.getId());
   }
 
   const newsContent = ref("消息内容");
   function sendNews() {
     const news = new News<string>(newsContent.value);
-    queue.value.pushNews(news);
+    props.queue.pushNews(news);
   }
 
   const code = ref("()=>{}");
@@ -78,7 +76,7 @@
       const consume = eval(code.value);
       if (typeof consume !== "function") return ElNotification.error({ title: "错误", message: "请填入消费者方法，接受消息和固定载体值" });
       const consuemr = new Consumer<string>(consume, payload.value);
-      queue.value.pushConsumer(consuemr);
+      props.queue.pushConsumer(consuemr);
       code.value = "()=>{}";
       payload.value = "";
     } catch (error) {
@@ -86,7 +84,7 @@
     }
   }
   function removeConsumer(consumerId) {
-    queue.value.removeConsumerById(consumerId);
+    props.queue.removeConsumerById(consumerId);
   }
 </script>
 <style lang="scss" scoped>

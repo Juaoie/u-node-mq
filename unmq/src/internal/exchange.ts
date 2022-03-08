@@ -44,9 +44,9 @@ export default class Exchange<D> {
     this.repeater = repeater;
   }
 
-  constructor(option: Option<D>) {
-    if (option.routes !== undefined) this.routes = option.routes;
-    if (option.repeater !== undefined) this.repeater = option.repeater;
+  constructor(option?: Option<D>) {
+    if (option?.routes !== undefined) this.routes = option.routes;
+    if (option?.repeater !== undefined) this.repeater = option.repeater;
   }
 
   /**
