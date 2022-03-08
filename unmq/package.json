@@ -1,9 +1,9 @@
 {
   "name": "u-node-mq",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "author": "hugaojie",
   "description": "前端多模块通信的消息中心模型",
-  "main": "./src/index.ts",
+  "main": "./dist/index.js",
   "repository": "https://github.com/Juaoie/u-node-mq.git",
   "homepage": "https://juaoie.github.io/u-node-mq/",
   "license": "MIT",
