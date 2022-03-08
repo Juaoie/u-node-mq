@@ -99,7 +99,7 @@ export default class Queue<D> {
    * @param news
    */
   pushNews(news: News<D>) {
-    if (news.consumedTimes === -1) news.consumedTimes === this.rcn;
+    if (news.consumedTimes === -1) news.consumedTimes = this.rcn;
 
     if (news.consumedTimes > 0) this.news.push(news);
 
