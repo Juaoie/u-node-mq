@@ -1,6 +1,6 @@
 {
   "name": "u-node-mq",
-  "version": "2.0.17",
+  "version": "3.0.0",
   "author": "hugaojie",
   "description": "前端多模块通信的消息中心模型",
   "main": "unmq/dist/UNodeMQ.js",

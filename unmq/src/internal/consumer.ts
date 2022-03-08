@@ -3,13 +3,8 @@ import Logs from "./Logs";
 import News from "./News";
 export type Next = (value: boolean) => void;
 
-export type Consume<D> = (content: D, next?: Next, payload?: any) => Promise<boolean> | boolean | void;
-export interface ConsumptionStatus<D> {
-  isOk: boolean;
-  consumer: Consumer<D>;
-  news: News<D>;
-}
-type ThenParameter<D> = (res: ConsumptionStatus<D>) => void;
+export type Consume<D> = (content: D, next?: Next, payload?: any) => Promise<boolean> | boolean | never;
+type ThenParameter<D> = (isOk: boolean) => void;
 interface Payload<D> {
   then: (res: ThenParameter<D>) => void;
 }
@@ -50,33 +45,28 @@ export default class Consumer<D> {
       try {
         if (!ask) {
           //不需要确认的消费方法
-          const res = this.consume(news.content, this.payload);
+          this.consume(news.content, this.payload);
+          return thenParameter(true);
         }
         //构建消息确认的方法
-        const confirm: Next = (value = true) => thenParameter({ isOk: value, consumer: this, news });
-        //真实消费方法
-        const res = this.consume(news.content, ask ? confirm : undefined, this.payload);
-        //如果消息不需要确认，将直接返回 isOk：true
-        if (ask === false) return thenParameter({ isOk: true, consumer: this, news });
+        const confirm: Next = (value = true) => thenParameter(value);
+        //需要确认的消费方法
+        const res = this.consume(news.content, confirm, this.payload);
         //如果消息需要确认，且返回的内容为Promise
         if (res instanceof Promise) {
           res
-            .then(onfulfilled => {
-              thenParameter({ isOk: onfulfilled, consumer: this, news });
-            })
-            .catch(() => {
-              thenParameter({ isOk: false, consumer: this, news });
-            });
-        } else {
-          thenParameter({
-            isOk: Boolean(res),
-            consumer: this,
-            news,
+          .then(onfulfilled => {
+            thenParameter(onfulfilled);
+          })
+          .catch(() => {
+            thenParameter(false);
           });
+        } else {
+          thenParameter(Boolean(res));
         }
       } catch (error) {
         Logs.error("Consumer consumption error");
-        thenParameter({ isOk: false, consumer: this, news });
+        thenParameter(false);
       }
     };
     return {

@@ -1,5 +1,5 @@
 import News from "./News";
-import Consumer, { Consume, ConsumptionStatus } from "./Consumer";
+import Consumer, { Consume } from "./Consumer";
 import Logs from "./Logs";
 import Tools from "../utils/tools";
 interface Option<D> {
@@ -133,17 +133,18 @@ export default class Queue<D> {
     if (this.news.length === 0) return;
     if (this.consumerList.length === 0) return;
     const news = this.eject();
+    if (news === null) return;
     //随机消费者的索引
     const index = Math.round(Math.random() * (this.consumerList.length - 1));
     const consumer = this.consumerList.slice(index, index + 1)[0];
-    consumer.consumption(news, this.ask).then((res: ConsumptionStatus<D>) => {
-      if (res.isOk) {
+    consumer.consumption(news, this.ask).then((isOk: boolean) => {
+      if (isOk) {
         //消费成功
         Logs.log(`队列 消费成功`);
       } else {
-        res.news.consumedTimes--;
-        this.pushNews(res.news);
         Logs.log(`队列 消费失败`);
+        news.consumedTimes--;
+        this.pushNews(news);
       }
     });
     if (this.news.length > 0) this.consumeNews();
