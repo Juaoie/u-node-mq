@@ -7,7 +7,9 @@ interface Option<D> {
   rcn?: number;
   news?: News<D>[];
   consumerList?: Consumer<D>[];
+  mode?: ConsumMode;
 }
+type ConsumMode = "random" | "all";
 /**
  * 队列，理论上一个队列的数据格式应该具有一致性
  */
@@ -28,6 +30,10 @@ export default class Queue<D> {
    */
   rcn: number = 3;
   /**
+   * 消费模式
+   */
+  mode: ConsumMode = "random";
+  /**
    * 消息 list
    */
   private news: News<D>[] = [];
@@ -46,6 +52,7 @@ export default class Queue<D> {
     if (option?.news !== undefined) this.news = option.news;
     if (option?.consumerList !== undefined) this.consumerList = option.consumerList;
     if (option?.rcn !== undefined) this.rcn = option.rcn;
+    if (option?.mode !== undefined) this.mode = option.mode;
   }
   /**
    * 通过消费方法移除指定消费者
@@ -127,19 +134,29 @@ export default class Queue<D> {
    * 消费方法
    * 只要消费者和消息存在就会消费掉所有的消息
    * @returns
-   * TODO:配置是随机消费还是所有消费者都消费
    */
   consumeNews() {
     if (this.news.length === 0) return;
     if (this.consumerList.length === 0) return;
     const news = this.eject();
     if (news === null) return;
-    //随机消费者的索引
-    const index = Math.round(Math.random() * (this.consumerList.length - 1));
-    const consumer = this.consumerList.slice(index, index + 1)[0];
+    if (this.mode === "random") {
+      //随机消费者的索引
+      const index = Math.round(Math.random() * (this.consumerList.length - 1));
+      const consumer = this.consumerList.slice(index, index + 1)[0];
+      this.consumption(news, consumer);
+    } else if (this.mode === "all") {
+      for (const consumer of this.consumerList) {
+        this.consumption(news, consumer);
+      }
+
+      if (this.news.length > 0) this.consumeNews();
+    }
+  }
+
+  consumption(news: News<D>, consumer: Consumer<D>) {
     consumer.consumption(news, this.ask).then((isOk: boolean) => {
       if (isOk) {
-        //消费成功
         Logs.log(`队列 消费成功`);
       } else {
         Logs.log(`队列 消费失败`);
@@ -147,6 +164,5 @@ export default class Queue<D> {
         this.pushNews(news);
       }
     });
-    if (this.news.length > 0) this.consumeNews();
   }
 }
