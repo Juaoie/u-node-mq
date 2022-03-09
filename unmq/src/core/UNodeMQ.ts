@@ -1,8 +1,23 @@
-import { Exchange, Queue, News, Consume, Next } from "..";
+import { Exchange, Queue, News } from "..";
+import { Consume, Next } from "../internal/Consumer";
+
 import Collection from "./Collection";
 //TODO:组合它两
 type ReturnPanShapeExchange<T> = T extends Exchange<infer U> ? U : never;
 type ReturnPanShapeQueue<T> = T extends Queue<infer U> ? U : never;
+
+type UNodeMQInterface<T> = {
+  [P in keyof T]: T[P];
+};
+type Plugin = {};
+
+export function createUnmq<ExchangeCollection extends Record<string, Exchange<unknown>>, QueueCollection extends Record<string, Queue<unknown>>>(
+  exchangeCollection: ExchangeCollection,
+  queueCollection: QueueCollection,
+  pluginList: Plugin[],
+) {
+  return new UNodeMQ(exchangeCollection, queueCollection, pluginList);
+}
 /**
  * unmq：
  * 仅有emit和on方法会触发队列推送消息给消费者
@@ -13,9 +28,11 @@ export default class UNodeMQ<
   QueueCollection extends Record<string, Queue<unknown>>,
   QueueName extends keyof QueueCollection,
 > extends Collection<ExchangeCollection, QueueCollection> {
-  constructor(exchangeCollection: ExchangeCollection, queueCollection: QueueCollection) {
+  constructor(exchangeCollection: ExchangeCollection, queueCollection: QueueCollection, pluginList?: Plugin[]) {
     super(exchangeCollection, queueCollection);
+    this.plugin = pluginList;
   }
+  plugin: Plugin[];
   /**
    * 发射数据到交换机
    * @param contentList 消息体列表

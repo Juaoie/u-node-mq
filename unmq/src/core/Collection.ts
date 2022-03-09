@@ -1,4 +1,5 @@
-import { Exchange, Queue, Consume } from "..";
+import { Exchange, Queue } from "..";
+import { Consume } from "../internal/Consumer";
 import ExchangeCollectionHandle from "./ExchangeCollectionHandle";
 import QueueCollectionHandle from "./QueueCollectionHandle";
 

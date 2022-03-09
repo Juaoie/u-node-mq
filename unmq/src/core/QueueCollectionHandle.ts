@@ -1,4 +1,5 @@
-import { Consume ,Logs,Queue} from "..";
+import { Logs, Queue } from "..";
+import { Consume } from "../internal/Consumer";
 
 /**
  * 队列集合

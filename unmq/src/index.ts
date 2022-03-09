@@ -1,12 +1,12 @@
 import Exchange from "./internal/Exchange";
 import Queue from "./internal/Queue";
-import Consumer, { Consume, Next } from "./internal/Consumer";
+import Consumer from "./internal/Consumer";
 import News from "./internal/News";
 import Logs from "./internal/Logs";
 
-import UNodeMQ from "./core/UNodeMQ";
+import UNodeMQ, { createUnmq } from "./core/UNodeMQ";
 export default UNodeMQ;
 
-export { Exchange, Queue, Consumer, News, Logs };
+export { createUnmq };
 
-export { Consume, Next };
+export { Exchange, Queue, Consumer, News, Logs };
