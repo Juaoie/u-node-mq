@@ -1,5 +1,5 @@
 import UNodeMQ, { Exchange, Queue, createUnmq } from "..";
-import "../plugin/postMessage/index";
+import IframeMessage from "../plugin/message/index";
 
 const unmq = new UNodeMQ(
   {
@@ -7,20 +7,8 @@ const unmq = new UNodeMQ(
   },
   {
     qu1: new Queue(),
+    qu2: new Queue(),
   },
-  [],
 );
-
-unmq.emit("ex1", "消息");
-
-const unmq1 = createUnmq(
-  {
-    ex1: new Exchange<string>(),
-  },
-  {
-    qu1: new Queue(),
-  },
-  [],
-);
-
-unmq1.emit("ex1", "");
+const message = new IframeMessage()
+unmq.use(message);

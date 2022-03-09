@@ -6,17 +6,16 @@ import Collection from "./Collection";
 type ReturnPanShapeExchange<T> = T extends Exchange<infer U> ? U : never;
 type ReturnPanShapeQueue<T> = T extends Queue<infer U> ? U : never;
 
-type UNodeMQInterface<T> = {
-  [P in keyof T]: T[P];
+export type PluginComponent<Q> = {
+  readonly name: string;
+  install: <Q>(queueNameList) => void;
 };
-type Plugin = {};
 
 export function createUnmq<ExchangeCollection extends Record<string, Exchange<unknown>>, QueueCollection extends Record<string, Queue<unknown>>>(
   exchangeCollection: ExchangeCollection,
   queueCollection: QueueCollection,
-  pluginList: Plugin[],
 ) {
-  return new UNodeMQ(exchangeCollection, queueCollection, pluginList);
+  return new UNodeMQ(exchangeCollection, queueCollection);
 }
 /**
  * unmq：
@@ -28,11 +27,15 @@ export default class UNodeMQ<
   QueueCollection extends Record<string, Queue<unknown>>,
   QueueName extends keyof QueueCollection,
 > extends Collection<ExchangeCollection, QueueCollection> {
-  constructor(exchangeCollection: ExchangeCollection, queueCollection: QueueCollection, pluginList?: Plugin[]) {
+  constructor(exchangeCollection: ExchangeCollection, queueCollection: QueueCollection) {
     super(exchangeCollection, queueCollection);
-    this.plugin = pluginList;
   }
-  plugin: Plugin[];
+  private _plugin: PluginComponent<QueueName>[];
+
+  use(plugin: PluginComponent<QueueName>) {
+    plugin.install<QueueName>();
+    this._plugin.push(plugin);
+  }
   /**
    * 发射数据到交换机
    * @param contentList 消息体列表
