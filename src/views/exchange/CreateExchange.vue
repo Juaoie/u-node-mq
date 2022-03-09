@@ -37,7 +37,7 @@
 <script setup lang="ts">
   import ExchangeInstance from "./ExchangeInstance.vue";
   import { ref } from "vue";
-  import { Exchange } from "../../../unmq/src";
+  import { Exchange } from "&/index";
   const showCreateExchange = ref(false);
   const form = ref({
     routes: [],

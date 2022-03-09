@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-  import { Queue } from "&/src";
+  import { Queue } from "&/index";
   import { ref } from "vue";
   import QueueInstance from "./QueueInstance.vue";
   const queueList = ref<Queue<string>[]>([]);

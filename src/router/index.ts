@@ -5,6 +5,7 @@ import Home from "../views/Home.vue";
 import Demo from "../views/Demo.vue";
 import About from "../views/About.vue";
 import NotFound from "../views/NotFound.vue";
+import Iframe from "../views/Iframe.vue";
 
 const routes: RouteRecordRaw[] = [
   {
@@ -15,11 +16,15 @@ const routes: RouteRecordRaw[] = [
     path: "/",
     meta: { title: "Home" },
     component: Home,
-    redirect: "/Home/Demo",
+    redirect: "/Home/Iframe",
     children: [
       {
         path: "/Home/Demo",
         component: Demo,
+      },
+      {
+        path: "/Home/Iframe",
+        component: Iframe,
       },
     ],
   },

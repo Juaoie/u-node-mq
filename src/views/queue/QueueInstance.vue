@@ -50,7 +50,7 @@
 </template>
 
 <script setup lang="ts">
-  import { Consumer, News, Queue } from "&/src";
+  import { Consumer, News, Queue } from "&/index";
   import { ref } from "vue";
   const emit = defineEmits(["removeQueue"]);
 

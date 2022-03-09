@@ -24,7 +24,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": resolve(__dirname, "src/"),
-      "&": resolve(__dirname, "unmq/"),
+      "&": resolve(__dirname, "unmq/src/"),
       "@a": resolve(__dirname, "src/assets/"),
     },
   },

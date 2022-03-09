@@ -1,5 +1,5 @@
 import UNodeMQ, { Exchange, Queue, createUnmq } from "..";
-import "../plugin/postMassage/index";
+import "../plugin/postMessage/index";
 
 const unmq = new UNodeMQ(
   {

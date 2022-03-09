@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-  import { Exchange } from "&/src";
+  import { Exchange } from "&/index";
   interface Props {
     exchange: Exchange<string>;
   }
