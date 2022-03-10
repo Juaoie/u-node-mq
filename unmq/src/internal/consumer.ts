@@ -1,7 +1,7 @@
 import Tools from "../utils/tools";
 import Logs from "./Logs";
 import News from "./News";
-export type Next = (value: boolean) => void;
+export type Next = (value?: boolean) => void;
 
 export type Consume<D> = (content: D, next?: Next, payload?: any) => Promise<boolean> | boolean | void;
 type ThenParameter<D> = (isOk: boolean) => void;

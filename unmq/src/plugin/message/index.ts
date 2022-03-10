@@ -8,23 +8,28 @@ import { Option } from "../../internal/Exchange";
  * 1.通过onload或者getElementById查询获取
  * 2.通过对window下属性直接引用获取，（一个窗口下所有直接子iframe都会挂载在window窗口下，所以iframe 实例是嵌套的）
  * 3.通过window.open打开窗口获取
- * 二、子通过window.top.postmessage 直接发送数据到夫，
+ * 二、子通过window.top.postmessage 直接发送数据到父，
+ * 三、兄弟通过window.top下的contentWindow.postmessage通信
  */
 
 /**
  * 需求：
- * 1.父子级 iframe 双向 通信 
+ * 1.父子级 iframe 双向 通信
  * 2.使用postmessage进行消息确认
  * 3.兄弟iframe 双向通信，采用路由器模式交换 url id
- * 
- * 
+ *
+ *
  * 因为交换机到队列是确定的，所以不能给所有队列添加消费者，需要通过消息传递到队列以后判断是否存在iframe node 来动态添加消费者
  */
 export class Iframe<D> extends Exchange<D> {
-  iframeNode: Window = null;
-  constructor(option?: Option<D> & { iframeNode?: Window }) {
+  iframeNode?: Window | Window[];
+  ndoeId?: string;
+  origin?: string;
+  constructor(option?: Option<D> & { iframeNode?: Window | []; nodeId?: string; origin?: string }) {
     super(option);
-    this.iframeNode = option.iframeNode;
+    this.iframeNode = option?.iframeNode;
+    this.ndoeId = option?.nodeId;
+    this.origin = option?.origin;
   }
 }
 export class QueueExpand<D> extends Queue<D> {}
@@ -32,10 +37,8 @@ export class QueueExpand<D> extends Queue<D> {}
  * 扩展消息，添加交换机名称，
  */
 export class NewsExpand<D, ExchangeName> extends News<D> {
-  exchangeName: ExchangeName;
-  constructor(exchangeName: ExchangeName, content: D) {
+  constructor(content: D) {
     super(content);
-    this.exchangeName = exchangeName;
   }
 }
 
@@ -56,6 +59,14 @@ export default class IframeMessage<
     type SelfIframe = {
       _selfIframe: Iframe<unknown>;
     };
+
+    for (const queueName in queueCollection) {
+      if (queueCollection[queueName].ask) {
+        this.unmq.on(queueName, (content, ask, payload) => {
+          ask();
+        });
+      }
+    }
 
     this.unmq = new UNodeMQ<ExchangeCollection & SelfIframe, QueueCollection>(
       Object.assign(exchangeCollection, {
@@ -93,7 +104,19 @@ export default class IframeMessage<
    * @returns
    */
   emit<E extends keyof ExchangeCollection>(exchangeName: E, ...contentList: ReturnPanShapeExchange<ExchangeCollection[E]>[]): this {
-    const newsExpand = contentList.map(content => new NewsExpand(exchangeName, content));
+    const iframe = this.unmq.getExchange(exchangeName);
+    const newsExpand = contentList.map(
+      content =>
+        new NewsExpand({
+          content: {
+            content,
+            exchangeName,
+            ndoeId: iframe?.ndoeId,
+            origin: iframe?.origin,
+            iframeNode: iframe?.iframeNode,
+          },
+        }),
+    );
     this.unmq.pushNewsListToExchange(exchangeName, ...newsExpand);
     return this;
   }
