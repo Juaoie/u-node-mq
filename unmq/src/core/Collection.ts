@@ -7,21 +7,27 @@ export default class Collection<
   ExchangeCollection extends Record<string, Exchange<unknown>>,
   QueueCollection extends Record<string, Queue<unknown>>,
 > {
-  private readonly exchangeCollection: ExchangeCollectionHandle<ExchangeCollection>;
-  private readonly queueCollection: QueueCollectionHandle<QueueCollection>;
+  private readonly exchangeCollectionHandle: ExchangeCollectionHandle<ExchangeCollection>;
+  private readonly queueCollectionHandle: QueueCollectionHandle<QueueCollection>;
   constructor(exchangeCollection: ExchangeCollection, queueCollection: QueueCollection) {
-    this.exchangeCollection.setExchangeCollection(exchangeCollection);
-    this.queueCollection.setQueueCollection(queueCollection);
+    this.exchangeCollectionHandle.setExchangeCollection(exchangeCollection);
+    this.queueCollectionHandle.setQueueCollection(queueCollection);
+  }
+  getExchange<E extends keyof ExchangeCollection>(exchangeName: E) {
+    return this.exchangeCollectionHandle.getExchange(exchangeName);
+  }
+  getQueue<Q extends keyof QueueCollection>(queueName: Q) {
+    return this.queueCollectionHandle.getQueue(queueName);
   }
   /**
    * 发送消息到交换机
    * @param exchangeName
    * @param contentList
    */
-  pushContentListToExchange(exchangeName: string, ...contentList: unknown[]) {
+  pushContentListToExchange<E extends keyof ExchangeCollection>(exchangeName: E, ...contentList: unknown[]) {
     for (const content of contentList) {
       //分别发送每一条消息
-      this.exchangeCollection.getQueueNameList(exchangeName, content).then(queueNameList => {
+      this.exchangeCollectionHandle.getQueueNameList(exchangeName, content).then(queueNameList => {
         for (const queueName in queueNameList) {
           this.pushContentListToQueue(queueName, content);
         }
@@ -33,10 +39,10 @@ export default class Collection<
    * @param queueName
    * @param contentList
    */
-  pushContentListToQueue(queueName: string, ...contentList: unknown[]) {
+  pushContentListToQueue<Q extends keyof QueueCollection>(queueName: Q, ...contentList: unknown[]) {
     for (const content of contentList) {
       //分别发送每一条消息
-      this.queueCollection.pushContentToQueue(queueName, content);
+      this.queueCollectionHandle.pushContentToQueue(queueName, content);
     }
   }
   /**
@@ -45,13 +51,13 @@ export default class Collection<
    * @param consume
    * @param payload
    */
-  subscribeQueue(queueName: string, consume: Consume<unknown>, payload?: any) {
-    this.queueCollection.subscribeQueue(queueName, consume, payload);
+  subscribeQueue<Q extends keyof QueueCollection>(queueName: Q, consume: Consume<unknown>, payload?: any) {
+    this.queueCollectionHandle.subscribeQueue(queueName, consume, payload);
   }
   /**
    * 取消订阅队列
    */
-  unsubscribeQueue(queueName: string, consume?: Consume<unknown>) {
-    this.queueCollection.unsubscribeQueue(queueName, consume);
+  unsubscribeQueue<Q extends keyof QueueCollection>(queueName: Q, consume?: Consume<unknown>) {
+    this.queueCollectionHandle.unsubscribeQueue(queueName, consume);
   }
 }

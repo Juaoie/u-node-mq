@@ -11,4 +11,5 @@ const unmq = new UNodeMQ(
   },
 );
 const message = new IframeMessage()
-unmq.use(message);
+
+unmq.emit("ex1",1)

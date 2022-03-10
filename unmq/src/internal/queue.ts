@@ -8,12 +8,14 @@ interface Option<D> {
   news?: News<D>[];
   consumerList?: Consumer<D>[];
   mode?: ConsumMode;
+  name?: string;
 }
 type ConsumMode = "random" | "all";
 /**
  * 队列，理论上一个队列的数据格式应该具有一致性
  */
 export default class Queue<D> {
+  name?: string;
   /**
    * id
    */
@@ -53,6 +55,7 @@ export default class Queue<D> {
     if (option?.consumerList !== undefined) this.consumerList = option.consumerList;
     if (option?.rcn !== undefined) this.rcn = option.rcn;
     if (option?.mode !== undefined) this.mode = option.mode;
+    if (option?.name !== undefined) this.name = option.name;
   }
   /**
    * 通过消费方法移除指定消费者

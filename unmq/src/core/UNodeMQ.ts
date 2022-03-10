@@ -3,13 +3,10 @@ import { Consume, Next } from "../internal/Consumer";
 
 import Collection from "./Collection";
 //TODO:组合它两
-type ReturnPanShapeExchange<T> = T extends Exchange<infer U> ? U : never;
-type ReturnPanShapeQueue<T> = T extends Queue<infer U> ? U : never;
+export type ReturnPanShapeExchange<T> = T extends Exchange<infer U> ? U : never;
+export type ReturnPanShapeQueue<T> = T extends Queue<infer U> ? U : never;
 
-export type PluginComponent<Q> = {
-  readonly name: string;
-  install: <Q>(queueNameList) => void;
-};
+export type UnionAttribute<T> = keyof T;
 
 export function createUnmq<ExchangeCollection extends Record<string, Exchange<unknown>>, QueueCollection extends Record<string, Queue<unknown>>>(
   exchangeCollection: ExchangeCollection,
@@ -23,26 +20,18 @@ export function createUnmq<ExchangeCollection extends Record<string, Exchange<un
  */
 export default class UNodeMQ<
   ExchangeCollection extends Record<string, Exchange<unknown>>,
-  ExchangeName extends keyof ExchangeCollection,
   QueueCollection extends Record<string, Queue<unknown>>,
-  QueueName extends keyof QueueCollection,
 > extends Collection<ExchangeCollection, QueueCollection> {
   constructor(exchangeCollection: ExchangeCollection, queueCollection: QueueCollection) {
     super(exchangeCollection, queueCollection);
-  }
-  private _plugin: PluginComponent<QueueName>[];
-
-  use(plugin: PluginComponent<QueueName>) {
-    plugin.install<QueueName>();
-    this._plugin.push(plugin);
   }
   /**
    * 发射数据到交换机
    * @param contentList 消息体列表
    * @returns
    */
-  emit<E extends ExchangeName>(exchangeName: E, ...contentList: ReturnPanShapeExchange<ExchangeCollection[E]>[]) {
-    super.pushContentListToExchange(exchangeName as string, contentList);
+  emit<E extends keyof ExchangeCollection>(exchangeName: E, ...contentList: ReturnPanShapeExchange<ExchangeCollection[E]>[]) {
+    super.pushContentListToExchange(exchangeName, contentList);
     return this;
   }
   /**
@@ -51,8 +40,8 @@ export default class UNodeMQ<
    * @param contentList
    * @returns
    */
-  emitToQueue<Q extends QueueName>(queueName: Q, ...contentList: ReturnPanShapeQueue<QueueCollection[Q]>[]) {
-    super.pushContentListToQueue(queueName as string, contentList);
+  emitToQueue<Q extends keyof QueueCollection>(queueName: Q, ...contentList: ReturnPanShapeQueue<QueueCollection[Q]>[]) {
+    super.pushContentListToQueue(queueName, contentList);
     return this;
   }
 
@@ -65,8 +54,8 @@ export default class UNodeMQ<
    * @param payload 固定参数，有效载荷，在每次消费的时候都传给消费者
    * @returns
    */
-  on<Q extends QueueName>(queueName: Q, consume: Consume<ReturnPanShapeQueue<QueueCollection[Q]>>, payload?: any) {
-    super.subscribeQueue(queueName as string, consume, payload);
+  on<Q extends keyof QueueCollection>(queueName: Q, consume: Consume<ReturnPanShapeQueue<QueueCollection[Q]>>, payload?: any) {
+    super.subscribeQueue(queueName, consume, payload);
     return () => this.off(queueName, consume);
   }
 
@@ -75,16 +64,10 @@ export default class UNodeMQ<
    * @param queueName
    * @param consume
    */
-  off<Q extends QueueName>(queueName: Q, consume: Consume<ReturnPanShapeQueue<QueueCollection[Q]>>): this;
-  off<Q extends QueueName>(queueName: Q): this;
-  off<Q extends QueueName>(x: Q, y?: Consume<ReturnPanShapeQueue<QueueCollection[Q]>>): this {
-    if (y !== undefined) {
-      //
-      super.unsubscribeQueue(x as string, y);
-    } else {
-      //
-      super.unsubscribeQueue(x as string);
-    }
+  off<Q extends keyof QueueCollection>(queueName: Q, consume: Consume<ReturnPanShapeQueue<QueueCollection[Q]>>): this;
+  off<Q extends keyof QueueCollection>(queueName: Q): this;
+  off<Q extends keyof QueueCollection>(x: Q, y?: Consume<ReturnPanShapeQueue<QueueCollection[Q]>>): this {
+    super.unsubscribeQueue(x, y);
     return this;
   }
 
@@ -95,7 +78,7 @@ export default class UNodeMQ<
    * @param payload
    * @returns
    */
-  once<Q extends QueueName>(queueName: Q, consume: Consume<ReturnPanShapeQueue<QueueCollection[Q]>>, payload?: any) {
+  once<Q extends keyof QueueCollection>(queueName: Q, consume: Consume<ReturnPanShapeQueue<QueueCollection[Q]>>, payload?: any) {
     let consumeNum = 0;
     const consumeProxy = (content: ReturnPanShapeQueue<QueueCollection[Q]>, next?: Next, payload?: any) => {
       if (consumeNum === 1) return; //一个消费者可能需要消耗多条消息,, error 队列里面的消息被消费了，但是这里返回为未被消费

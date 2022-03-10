@@ -9,13 +9,16 @@ export default class QueueCollectionHandle<QueueCollection extends Record<string
   setQueueCollection(queueCollection: QueueCollection) {
     this.queueCollection = queueCollection;
   }
+  getQueue<Q extends keyof QueueCollection>(queueName: Q) {
+    return this.queueCollection[queueName];
+  }
   /**
    * 添加一个消息内容到队列
    * @param queueName
    * @param content
    * @returns
    */
-  pushContentToQueue(queueName: string, content: unknown) {
+  pushContentToQueue<Q extends keyof QueueCollection>(queueName: Q, content: unknown) {
     if (this.queueCollection[queueName] === undefined) {
       Logs.error(`${queueName} not find`);
       return false;
@@ -30,7 +33,7 @@ export default class QueueCollectionHandle<QueueCollection extends Record<string
    * @param payload
    * @returns
    */
-  subscribeQueue(queueName: string, consume: Consume<unknown>, payload?: any) {
+  subscribeQueue<Q extends keyof QueueCollection>(queueName: Q, consume: Consume<unknown>, payload?: any) {
     if (this.queueCollection[queueName] === undefined) {
       Logs.error(`${queueName} not find`);
       return false;
@@ -43,7 +46,7 @@ export default class QueueCollectionHandle<QueueCollection extends Record<string
    * @param queueName
    * @param consume
    */
-  unsubscribeQueue(queueName: string, consume?: Consume<unknown>) {
+  unsubscribeQueue<Q extends keyof QueueCollection>(queueName: Q, consume?: Consume<unknown>) {
     if (this.queueCollection[queueName] === undefined) {
       Logs.error(`${queueName} not find`);
       return false;

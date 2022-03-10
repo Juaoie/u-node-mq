@@ -13,7 +13,9 @@
     "git:commit": "git add -A . && git commit -am",
     "av": "node ./script/addVersion.js"
   },
-  "dependencies": {},
+  "dependencies": {
+    "vue": "^3.2.31"
+  },
   "devDependencies": {
     "@types/gulp": "^4.0.9",
     "del": "^6.0.0",
