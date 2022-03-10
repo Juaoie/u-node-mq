@@ -1,8 +1,23 @@
 import UNodeMQ, { Exchange, Queue, News } from "../..";
 import { ReturnPanShapeExchange } from "../../core/UNodeMQ";
 import { Option } from "../../internal/Exchange";
+/**
+ * postmessage 功能如下
+ * 一、父通过contentWindow.postmessage 发送数据给指定的url 或者 *
+ * contentWindow的为iframe实例对象，获取方式
+ * 1.通过onload或者getElementById查询获取
+ * 2.通过对window下属性直接引用获取，（一个窗口下所有直接子iframe都会挂载在window窗口下，所以iframe 实例是嵌套的）
+ * 3.通过window.open打开窗口获取
+ * 二、子通过window.top.postmessage 直接发送数据到夫，
+ */
 
 /**
+ * 需求：
+ * 1.父子级 iframe 双向 通信 
+ * 2.使用postmessage进行消息确认
+ * 3.兄弟iframe 双向通信，采用路由器模式交换 url id
+ * 
+ * 
  * 因为交换机到队列是确定的，所以不能给所有队列添加消费者，需要通过消息传递到队列以后判断是否存在iframe node 来动态添加消费者
  */
 export class Iframe<D> extends Exchange<D> {
