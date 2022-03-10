@@ -1,4 +1,4 @@
-import { Exchange, Queue } from "..";
+import { Exchange, Queue, News } from "..";
 import { Consume } from "../internal/Consumer";
 import ExchangeCollectionHandle from "./ExchangeCollectionHandle";
 import QueueCollectionHandle from "./QueueCollectionHandle";
@@ -22,6 +22,32 @@ export default class Collection<
   /**
    * 发送消息到交换机
    * @param exchangeName
+   * @param news
+   */
+  pushNewsListToExchange<E extends keyof ExchangeCollection>(exchangeName: E, ...news: News<unknown>[]) {
+    for (const newsItem of news) {
+      //分别发送每一条消息
+      this.exchangeCollectionHandle.getQueueNameList(exchangeName, newsItem.content).then(queueNameList => {
+        for (const queueName in queueNameList) {
+          this.pushNewsListToQueue(queueName, newsItem);
+        }
+      });
+    }
+  }
+  /**
+   * 发送消息到队列
+   * @param queueName
+   * @param news
+   */
+  pushNewsListToQueue<Q extends keyof QueueCollection>(queueName: Q, ...news: News<unknown>[]) {
+    for (const newsItem of news) {
+      //分别发送每一条消息
+      this.queueCollectionHandle.pushNewsToQueue(queueName, newsItem);
+    }
+  }
+  /**
+   * 发送消息内容到交换机
+   * @param exchangeName
    * @param contentList
    */
   pushContentListToExchange<E extends keyof ExchangeCollection>(exchangeName: E, ...contentList: unknown[]) {
@@ -35,7 +61,7 @@ export default class Collection<
     }
   }
   /**
-   *  发送消息到队列
+   *  发送消息内容到队列
    * @param queueName
    * @param contentList
    */

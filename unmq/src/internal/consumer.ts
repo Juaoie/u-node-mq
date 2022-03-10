@@ -3,7 +3,7 @@ import Logs from "./Logs";
 import News from "./News";
 export type Next = (value: boolean) => void;
 
-export type Consume<D> = (content: D, next?: Next, payload?: any) => Promise<boolean> | boolean | never;
+export type Consume<D> = (content: D, next?: Next, payload?: any) => Promise<boolean> | boolean | void;
 type ThenParameter<D> = (isOk: boolean) => void;
 interface Payload<D> {
   then: (res: ThenParameter<D>) => void;
@@ -55,12 +55,12 @@ export default class Consumer<D> {
         //如果消息需要确认，且返回的内容为Promise
         if (res instanceof Promise) {
           res
-          .then(onfulfilled => {
-            thenParameter(onfulfilled);
-          })
-          .catch(() => {
-            thenParameter(false);
-          });
+            .then(onfulfilled => {
+              thenParameter(onfulfilled);
+            })
+            .catch(() => {
+              thenParameter(false);
+            });
         } else {
           thenParameter(Boolean(res));
         }

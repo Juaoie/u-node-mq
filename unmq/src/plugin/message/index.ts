@@ -1,11 +1,25 @@
-import UNodeMQ, { Exchange, Queue } from "../..";
+import UNodeMQ, { Exchange, Queue, News } from "../..";
 import { ReturnPanShapeExchange } from "../../core/UNodeMQ";
-import { ref } from "vue";
-class Iframe<D> extends Exchange<D> {
-  iframeNode: Window;
+import { ref, watch } from "vue";
+import { Option } from "../../internal/Exchange";
+
+export class Iframe<D> extends Exchange<D> {
+  iframeNode: Window = null;
+  constructor(option?: Option<D> & { iframeNode?: Window }) {
+    super(option);
+    this.iframeNode = option.iframeNode;
+  }
 }
-class QueueNews<D> extends Queue<D> {
-  consumeNews() {}
+export class QueueExpand<D> extends Queue<D> {}
+/**
+ * 扩展消息，添加交换机名称，
+ */
+export class NewsExpand<D, ExchangeName> extends News<D> {
+  exchangeName: ExchangeName;
+  constructor(exchangeName: ExchangeName, content: D) {
+    super(content);
+    this.exchangeName = exchangeName;
+  }
 }
 
 /**
@@ -14,7 +28,7 @@ class QueueNews<D> extends Queue<D> {
  */
 export default class IframeMessage<
   ExchangeCollection extends Record<string, Iframe<unknown>>,
-  QueueCollection extends Record<string, QueueNews<unknown>>,
+  QueueCollection extends Record<string, QueueExpand<unknown>>,
 > {
   readonly name = "postMessage";
   private unmq: UNodeMQ<ExchangeCollection, QueueCollection>;
@@ -32,16 +46,26 @@ export default class IframeMessage<
       }),
       queueCollection,
     );
-    // iframeWindow.postMessage();
+  }
+  private setPostMessage<E extends keyof QueueCollection>(queueName: E) {
+    this.unmq.on(queueName, () => {
+      //真实发送消息的
+      return true;
+    });
   }
   /**
    * 设置一条iframe 节点信息，
-   * @param e 交换机名称 / iframe名称
-   * @param w iframe dom node
+   * 给每个于交换机连接的队列绑定一个消费方法
+   * @param exchangeName 交换机名称 / iframe名称
+   * @param iframeNode iframe dom node
    */
   setIframe<E extends keyof ExchangeCollection>(exchangeName: E, iframeNode: Window) {
     const iframe = this.unmq.getExchange(exchangeName);
     iframe.iframeNode = iframeNode;
+  }
+  removeIframe<E extends keyof ExchangeCollection>(exchangeName: E) {
+    const iframe = this.unmq.getExchange(exchangeName);
+    iframe.iframeNode = null;
   }
 
   /**
@@ -52,6 +76,8 @@ export default class IframeMessage<
    * @returns
    */
   emit<E extends keyof ExchangeCollection>(exchangeName: E, ...contentList: ReturnPanShapeExchange<ExchangeCollection[E]>[]): this {
+    const newsExpand = contentList.map(content => new NewsExpand(exchangeName, content));
+    this.unmq.pushNewsListToExchange(exchangeName, ...newsExpand);
     return this;
   }
 }

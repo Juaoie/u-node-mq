@@ -1,4 +1,4 @@
-import { Logs, Queue } from "..";
+import { Logs, Queue, News } from "..";
 import { Consume } from "../internal/Consumer";
 
 /**
@@ -11,6 +11,14 @@ export default class QueueCollectionHandle<QueueCollection extends Record<string
   }
   getQueue<Q extends keyof QueueCollection>(queueName: Q) {
     return this.queueCollection[queueName];
+  }
+  pushNewsToQueue<Q extends keyof QueueCollection>(queueName: Q, news: News<unknown>) {
+    if (this.queueCollection[queueName] === undefined) {
+      Logs.error(`${queueName} not find`);
+      return false;
+    }
+    this.queueCollection[queueName].pushNews(news);
+    return true;
   }
   /**
    * 添加一个消息内容到队列
