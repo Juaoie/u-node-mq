@@ -1,8 +1,10 @@
 import UNodeMQ, { Exchange, Queue, News } from "../..";
 import { ReturnPanShapeExchange } from "../../core/UNodeMQ";
-import { ref, watch } from "vue";
 import { Option } from "../../internal/Exchange";
 
+/**
+ * 因为交换机到队列是确定的，所以不能给所有队列添加消费者，需要通过消息传递到队列以后判断是否存在iframe node 来动态添加消费者
+ */
 export class Iframe<D> extends Exchange<D> {
   iframeNode: Window = null;
   constructor(option?: Option<D> & { iframeNode?: Window }) {
