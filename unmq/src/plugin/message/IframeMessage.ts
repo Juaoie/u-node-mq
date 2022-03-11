@@ -1,6 +1,8 @@
 import UNodeMQ, { Exchange, Queue, News } from "../..";
 import { ReturnPanShapeExchange } from "../../core/UNodeMQ";
 import { Option } from "../../internal/Exchange";
+import { getAllIframeDoc, getIframeNode } from "./loader";
+import { sendMessage } from "./sendMessage";
 /**
  * postmessage 功能如下
  * 一、父通过contentWindow.postmessage 发送数据给指定的url 或者 *
@@ -10,6 +12,9 @@ import { Option } from "../../internal/Exchange";
  * 3.通过window.open打开窗口获取
  * 二、子通过window.top.postmessage 直接发送数据到父，
  * 三、兄弟通过window.top下的contentWindow.postmessage通信
+ */
+/**
+ * 每个IframeMessage维护一张路由表
  */
 
 /**
@@ -22,14 +27,8 @@ import { Option } from "../../internal/Exchange";
  * 因为交换机到队列是确定的，所以不能给所有队列添加消费者，需要通过消息传递到队列以后判断是否存在iframe node 来动态添加消费者
  */
 export class Iframe<D> extends Exchange<D> {
-  iframeNode?: Window | Window[];
-  ndoeId?: string;
-  origin?: string;
-  constructor(option?: Option<D> & { iframeNode?: Window | []; nodeId?: string; origin?: string }) {
+  constructor(option?: Option<D>) {
     super(option);
-    this.iframeNode = option?.iframeNode;
-    this.ndoeId = option?.nodeId;
-    this.origin = option?.origin;
   }
 }
 export class QueueExpand<D> extends Queue<D> {}
@@ -41,6 +40,11 @@ export class NewsExpand<D, ExchangeName> extends News<D> {
     super(content);
   }
 }
+type Coordinate = {
+  x: number;
+  y: number;
+  origin: string;
+};
 
 /**
  * 使用postMessage api 进行通信
@@ -54,12 +58,63 @@ export default class IframeMessage<
   private unmq: UNodeMQ<ExchangeCollection, QueueCollection>;
   constructor(exchangeCollection: ExchangeCollection, queueCollection: QueueCollection) {
     /**
-     * 为当前域创建一个iframe 用于接受消息
+     * 内部队列
      */
-    type SelfIframe = {
+    type InternalQueue = {
+      //将自己的路由坐标和origin发送给基座iframe
+      _sendRouter: QueueExpand<Coordinate>;
+      //接受来自外边的消息，该消息用于通知我更新坐标到基座
+      _updateRouter: QueueExpand<null>;
+    };
+    /**
+     * 基座的iframe
+     */
+    type Internalframe = {
+      //自己的交换机，用于接受外边数据
       _selfIframe: Iframe<unknown>;
+      //基座的交换机，用于发送数据给基座
+      _masterIframe: Iframe<unknown>;
     };
 
+    this.unmq = new UNodeMQ<ExchangeCollection & Internalframe, QueueCollection & InternalQueue>(
+      Object.assign(exchangeCollection, {
+        _selfIframe: new Iframe<unknown>({ routes: ["_updateRouter"] }),
+        _masterIframe: new Iframe<unknown>({ routes: ["_sendRouter"] }),
+      }),
+      Object.assign(queueCollection, {
+        _sendRouter: new QueueExpand<Coordinate>({ ask: true }),
+        _updateRouter: new QueueExpand<null>(),
+      }),
+    );
+    /**
+     * constructor执行以后需要发送更新消息
+     */
+    this.unmq.emit("_selfIframe", null);
+
+    /**
+     * 先为自己挂载消费_updateRouter的消费者
+     */
+    this.unmq.on("_updateRouter", (content, ask, payload) => {
+      //拿到所有的iframe
+      const iframeList = getIframeNode(true);
+      //向所有iframe 同伴 发送自己的坐标
+      type Message={
+        data:Coordinate
+        
+      }
+      const message:Message={
+        data:{
+
+        }
+      }
+      iframeList.forEach(item => {
+        sendMessage(item,{data:{}} , "*");
+      });
+      ask(true);
+    });
+    /**
+     * 挂载消费者
+     */
     for (const queueName in queueCollection) {
       if (queueCollection[queueName].ask) {
         this.unmq.on(queueName, (content, ask, payload) => {
@@ -67,13 +122,6 @@ export default class IframeMessage<
         });
       }
     }
-
-    this.unmq = new UNodeMQ<ExchangeCollection & SelfIframe, QueueCollection>(
-      Object.assign(exchangeCollection, {
-        _selfIframe: new Iframe<unknown>(),
-      }),
-      queueCollection,
-    );
   }
   private setPostMessage<E extends keyof QueueCollection>(queueName: E) {
     this.unmq.on(queueName, () => {
