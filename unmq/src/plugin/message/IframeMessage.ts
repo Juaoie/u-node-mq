@@ -62,7 +62,7 @@ import { sendMessage } from "./messageProcessing";
  * 
  * 
  * 问题二、
- * 次啊用分布式路由表
+ * 使用分布式路由表
  * 这样不需要每次兄弟应用传值都需要基座应用修改代码
  * 
  * 如何确定当前应用信息：
@@ -70,11 +70,6 @@ import { sendMessage } from "./messageProcessing";
  * 应用名称：通过创建IframeMessage 传入的名称得到当前应用的名称
  * origin：通过window.origin得到
  * 
- * 如何进行消息确认通信：
- * emit到数据？？？？ TODO: 当前应用不设置其他应用的队列，则无法保存数据，
- * 例如：A应用发送数据到B应用，但是B应用还没挂载，那么数据将会丢失
- * 即使B应用挂载了，但是如果A应用不设置B应用的队列，那消费者挂载在哪呢？
- * 或许B应用不需要交换机，只需要
  * 
  * 
  */
