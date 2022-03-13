@@ -97,8 +97,10 @@ import { sendMessage } from "./messageProcessing";
  * 因为交换机到队列是确定的，所以不能给所有队列添加消费者，需要通过消息传递到队列以后判断是否存在iframe node 来动态添加消费者
  */
 
+type ConstructorOptionParameters<T extends new (args: any) => any> = T extends new (args: infer P) => any ? P : never;
+
 class Iframe<D> extends Exchange<D> {
-  constructor(option: InstanceType<typeof Exchange>) {
+  constructor(option: ConstructorOptionParameters<typeof Exchange>) {
     super(option);
   }
 }
