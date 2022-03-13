@@ -23,6 +23,12 @@ export default class UNodeMQ<
   QueueCollection extends Record<string, Queue<unknown>>,
 > extends Collection<ExchangeCollection, QueueCollection> {
   constructor(exchangeCollection: ExchangeCollection, queueCollection: QueueCollection) {
+    for (const name in exchangeCollection) {
+      exchangeCollection[name].name = name;
+    }
+    for (const name in queueCollection) {
+      queueCollection[name].name = name;
+    }
     super(exchangeCollection, queueCollection);
   }
   /**
