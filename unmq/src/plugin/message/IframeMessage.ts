@@ -1,7 +1,6 @@
 import UNodeMQ, { Exchange, Queue, News } from "../..";
 import { ReturnPanShapeExchange } from "../../core/UNodeMQ";
-import { getAllIframeDoc, getIframeNode } from "./loader";
-import { sendMessage } from "./messageProcessing";
+import { postMessage } from "./messageProcess";
 import RouteTable, { Coordinate } from "./coordinate";
 import Centralization from "./coordinate/mode/Centralization";
 import Decentralization from "./coordinate/mode/Decentralization";
@@ -168,12 +167,19 @@ export default class IframeMessage<
       return true;
     });
   }
+  /**
+   * 发送消息给其他应用
+   * @param exchangeName
+   * @param contentList
+   */
   emit<E extends keyof ExchangeCollection>(exchangeName: E, ...contentList: ReturnPanShapeExchange<ExchangeCollection[E]>[]) {
     this.unmq.emit(exchangeName, ...contentList);
     //广播获取路由地址
-    this.routeTable.getCoordinate(exchangeName).then((coordinate:Coordinate)=>{
+    this.routeTable.getCoordinate(exchangeName).then((coordinate: Coordinate) => {
       //获取到路由地址以后，
-
-    })
+      for (const content of contentList) {
+        postMessage({ message: content }, coordinate);
+      }
+    });
   }
 }
