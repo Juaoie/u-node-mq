@@ -25,12 +25,34 @@ export function getIframeNodeFromCoordinate(coordinate: Pick<Coordinate, "x" | "
   if (w === undefined) return null;
   return w.window;
 }
-
+/**
+ * 获取其他所有Iframe doc
+ * @returns
+ */
+export function getOtherAllIframeDoc(): T[] {
+  const list = getAllIframeDoc(window.top, 0, 0);
+  return list.filter(item => item.window !== window.self);
+}
+/**
+ * 获取自己的iframe doc
+ * @returns 
+ */
+export function getSelfIframeDoc(){
+  const list = getAllIframeDoc(window.top, 0, 0);
+  return list.find(item => item.window === window.self);
+}
 type T = {
   window: Window;
   x: number;
   y: number;
 };
+/**
+ * 获取所有node doc
+ * @param w
+ * @param x
+ * @param y
+ * @returns
+ */
 export function getAllIframeDoc(w: Window, x, y): T[] {
   const arr = [];
   arr.push({

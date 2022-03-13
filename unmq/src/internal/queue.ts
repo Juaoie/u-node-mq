@@ -10,7 +10,10 @@ interface Option<D> {
   mode?: ConsumMode;
   name?: string;
 }
-type ConsumMode = "random" | "all";
+enum ConsumMode {
+  "Random",
+  "All",
+}
 /**
  * 队列，理论上一个队列的数据格式应该具有一致性
  */
@@ -34,7 +37,7 @@ export default class Queue<D> {
   /**
    * 消费模式
    */
-  mode: ConsumMode = "random";
+  mode: ConsumMode = ConsumMode.Random;
   /**
    * 消息 list
    */
@@ -143,12 +146,12 @@ export default class Queue<D> {
     if (this.consumerList.length === 0) return;
     const news = this.eject();
     if (news === null) return;
-    if (this.mode === "random") {
+    if (this.mode === ConsumMode.Random) {
       //随机消费者的索引
       const index = Math.round(Math.random() * (this.consumerList.length - 1));
       const consumer = this.consumerList.slice(index, index + 1)[0];
       this.consumption(news, consumer);
-    } else if (this.mode === "all") {
+    } else if (this.mode === ConsumMode.All) {
       for (const consumer of this.consumerList) {
         this.consumption(news, consumer);
       }

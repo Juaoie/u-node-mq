@@ -11,6 +11,7 @@ export type Coordinate = {
  * 中心式路由表待续
  */
 export default abstract class CoordinateList {
+  constructor(private name: string) {}
   /**
    * 通过交换机名称获取路由地址
    * @param exchangeName

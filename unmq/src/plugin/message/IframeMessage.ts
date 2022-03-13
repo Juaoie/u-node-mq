@@ -1,6 +1,6 @@
 import UNodeMQ, { Exchange, Queue, News } from "../..";
 import { ReturnPanShapeExchange } from "../../core/UNodeMQ";
-import { postMessage } from "./messageProcess";
+import { singleMessage } from "./messageProcess";
 import RouteTable, { Coordinate } from "./coordinate";
 import Centralization from "./coordinate/mode/Centralization";
 import Decentralization from "./coordinate/mode/Decentralization";
@@ -118,15 +118,19 @@ export class NewsExpand<D, ExchangeName> extends News<D> {
 }
 
 type RouteMode = "Centralization" | "Decentralization";
+
+type ExchangeCollectionType = Record<string, OtherIframe<unknown>>;
+type QueueCollectionType = Record<string, SelfQueue<unknown>>;
+function createIframe(){
+  
+}
 /**
  * 使用postMessage api 进行通信
  *
  */
-export default class IframeMessage<
-  ExchangeCollection extends Record<string, OtherIframe<unknown>>,
-  QueueCollection extends Record<string, SelfQueue<unknown>>,
-> {
-  readonly name = "postMessage";
+export default class IframeMessage<ExchangeCollection extends ExchangeCollectionType, QueueCollection extends QueueCollectionType> {
+  private static iframeMessage: IframeMessage<ExchangeCollectionType, QueueCollectionType>;
+  private name = "postMessage";
   private unmq: UNodeMQ<ExchangeCollection, QueueCollection>;
   //接受外界消息，然后转发到 self 交换机
   private acceptMessage = new SelfQueue<unknown>();
@@ -134,14 +138,26 @@ export default class IframeMessage<
   private acceptCoordinate = new SelfQueue<Coordinate>();
   //路由表
   private routeTable: RouteTable;
-
-  constructor(
+  public static getInstance<E extends ExchangeCollectionType, Q extends QueueCollectionType>(
+    name: string,
+    selfIframe: SelfIframe<unknown>,
+    otherIframe: E,
+    selfQueue: Q,
+    routeMode: RouteMode = "Decentralization",
+  ) {
+    if (this.iframeMessage === null) {
+      this.iframeMessage = new IframeMessage(name, selfIframe, otherIframe, selfQueue, routeMode);
+    }
+    return IframeMessage.iframeMessage;
+  }
+  private constructor(
     name: string,
     selfIframe: SelfIframe<unknown>,
     otherIframe: ExchangeCollection,
     selfQueue: QueueCollection,
     routeMode: RouteMode = "Decentralization",
   ) {
+    this.name = name;
     //为每个交换机添加默认队列
     const queueCollection: Record<string, Queue<unknown>> = {};
     for (const name in otherIframe) {
@@ -157,9 +173,9 @@ export default class IframeMessage<
     );
     //注册路由表
     if (routeMode === "Decentralization") {
-      this.routeTable = new Decentralization();
+      this.routeTable = new Decentralization(name);
     } else if (routeMode === "Centralization") {
-      this.routeTable = new Centralization();
+      this.routeTable = new Centralization(name);
     }
     //挂载接受外界消息的消费者到_acceptMessage
     this.acceptMessage.pushConsume((content: any) => {
@@ -178,7 +194,7 @@ export default class IframeMessage<
     this.routeTable.getCoordinate(exchangeName).then((coordinate: Coordinate) => {
       //获取到路由地址以后，
       for (const content of contentList) {
-        postMessage({ message: content }, coordinate);
+        singleMessage({ message: content }, coordinate);
       }
     });
   }
