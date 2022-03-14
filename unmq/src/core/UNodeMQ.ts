@@ -37,7 +37,7 @@ export default class UNodeMQ<
    * @returns
    */
   emit<E extends keyof ExchangeCollection>(exchangeName: E, ...contentList: ReturnPanShapeExchange<ExchangeCollection[E]>[]) {
-    super.pushContentListToExchange(exchangeName, contentList);
+    super.pushContentListToExchange(exchangeName, ...contentList);
     return this;
   }
   /**
@@ -47,7 +47,7 @@ export default class UNodeMQ<
    * @returns
    */
   emitToQueue<Q extends keyof QueueCollection>(queueName: Q, ...contentList: ReturnPanShapeQueue<QueueCollection[Q]>[]) {
-    super.pushContentListToQueue(queueName, contentList);
+    super.pushContentListToQueue(queueName, ...contentList);
     return this;
   }
 

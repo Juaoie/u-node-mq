@@ -1,4 +1,4 @@
-import UNodeMQ, { Exchange, Queue } from "../src";
+import UNodeMQ, { Exchange, Queue } from "../dist";
 
 const unmq = new UNodeMQ(
   {
@@ -15,5 +15,7 @@ const unmq = new UNodeMQ(
   },
 );
 export default unmq;
-console.log("🚀 ~ file: index.ts ~ line 18 ~ unmq", unmq);
-unmq.emit("GET_OPENID", "123232323");
+unmq.emit("CHANGE_QUESTION_TABS_CURRENT", "aaaa");
+unmq.once("HOME_ALL_QUESTION", res => {
+  console.log("🚀 ~ file: index.ts ~ line 21 ~ unmq.on ~ res", res);
+});

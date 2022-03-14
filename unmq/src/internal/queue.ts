@@ -80,6 +80,14 @@ export default class Queue<D> {
     return true;
   }
   /**
+   * 移除所有消息
+   * @returns
+   */
+  removeAllNews() {
+    this.news = [];
+    return true;
+  }
+  /**
    * 通过id移除指定消费者
    * @param consumerId
    * @returns

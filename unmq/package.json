@@ -1,6 +1,6 @@
 {
   "name": "u-node-mq",
-  "version": "3.0.6",
+  "version": "3.0.8",
   "author": "hugaojie",
   "description": "前端多模块通信的消息中心模型",
   "main": "./dist/index.js",
@@ -8,7 +8,7 @@
   "homepage": "https://juaoie.github.io/u-node-mq/",
   "license": "MIT",
   "scripts": {
-    "test": "tsc ./test/index.ts && node ./test/index.js",
+    "test": "gulp && tsc ./test/index.ts && node ./test/index.js",
     "gtest": "gulp && yarn test",
     "git:commit": "git add -A . && git commit -am",
     "av": "node ./script/addVersion.js"
