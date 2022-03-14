@@ -7,8 +7,8 @@ export default class Collection<
   ExchangeCollection extends Record<string, Exchange<unknown>>,
   QueueCollection extends Record<string, Queue<unknown>>,
 > {
-  private readonly exchangeCollectionHandle: ExchangeCollectionHandle<ExchangeCollection>;
-  private readonly queueCollectionHandle: QueueCollectionHandle<QueueCollection>;
+  private readonly exchangeCollectionHandle = new ExchangeCollectionHandle<ExchangeCollection>();
+  private readonly queueCollectionHandle = new QueueCollectionHandle<QueueCollection>();
   constructor(exchangeCollection: ExchangeCollection, queueCollection: QueueCollection) {
     this.exchangeCollectionHandle.setExchangeCollection(exchangeCollection);
     this.queueCollectionHandle.setQueueCollection(queueCollection);
@@ -54,7 +54,7 @@ export default class Collection<
     for (const content of contentList) {
       //分别发送每一条消息
       this.exchangeCollectionHandle.getQueueNameList(exchangeName, content).then(queueNameList => {
-        for (const queueName in queueNameList) {
+        for (const queueName of queueNameList) {
           this.pushContentListToQueue(queueName, content);
         }
       });
