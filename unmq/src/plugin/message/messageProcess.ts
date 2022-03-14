@@ -23,7 +23,7 @@ const postMessage = (currentWindow: Window, type: MessageType, message: any, ori
     {
       type,
       message,
-      fromName: IframeMessage,
+      fromName: IframeMessage.getInstance().getName(),
       fromOrigin: window.origin,
       x: selfIframe.x,
       y: selfIframe.y,

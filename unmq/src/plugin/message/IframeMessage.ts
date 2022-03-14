@@ -121,9 +121,7 @@ type RouteMode = "Centralization" | "Decentralization";
 
 type ExchangeCollectionType = Record<string, OtherIframe<unknown>>;
 type QueueCollectionType = Record<string, SelfQueue<unknown>>;
-function createIframe(){
-  
-}
+function createIframe() {}
 /**
  * 使用postMessage api 进行通信
  *
@@ -131,6 +129,9 @@ function createIframe(){
 export default class IframeMessage<ExchangeCollection extends ExchangeCollectionType, QueueCollection extends QueueCollectionType> {
   private static iframeMessage: IframeMessage<ExchangeCollectionType, QueueCollectionType>;
   private name = "postMessage";
+  getName() {
+    return this.name;
+  }
   private unmq: UNodeMQ<ExchangeCollection, QueueCollection>;
   //接受外界消息，然后转发到 self 交换机
   private acceptMessage = new SelfQueue<unknown>();
@@ -138,7 +139,7 @@ export default class IframeMessage<ExchangeCollection extends ExchangeCollection
   private acceptCoordinate = new SelfQueue<Coordinate>();
   //路由表
   private routeTable: RouteTable;
-  public static getInstance<E extends ExchangeCollectionType, Q extends QueueCollectionType>(
+  static createIframe<E extends ExchangeCollectionType, Q extends QueueCollectionType>(
     name: string,
     selfIframe: SelfIframe<unknown>,
     otherIframe: E,
@@ -148,6 +149,9 @@ export default class IframeMessage<ExchangeCollection extends ExchangeCollection
     if (this.iframeMessage === null) {
       this.iframeMessage = new IframeMessage(name, selfIframe, otherIframe, selfQueue, routeMode);
     }
+    return IframeMessage.iframeMessage;
+  }
+  static getInstance() {
     return IframeMessage.iframeMessage;
   }
   private constructor(
@@ -173,7 +177,7 @@ export default class IframeMessage<ExchangeCollection extends ExchangeCollection
     );
     //注册路由表
     if (routeMode === "Decentralization") {
-      this.routeTable = new Decentralization(name);
+      // this.routeTable = new Decentralization(name);
     } else if (routeMode === "Centralization") {
       this.routeTable = new Centralization(name);
     }
