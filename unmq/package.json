@@ -1,6 +1,6 @@
 {
   "name": "u-node-mq",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "author": "hugaojie",
   "description": "前端多模块通信的消息中心模型",
   "main": "./dist/index.js",
@@ -13,9 +13,7 @@
     "git:commit": "git add -A . && git commit -am",
     "av": "node ./script/addVersion.js"
   },
-  "dependencies": {
-    "vue": "^3.2.31"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@types/gulp": "^4.0.9",
     "del": "^6.0.0",
