@@ -105,8 +105,8 @@ type ConstructorOptionParameters<T extends new (args: any) => any> = T extends n
 class Iframe<D> extends Exchange<D> {}
 export class SelfIframe<D> extends Iframe<D> {}
 export class OtherIframe<D> extends Iframe<D> {
-  constructor(option: Pick<ConstructorOptionParameters<typeof Iframe>, "name">) {
-    super(option);
+  constructor(name?: string) {
+    super({ name });
   }
 }
 export class SelfQueue<D> extends Queue<D> {}
@@ -130,7 +130,7 @@ export interface MessageCoordinate extends Coordinate {
  *
  */
 export default class IframeMessage<ExchangeCollection extends ExchangeCollectionType, QueueCollection extends QueueCollectionType> {
-  private static iframeMessage: IframeMessage<ExchangeCollectionType, QueueCollectionType>;
+  private static iframeMessage: IframeMessage<ExchangeCollectionType, QueueCollectionType> = null;
   private name: string;
   getName() {
     return this.name;
@@ -151,6 +151,7 @@ export default class IframeMessage<ExchangeCollection extends ExchangeCollection
   getRouteTable() {
     return this.routeTable;
   }
+
   static createIframe<E extends ExchangeCollectionType, Q extends QueueCollectionType>(
     name: string,
     selfIframe: SelfIframe<unknown>,
@@ -166,6 +167,7 @@ export default class IframeMessage<ExchangeCollection extends ExchangeCollection
   static getInstance() {
     return IframeMessage.iframeMessage;
   }
+  //TODO: exchange name 没有类型提示
   private constructor(
     name: string,
     selfIframe: SelfIframe<unknown>,

@@ -19,3 +19,15 @@ unmq.emit("CHANGE_QUESTION_TABS_CURRENT", "aaaa");
 unmq.once("HOME_ALL_QUESTION", res => {
   console.log("🚀 ~ file: index.ts ~ line 21 ~ unmq.on ~ res", res);
 });
+
+import { IframeMessage, OtherIframe, SelfIframe, SelfQueue } from "../src/index";
+
+//其他交换机name变成必选了
+const iframeMessage = IframeMessage.createIframe(
+  "test1",
+  new SelfIframe({ routes: ["queue1"] }),
+  { test2: new OtherIframe() },
+  { queue1: new SelfQueue() },
+);
+
+iframeMessage.emit("123");
