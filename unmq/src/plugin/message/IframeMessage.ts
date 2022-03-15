@@ -1,10 +1,11 @@
 import UNodeMQ, { Exchange, Queue, News } from "../..";
-import { ReturnPanShapeExchange } from "../../core/UNodeMQ";
-import { MessageType, singleMessage } from "./messageProcess";
+import { ReturnPanShapeExchange, ReturnPanShapeQueue } from "../../core/UNodeMQ";
+import { broadcastMessage, MessageType, singleMessage } from "./messageProcess";
 import RouteTable, { Coordinate } from "./coordinate";
 import Centralization from "./coordinate/mode/Centralization";
 import Decentralization from "./coordinate/mode/Decentralization";
 import { ConsumMode } from "../../internal/Queue";
+import { Consume, Next } from "../../internal/Consumer";
 /**
  * postmessage 功能如下
  * 一、父通过contentWindow.postmessage 发送数据给指定的url 或者 *
@@ -197,6 +198,8 @@ export default class IframeMessage<ExchangeCollection extends ExchangeCollection
       this.unmq.emit(name, content);
       return true;
     });
+    //广播发送上线通知
+    broadcastMessage(MessageType.OnlineNotificationMessage, { exchangeName: this.name, msg: `${this.name}上线了` });
   }
   /**
    * 发送消息给其他应用
@@ -204,7 +207,10 @@ export default class IframeMessage<ExchangeCollection extends ExchangeCollection
    * @param contentList
    */
   emit<E extends keyof ExchangeCollection>(exchangeName: E, ...contentList: ReturnPanShapeExchange<ExchangeCollection[E]>[]) {
-    this.unmq.emit(exchangeName, ...contentList);
+    if (exchangeName === this.name) {
+      this.unmq.emit(exchangeName, ...contentList);
+      return this;
+    }
     //广播获取路由地址
     this.routeTable
       .getCoordinate(exchangeName as string)
@@ -223,6 +229,44 @@ export default class IframeMessage<ExchangeCollection extends ExchangeCollection
           this.unmq.emit(exchangeName, content);
         }
       });
+    return this;
+  }
+
+  /**
+   *  订阅队列消息
+   * 队列名称为null 则订阅所有队列
+   * 消费方法
+   * @param queueName 队列名称
+   * @param consume 消费方法
+   * @param payload 固定参数，有效载荷，在每次消费的时候都传给消费者
+   * @returns
+   */
+  on<Q extends keyof QueueCollection>(queueName: Q, consume: Consume<ReturnPanShapeQueue<QueueCollection[Q]>>, payload?: any) {
+    this.unmq.on(queueName, consume, payload);
+    return () => this.off(queueName, consume);
+  }
+
+  /**
+   * 移除消费者
+   * @param queueName
+   * @param consume
+   */
+  off<Q extends keyof QueueCollection>(queueName: Q, consume: Consume<ReturnPanShapeQueue<QueueCollection[Q]>>): this;
+  off<Q extends keyof QueueCollection>(queueName: Q): this;
+  off<Q extends keyof QueueCollection>(x: Q, y?: Consume<ReturnPanShapeQueue<QueueCollection[Q]>>): this {
+    this.unmq.off(x, y);
+    return this;
+  }
+
+  /**
+   * 一次性订阅消息
+   * @param queueName
+   * @param consume
+   * @param payload
+   * @returns
+   */
+  once<Q extends keyof QueueCollection>(queueName: Q, consume: Consume<ReturnPanShapeQueue<QueueCollection[Q]>>, payload?: any) {
+    this.once(queueName, consume, payload);
     return this;
   }
 }

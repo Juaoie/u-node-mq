@@ -5,6 +5,7 @@ export enum MessageType {
   GeneralMessage, //普通消息
   FindExchangeMessage, //广播查找交换机消息
   SendCoordinateMessage, //发送exchange消息
+  OnlineNotificationMessage, //上线通知消息
 }
 
 /**
@@ -80,6 +81,7 @@ function receiveMessage({ source, data, origin }) {
         }
       } else if (data.type === MessageType.GeneralMessage) {
         //普通消息
+        iframeMessage.emit(iframeMessage.getName(), data.message);
       } else if (data.type === MessageType.SendCoordinateMessage) {
         //发送位置信息消息
         const message: FindExchangeCoordinate = data.message;
@@ -89,6 +91,14 @@ function receiveMessage({ source, data, origin }) {
           currentWindow: source,
           origin: origin,
         });
+      } else if (data.type === MessageType.OnlineNotificationMessage) {
+        //上线通知消息
+        const queueName = data.message.exchangeName + "_SendMessage";
+        if (!iframeMessage.getUnmq().getQueue(queueName)) throw `${data.message.exchangeName} 未注册`;
+
+        iframeMessage.getUnmq().on(queueName, content => {
+          singleMessage(MessageType.GeneralMessage, origin, content);
+        })();
       }
     }
   }
@@ -118,7 +128,6 @@ export function broadcastGetCoordinateMessage(exchangeName: string) {
     function getExchangeCoordinae(messageCoordinate: MessageCoordinate) {
       //判断随机数是否正常,然后加入路由表
       if (messageCoordinate.random == random) {
-        iframeMessage.getRouteTable().pushCoordinate(messageCoordinate);
         clearTimeout(id);
         resolve(messageCoordinate);
       }
