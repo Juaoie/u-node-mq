@@ -1,9 +1,10 @@
 import UNodeMQ, { Exchange, Queue, News } from "../..";
 import { ReturnPanShapeExchange } from "../../core/UNodeMQ";
-import { singleMessage } from "./messageProcess";
+import { MessageType, singleMessage } from "./messageProcess";
 import RouteTable, { Coordinate } from "./coordinate";
 import Centralization from "./coordinate/mode/Centralization";
 import Decentralization from "./coordinate/mode/Decentralization";
+import { ConsumMode } from "../../internal/Queue";
 /**
  * postmessage 功能如下
  * 一、父通过contentWindow.postmessage 发送数据给指定的url 或者 *
@@ -118,27 +119,37 @@ export class NewsExpand<D, ExchangeName> extends News<D> {
 }
 
 type RouteMode = "Centralization" | "Decentralization";
-
 type ExchangeCollectionType = Record<string, OtherIframe<unknown>>;
 type QueueCollectionType = Record<string, SelfQueue<unknown>>;
-function createIframe() {}
+export interface MessageCoordinate extends Coordinate {
+  random: string | number;
+}
 /**
  * 使用postMessage api 进行通信
  *
  */
 export default class IframeMessage<ExchangeCollection extends ExchangeCollectionType, QueueCollection extends QueueCollectionType> {
   private static iframeMessage: IframeMessage<ExchangeCollectionType, QueueCollectionType>;
-  private name = "postMessage";
+  private name: string;
   getName() {
     return this.name;
   }
   private unmq: UNodeMQ<ExchangeCollection, QueueCollection>;
+  getUnmq() {
+    return this.unmq;
+  }
   //接受外界消息，然后转发到 self 交换机
   private acceptMessage = new SelfQueue<unknown>();
-  //接受来着外界的坐标信息 坐标信息
-  private acceptCoordinate = new SelfQueue<Coordinate>();
+  //接受来着外界的坐标信息 坐标信息，所有人都消费
+  private acceptCoordinate = new SelfQueue<MessageCoordinate>({ mode: ConsumMode.All });
+  getAcceptCoordinate() {
+    return this.acceptCoordinate;
+  }
   //路由表
   private routeTable: RouteTable;
+  getRouteTable() {
+    return this.routeTable;
+  }
   static createIframe<E extends ExchangeCollectionType, Q extends QueueCollectionType>(
     name: string,
     selfIframe: SelfIframe<unknown>,
@@ -165,7 +176,7 @@ export default class IframeMessage<ExchangeCollection extends ExchangeCollection
     //为每个交换机添加默认队列
     const queueCollection: Record<string, Queue<unknown>> = {};
     for (const name in otherIframe) {
-      const queueName = name + "SendMessage";
+      const queueName = name + "_SendMessage";
       queueCollection[queueName] = new Queue();
       otherIframe[name].setRoutes([queueName]);
     }
@@ -177,9 +188,9 @@ export default class IframeMessage<ExchangeCollection extends ExchangeCollection
     );
     //注册路由表
     if (routeMode === "Decentralization") {
-      // this.routeTable = new Decentralization(name);
+      this.routeTable = new Decentralization();
     } else if (routeMode === "Centralization") {
-      this.routeTable = new Centralization(name);
+      this.routeTable = new Centralization();
     }
     //挂载接受外界消息的消费者到_acceptMessage
     this.acceptMessage.pushConsume((content: any) => {
@@ -195,11 +206,23 @@ export default class IframeMessage<ExchangeCollection extends ExchangeCollection
   emit<E extends keyof ExchangeCollection>(exchangeName: E, ...contentList: ReturnPanShapeExchange<ExchangeCollection[E]>[]) {
     this.unmq.emit(exchangeName, ...contentList);
     //广播获取路由地址
-    this.routeTable.getCoordinate(exchangeName).then((coordinate: Coordinate) => {
-      //获取到路由地址以后，
-      for (const content of contentList) {
-        singleMessage({ message: content }, coordinate);
-      }
-    });
+    this.routeTable
+      .getCoordinate(exchangeName as string)
+      .then((coordinate: Coordinate) => {
+        //获取到路由地址以后，
+        for (const content of contentList) {
+          singleMessage(MessageType.GeneralMessage, coordinate.currentWindow, content);
+        }
+      })
+      .catch(() => {
+        //接受者还没挂载到dom上，
+        //先移除所有队列上的所有消费者
+        this.unmq.getQueue(exchangeName + "_SendMessage").removeAllConsumer();
+        //再将消息存到指定队列里面
+        for (const content of contentList) {
+          this.unmq.emit(exchangeName, content);
+        }
+      });
+    return this;
   }
 }

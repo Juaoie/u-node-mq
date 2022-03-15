@@ -1,8 +1,9 @@
 export type Coordinate = {
   name: string; //exchange name
-  x: number;
-  y: number;
-  origin: string;
+  x?: number;
+  y?: number;
+  origin?: string;
+  currentWindow: Window;
 };
 
 /**
@@ -11,10 +12,15 @@ export type Coordinate = {
  * 中心式路由表待续
  */
 export default abstract class CoordinateList {
-  constructor(private name: string) {}
+  abstract coordinateList: Coordinate[];
   /**
    * 通过交换机名称获取路由地址
    * @param exchangeName
    */
-  abstract getCoordinate<T>(exchangeName: T): Promise<Coordinate>;
+  abstract getCoordinate(exchangeName: string): Promise<Coordinate>;
+  /**
+   * 驱虫加入坐标信息
+   * @param coordinate
+   */
+  abstract pushCoordinate(coordinate: Coordinate);
 }

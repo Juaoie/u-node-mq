@@ -10,7 +10,7 @@ interface Option<D> {
   mode?: ConsumMode;
   name?: string;
 }
-enum ConsumMode {
+export enum ConsumMode {
   "Random",
   "All",
 }
