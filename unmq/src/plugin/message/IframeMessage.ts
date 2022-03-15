@@ -200,8 +200,10 @@ export default class IframeMessage<ExchangeCollection extends ExchangeCollection
       this.unmq.emit(name, content);
       return true;
     });
-    //广播发送上线通知
-    broadcastMessage(MessageType.OnlineNotificationMessage, { exchangeName: this.name, msg: `${this.name}上线了` });
+    setTimeout(() => {
+      //广播发送上线通知
+      broadcastMessage(MessageType.OnlineNotificationMessage, { exchangeName: this.name, msg: `${this.name}上线了` });
+    });
   }
   /**
    * 发送消息给其他应用
