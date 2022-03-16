@@ -17,7 +17,6 @@ export enum MessageType {
  * @param transfer
  */
 const postMessage = (currentWindow: Window, type: MessageType, message: any, origin: string = "*", transfer?: Transferable[]) => {
-  const selfIframe = getSelfIframeDoc();
   currentWindow.postMessage(
     {
       mask: "u-node-mq-plugin",
@@ -25,8 +24,6 @@ const postMessage = (currentWindow: Window, type: MessageType, message: any, ori
       message,
       fromName: IframeMessage.getInstance().getName(),
       fromOrigin: window.origin,
-      x: selfIframe.x,
-      y: selfIframe.y,
     },
     origin,
     transfer,
@@ -60,7 +57,7 @@ interface FindExchangeCoordinate {
 /**
  * 监听message事件触发
  */
-window?.addEventListener("message", receiveMessage, false);
+window.addEventListener("message", receiveMessage, false);
 function receiveMessage({ source, data, origin }) {
   const iframeMessage = IframeMessage.getInstance();
   if (typeof data === "object") {

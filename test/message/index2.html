@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body id="body">
+    <h1>22222</h1>
+    <button onclick="click2()">发送消息给ex1</button>
+  </body>
+  <script type="module">
+    import { IframeMessage, SelfIframe, OtherIframe, SelfQueue } from "/dist/index.js";
+    const im = IframeMessage.createIframe(
+      "ex2",
+      new SelfIframe({ routes: ["qu2"] }),
+      { ex1: new OtherIframe() },
+      { qu2: new SelfQueue() }
+    );
+    im.on("qu2", (res) => {
+      console.log("🚀 ~ file: index2.html ~ line 22 ~ im.on ~ res", res);
+    });
+    window.click2 = () => {
+      im.emit("ex1", "消息内容1");
+    };
+
+    window.im = im;
+  </script>
+</html>

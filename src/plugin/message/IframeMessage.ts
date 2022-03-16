@@ -129,7 +129,10 @@ export interface MessageCoordinate extends Coordinate {
  * 使用postMessage api 进行通信
  *
  */
-export default class IframeMessage<ExchangeCollection extends ExchangeCollectionType, QueueCollection extends QueueCollectionType> {
+export default class IframeMessage<
+  ExchangeCollection extends ExchangeCollectionType,
+  QueueCollection extends QueueCollectionType
+> {
   private static iframeMessage: IframeMessage<ExchangeCollectionType, QueueCollectionType> = null;
   private name: string;
   getName() {
@@ -157,10 +160,12 @@ export default class IframeMessage<ExchangeCollection extends ExchangeCollection
     selfIframe: SelfIframe<unknown>,
     otherIframe: E,
     selfQueue: Q,
-    routeMode: RouteMode = "Decentralization",
-  ) {
+    routeMode: RouteMode = "Decentralization"
+    ) {
     if (this.iframeMessage === null) {
       this.iframeMessage = new IframeMessage(name, selfIframe, otherIframe, selfQueue, routeMode);
+      //广播发送上线通知
+      broadcastMessage(MessageType.OnlineNotificationMessage, { exchangeName: name, msg: `${this.name}上线了` });
     }
     return IframeMessage.iframeMessage;
   }
@@ -173,7 +178,7 @@ export default class IframeMessage<ExchangeCollection extends ExchangeCollection
     selfIframe: SelfIframe<unknown>,
     otherIframe: ExchangeCollection,
     selfQueue: QueueCollection,
-    routeMode: RouteMode = "Decentralization",
+    routeMode: RouteMode = "Decentralization"
   ) {
     this.name = name;
     //为每个交换机添加默认队列
@@ -187,7 +192,7 @@ export default class IframeMessage<ExchangeCollection extends ExchangeCollection
       Object.assign(otherIframe, {
         [name]: selfIframe,
       }),
-      Object.assign(selfQueue, queueCollection),
+      Object.assign(selfQueue, queueCollection)
     );
     //注册路由表
     if (routeMode === "Decentralization") {
@@ -200,17 +205,16 @@ export default class IframeMessage<ExchangeCollection extends ExchangeCollection
       this.unmq.emit(name, content);
       return true;
     });
-    setTimeout(() => {
-      //广播发送上线通知
-      broadcastMessage(MessageType.OnlineNotificationMessage, { exchangeName: this.name, msg: `${this.name}上线了` });
-    });
   }
   /**
    * 发送消息给其他应用
    * @param exchangeName
    * @param contentList
    */
-  emit<E extends keyof ExchangeCollection>(exchangeName: E, ...contentList: ReturnPanShapeExchange<ExchangeCollection[E]>[]) {
+  emit<E extends keyof ExchangeCollection>(
+    exchangeName: E,
+    ...contentList: ReturnPanShapeExchange<ExchangeCollection[E]>[]
+  ) {
     if (exchangeName === this.name) {
       this.unmq.emit(exchangeName, ...contentList);
       return this;
@@ -245,7 +249,11 @@ export default class IframeMessage<ExchangeCollection extends ExchangeCollection
    * @param payload 固定参数，有效载荷，在每次消费的时候都传给消费者
    * @returns
    */
-  on<Q extends keyof QueueCollection>(queueName: Q, consume: Consume<ReturnPanShapeQueue<QueueCollection[Q]>>, payload?: any) {
+  on<Q extends keyof QueueCollection>(
+    queueName: Q,
+    consume: Consume<ReturnPanShapeQueue<QueueCollection[Q]>>,
+    payload?: any
+  ) {
     this.unmq.on(queueName, consume, payload);
     return () => this.off(queueName, consume);
   }
@@ -269,7 +277,11 @@ export default class IframeMessage<ExchangeCollection extends ExchangeCollection
    * @param payload
    * @returns
    */
-  once<Q extends keyof QueueCollection>(queueName: Q, consume: Consume<ReturnPanShapeQueue<QueueCollection[Q]>>, payload?: any) {
+  once<Q extends keyof QueueCollection>(
+    queueName: Q,
+    consume: Consume<ReturnPanShapeQueue<QueueCollection[Q]>>,
+    payload?: any
+  ) {
     this.once(queueName, consume, payload);
     return this;
   }

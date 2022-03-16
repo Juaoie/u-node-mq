@@ -93,9 +93,6 @@ var IframeMessage = (function () {
             _this.unmq.emit(name, content);
             return true;
         });
-        setTimeout(function () {
-            broadcastMessage(MessageType.OnlineNotificationMessage, { exchangeName: _this.name, msg: _this.name + "\u4E0A\u7EBF\u4E86" });
-        });
     }
     IframeMessage.prototype.getName = function () {
         return this.name;
@@ -113,6 +110,7 @@ var IframeMessage = (function () {
         if (routeMode === void 0) { routeMode = "Decentralization"; }
         if (this.iframeMessage === null) {
             this.iframeMessage = new IframeMessage(name, selfIframe, otherIframe, selfQueue, routeMode);
+            broadcastMessage(MessageType.OnlineNotificationMessage, { exchangeName: name, msg: this.name + "\u4E0A\u7EBF\u4E86" });
         }
         return IframeMessage.iframeMessage;
     };

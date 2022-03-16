@@ -1,5 +1,5 @@
 import IframeMessage from "./IframeMessage.js";
-import { getOtherAllIframeDoc, getSelfIframeDoc } from "./loader.js";
+import { getOtherAllIframeDoc } from "./loader.js";
 export var MessageType;
 (function (MessageType) {
     MessageType[MessageType["GeneralMessage"] = 0] = "GeneralMessage";
@@ -9,15 +9,12 @@ export var MessageType;
 })(MessageType || (MessageType = {}));
 var postMessage = function (currentWindow, type, message, origin, transfer) {
     if (origin === void 0) { origin = "*"; }
-    var selfIframe = getSelfIframeDoc();
     currentWindow.postMessage({
         mask: "u-node-mq-plugin",
         type: type,
         message: message,
         fromName: IframeMessage.getInstance().getName(),
         fromOrigin: window.origin,
-        x: selfIframe.x,
-        y: selfIframe.y,
     }, origin, transfer);
 };
 export function singleMessage(type, currentWindow, message) {
@@ -29,7 +26,7 @@ export function broadcastMessage(type, message) {
         postMessage(item.window, type, message, "*");
     });
 }
-window === null || window === void 0 ? void 0 : window.addEventListener("message", receiveMessage, false);
+window.addEventListener("message", receiveMessage, false);
 function receiveMessage(_a) {
     var source = _a.source, data = _a.data, origin = _a.origin;
     var iframeMessage = IframeMessage.getInstance();
