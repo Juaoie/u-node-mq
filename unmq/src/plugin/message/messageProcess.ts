@@ -95,14 +95,9 @@ function receiveMessage({ source, data, origin }) {
         //上线通知消息
         const queueName = data.message.exchangeName + "_SendMessage";
         if (!iframeMessage.getUnmq().getQueue(queueName)) return; //throw `${data.message.exchangeName} 未注册`;
-        console.log("zhixingl");
-        const instance = iframeMessage.getUnmq().on(queueName, content => {
-          console.log("🚀 ~ file: messageProcess.ts ~ line 100 ~ iframeMessage.getUnmq ~ content", content);
+        iframeMessage.getUnmq().on(queueName, content => {
           singleMessage(MessageType.GeneralMessage, source, content);
-        });
-        setTimeout(() => {
-          instance();
-        });
+        })();
       }
     }
   }
@@ -126,7 +121,7 @@ export function broadcastGetCoordinateMessage(exchangeName: string) {
     const id = setTimeout(() => {
       iframeMessage.getAcceptCoordinate().removeConsumer(getExchangeCoordinae);
       reject();
-    }, 3000);
+    }, 1000);
 
     iframeMessage.getAcceptCoordinate().pushConsume(getExchangeCoordinae);
     function getExchangeCoordinae(messageCoordinate: MessageCoordinate) {
