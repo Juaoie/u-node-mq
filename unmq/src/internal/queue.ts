@@ -103,7 +103,9 @@ export default class Queue<D> {
    * @param consumerList
    */
   pushConsumer(consumer: Consumer<D>) {
-    this.consumerList.push(consumer);
+    //过滤重复的消费者id
+    if (this.consumerList.findIndex(item => item.getId() === consumer.getId()) === -1) this.consumerList.push(consumer);
+
     if (this.news.length > 0 && this.consumerList.length > 0) this.consumeNews();
   }
   /**
@@ -122,7 +124,10 @@ export default class Queue<D> {
   pushNews(news: News<D>) {
     if (news.consumedTimes === -1) news.consumedTimes = this.rcn;
 
-    if (news.consumedTimes > 0) this.news.push(news);
+    if (news.consumedTimes > 0) {
+      //过滤重复的消息id
+      if (this.news.findIndex(item => item.getId() === news.getId()) === -1) this.news.push(news);
+    }
 
     if (this.news.length > 0 && this.consumerList.length > 0) this.consumeNews();
   }

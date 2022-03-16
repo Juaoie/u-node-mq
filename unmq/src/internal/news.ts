@@ -4,7 +4,10 @@ export default class News<D> {
   /**
    * id
    */
-  readonly id: string = Tools.random();
+  private readonly id: string = Tools.random();
+  getId() {
+    return this.id;
+  }
   /**
    * 消费者创建时间戳
    */
