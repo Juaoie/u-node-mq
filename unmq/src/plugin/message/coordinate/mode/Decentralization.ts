@@ -1,6 +1,5 @@
-import CoordinateList, { Coordinate } from "..";
-import IframeMessage from "../../IframeMessage";
-import { broadcastGetCoordinateMessage, broadcastMessage, MessageType } from "../../messageProcess";
+import CoordinateList, { Coordinate } from "../index.js";
+import { broadcastGetCoordinateMessage, broadcastMessage, MessageType } from "../../messageProcess.js";
 /**
  * 分布式路由
  */

@@ -1,7 +1,7 @@
-import News from "./News";
-import Consumer, { Consume } from "./Consumer";
-import Logs from "./Logs";
-import Tools from "../utils/tools";
+import News from "./News.js";
+import Consumer, { Consume } from "./Consumer.js";
+import Logs from "./Logs.js";
+import Tools from "../utils/tools.js";
 interface Option<D> {
   ask?: boolean;
   rcn?: number;

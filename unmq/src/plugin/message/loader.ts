@@ -1,4 +1,4 @@
-import { Coordinate } from "./coordinate";
+import { Coordinate } from "./coordinate/index.js";
 
 /**
  * 饼平化方便取值

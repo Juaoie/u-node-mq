@@ -1,4 +1,4 @@
-import CoordinateList, { Coordinate } from "..";
+import CoordinateList, { Coordinate } from "../index.js";
 
 /**
  * 中心化路由

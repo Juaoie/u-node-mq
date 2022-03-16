@@ -1,7 +1,7 @@
-import { Exchange, Queue, News } from "..";
-import { Consume } from "../internal/Consumer";
-import ExchangeCollectionHandle from "./ExchangeCollectionHandle";
-import QueueCollectionHandle from "./QueueCollectionHandle";
+import { Exchange, Queue, News } from "../index.js";
+import { Consume } from "../internal/Consumer.js";
+import ExchangeCollectionHandle from "./ExchangeCollectionHandle.js";
+import QueueCollectionHandle from "./QueueCollectionHandle.js";
 
 export default class Collection<
   ExchangeCollection extends Record<string, Exchange<unknown>>,

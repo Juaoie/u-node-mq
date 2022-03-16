@@ -1,6 +1,6 @@
-import Tools from "../utils/tools";
-import Logs from "./Logs";
-import News from "./News";
+import Tools from "../utils/tools.js";
+import Logs from "./Logs.js";
+import News from "./News.js";
 export type Next = (value?: boolean) => void;
 
 export type Consume<D> = (content: D, next?: Next, payload?: any) => Promise<boolean> | boolean | void;

@@ -1,6 +1,6 @@
-import { Coordinate } from "./coordinate";
-import IframeMessage, { MessageCoordinate } from "./IframeMessage";
-import { getAllIframeDoc, getIframeNodeFromCoordinate, getOtherAllIframeDoc, getSelfIframeDoc } from "./loader";
+import { Coordinate } from "./coordinate/index.js";
+import IframeMessage, { MessageCoordinate } from "./IframeMessage.js";
+import { getAllIframeDoc, getIframeNodeFromCoordinate, getOtherAllIframeDoc, getSelfIframeDoc } from "./loader.js";
 export enum MessageType {
   GeneralMessage, //普通消息
   FindExchangeMessage, //广播查找交换机消息

@@ -1,11 +1,11 @@
-import UNodeMQ, { Exchange, Queue, News } from "../..";
-import { ReturnPanShapeExchange, ReturnPanShapeQueue } from "../../core/UNodeMQ";
-import { broadcastMessage, MessageType, singleMessage } from "./messageProcess";
-import RouteTable, { Coordinate } from "./coordinate";
-import Centralization from "./coordinate/mode/Centralization";
-import Decentralization from "./coordinate/mode/Decentralization";
-import { ConsumMode } from "../../internal/Queue";
-import { Consume, Next } from "../../internal/Consumer";
+import UNodeMQ, { Exchange, Queue, News } from "../../index.js";
+import { ReturnPanShapeExchange, ReturnPanShapeQueue } from "../../core/UNodeMQ.js";
+import { broadcastMessage, MessageType, singleMessage } from "./messageProcess.js";
+import RouteTable, { Coordinate } from "./coordinate/index.js";
+import Centralization from "./coordinate/mode/Centralization.js";
+import Decentralization from "./coordinate/mode/Decentralization.js";
+import { ConsumMode } from "../../internal/Queue.js";
+import { Consume, Next } from "../../internal/Consumer.js";
 /**
  * postmessage 功能如下
  * 一、父通过contentWindow.postmessage 发送数据给指定的url 或者 *

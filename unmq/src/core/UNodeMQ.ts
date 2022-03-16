@@ -1,7 +1,7 @@
-import { Exchange, Queue, News } from "..";
-import { Consume, Next } from "../internal/Consumer";
+import { Exchange, Queue, News } from "../index.js";
+import { Consume, Next } from "../internal/Consumer.js";
 
-import Collection from "./Collection";
+import Collection from "./Collection.js";
 //TODO:组合它两
 export type ReturnPanShapeExchange<T> = T extends Exchange<infer U> ? U : never;
 export type ReturnPanShapeQueue<T> = T extends Queue<infer U> ? U : never;
