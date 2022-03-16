@@ -163,8 +163,6 @@ export default class Queue<D> {
       for (const consumer of this.consumerList) {
         this.consumption(news, consumer);
       }
-
-      if (this.news.length > 0) this.consumeNews();
     }
   }
 
@@ -177,6 +175,7 @@ export default class Queue<D> {
         news.consumedTimes--;
         this.pushNews(news);
       }
+      if (this.news.length > 0) this.consumeNews();
     });
   }
 }

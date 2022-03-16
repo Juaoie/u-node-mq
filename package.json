@@ -8,7 +8,7 @@
   "homepage": "https://juaoie.github.io/u-node-mq/",
   "license": "MIT",
   "scripts": {
-    "dev": "vite --host",
+    "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview"
   },
