@@ -19,10 +19,12 @@
       { ex2: new OtherIframe() },
       { qu1: new SelfQueue() }
     );
-
+    im.on("qu1", (res) => {
+      console.log(res);
+    });
     window.click1 = () => {
       console.log("消息");
-      im.emit("ex2", "消息内容1");
+      im.emit("ex2", "发给ex2的消息");
     };
 
     window.im = im;

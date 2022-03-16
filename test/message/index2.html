@@ -19,10 +19,10 @@
       { qu2: new SelfQueue() }
     );
     im.on("qu2", (res) => {
-      console.log("🚀 ~ file: index2.html ~ line 22 ~ im.on ~ res", res);
+      console.log(res);
     });
     window.click2 = () => {
-      im.emit("ex1", "消息内容1");
+      im.emit("ex1", "发给ex1的消息");
     };
 
     window.im = im;
