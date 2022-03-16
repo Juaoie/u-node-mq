@@ -60,7 +60,7 @@ interface FindExchangeCoordinate {
 /**
  * 监听message事件触发
  */
-window.addEventListener("message", receiveMessage, false);
+window?.addEventListener("message", receiveMessage, false);
 function receiveMessage({ source, data, origin }) {
   const iframeMessage = IframeMessage.getInstance();
   if (typeof data === "object") {
