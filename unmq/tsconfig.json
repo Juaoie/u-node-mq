@@ -3,6 +3,9 @@
   "exclude": ["node_modules", "test/*.ts"],
   "compilerOptions": {
     "target": "ES5",
+    "module": "ES6",
+    "moduleResolution": "Node",
+    "outDir": "dist/",
     "lib": ["ES6", "dom"],
     "declaration": true,
     "removeComments": true,
