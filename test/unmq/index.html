@@ -6,10 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
   </head>
-  <body>
-    <script type="module">
-      import UNodeMQ from "./unmq/dist/index.js";
-      console.log("🚀 ~ file: index.html ~ line 12 ~ UNodeMQ", UNodeMQ)
-    </script>
+  <body id="body">
+    <button onclick="click1()">点击发送消息给ex1</button>
+    <button onclick="click2()">点击发送消息给ex2</button>
   </body>
+  <!-- <script src="https://unpkg.com/vue@next"></script> -->
+  <script type="module" src="./index.js"></script>
+  <script type="module" src="./ex1.js"></script>
+  <script type="module" src="./ex2.js"></script>
 </html>
