@@ -97,7 +97,7 @@ function receiveMessage({ source, data, origin }) {
         if (!iframeMessage.getUnmq().getQueue(queueName)) throw `${data.message.exchangeName} 未注册`;
 
         iframeMessage.getUnmq().on(queueName, content => {
-          singleMessage(MessageType.GeneralMessage, origin, content);
+          singleMessage(MessageType.GeneralMessage, source, content);
         })();
       }
     }
@@ -126,6 +126,7 @@ export function broadcastGetCoordinateMessage(exchangeName: string) {
 
     iframeMessage.getAcceptCoordinate().pushConsume(getExchangeCoordinae);
     function getExchangeCoordinae(messageCoordinate: MessageCoordinate) {
+      iframeMessage.getAcceptCoordinate().removeConsumer(getExchangeCoordinae);
       //判断随机数是否正常,然后加入路由表
       if (messageCoordinate.random == random) {
         clearTimeout(id);

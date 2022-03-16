@@ -30,4 +30,13 @@ const iframeMessage = IframeMessage.createIframe(
   { queue1: new SelfQueue() },
 );
 
+const iframeMessage2 = new IframeMessage(
+  "test1",
+  new SelfIframe({ routes: ["queue1"] }),
+  { test2: new OtherIframe() },
+  { queue1: new SelfQueue() },
+);
+
+
 iframeMessage.emit("123");
+iframeMessage2.emit("123");

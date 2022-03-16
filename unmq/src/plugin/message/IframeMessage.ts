@@ -168,7 +168,7 @@ export default class IframeMessage<ExchangeCollection extends ExchangeCollection
     return IframeMessage.iframeMessage;
   }
   //TODO: exchange name 没有类型提示
-  private constructor(
+  constructor(
     name: string,
     selfIframe: SelfIframe<unknown>,
     otherIframe: ExchangeCollection,
