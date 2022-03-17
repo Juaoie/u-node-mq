@@ -1,12 +1,28 @@
 {
   "name": "u-node-mq",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "author": "hugaojie",
-  "description": "前端多模块通信的消息中心模型",
+  "description": "基于发布订阅模型的消息通信插件",
+  "keywords": [
+    "发布订阅",
+    "消息中心",
+    "通信",
+    "队列",
+    "rabbitmq",
+    "消息",
+    "交换机",
+    "消费者",
+    "观察者",
+    "iframe通信",
+    "微前端"
+  ],
   "main": "./dist/index.js",
   "repository": "https://github.com/Juaoie/u-node-mq.git",
-  "homepage": "https://juaoie.github.io/u-node-mq/",
+  "homepage": "https://github.com/Juaoie/u-node-mq/",
   "license": "MIT",
+  "publishConfig": {
+    "registry": "git@github.com:Juaoie/u-node-mq.git"
+  },
   "scripts": {
     "test": "gulp && tsc ./test/index.ts && node ./test/index.js",
     "gtest": "gulp && yarn test",
