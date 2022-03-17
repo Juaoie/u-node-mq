@@ -20,9 +20,6 @@
   "repository": "https://github.com/Juaoie/u-node-mq.git",
   "homepage": "https://github.com/Juaoie/u-node-mq/",
   "license": "MIT",
-  "publishConfig": {
-    "registry": "git@github.com:Juaoie/u-node-mq.git"
-  },
   "scripts": {
     "test": "gulp && tsc ./test/index.ts && node ./test/index.js",
     "gtest": "gulp && yarn test",
