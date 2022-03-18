@@ -6,58 +6,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
   </head>
-
   <body id="body">
-    <div id="ex1">
-      <h3>ex1模块</h3>
-      <iframe src="./index2.html" width="600" height="300"></iframe>
-      <iframe src="./index4.html" width="600" height="300"></iframe>
+    <div id="ex3">
+      <h3>ex3模块</h3>
     </div>
     <style>
       body {
-        background-color: antiquewhite;
+        background-color: azure;
       }
     </style>
   </body>
   <script type="module">
     import { IframeMessage, SelfIframe, OtherIframe, SelfQueue } from "../../dist/index.js";
     const im = IframeMessage.createIframe(
-      "ex1",
-      new SelfIframe({ routes: ["qu1"] }),
-      { ex2: new OtherIframe(), ex3: new OtherIframe(), ex4: new OtherIframe() },
-      { qu1: new SelfQueue() }
+      "ex3",
+      new SelfIframe({ routes: ["qu3"] }),
+      { ex1: new OtherIframe(), ex2: new OtherIframe(), ex4: new OtherIframe() },
+      { qu3: new SelfQueue() }
     );
     window.im = im;
 
-    im.on("qu1", (res) => {
-      alert("ex1收到：" + res);
+    im.on("qu3", (res) => {
+      alert("ex3收到：" + res);
     });
 
-    const body = document.getElementById("ex1");
+    const body = document.getElementById("ex3");
+
+    //发送给ex1
+    const button1 = document.createElement("button");
+    button1.innerText = "发送消息给ex1";
+    button1.onclick = function () {
+      console.log("ex3 发送了一条消息给 ex1");
+      im.emit("ex1", "发给ex1");
+    };
+    body.appendChild(button1);
+
     //发送给ex2
     const button2 = document.createElement("button");
     button2.innerText = "发送消息给ex2";
     button2.onclick = function () {
-      console.log("ex1 发送了一条消息给 ex2");
+      console.log("ex3 发送了一条消息给 ex2");
       im.emit("ex2", "发给ex2");
     };
     body.appendChild(button2);
-
-    //发送给ex3
-    const button3 = document.createElement("button");
-    button3.innerText = "发送消息给ex3";
-    button3.onclick = function () {
-      console.log("ex1 发送了一条消息给 ex3");
-      im.emit("ex3", "发给ex3");
-    };
-    body.appendChild(button3);
 
     //发送给ex4
     const button4 = document.createElement("button");
     button4.innerText = "发送消息给ex4";
     button4.onclick = function () {
-      console.log("ex1 发送了一条消息给 ex4");
-      im.emit("ex4", "ex1发给ex4的消息");
+      console.log("ex3 发送了一条消息给 ex4");
+      im.emit("ex4", "ex2发给ex4的消息");
     };
     body.appendChild(button4);
   </script>
