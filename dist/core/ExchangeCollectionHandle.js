@@ -10,8 +10,8 @@ var ExchangeCollectionHandle = (function () {
     };
     ExchangeCollectionHandle.prototype.getQueueNameList = function (exchangeName, content) {
         if (this.exchangeCollection[exchangeName] === undefined) {
-            Logs.error(exchangeName + " not find");
-            throw exchangeName + " not find";
+            Logs.error("".concat(exchangeName, " not find"));
+            throw "".concat(exchangeName, " not find");
         }
         return this.exchangeCollection[exchangeName].getQueueNameList(content);
     };

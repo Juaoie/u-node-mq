@@ -1,5 +1,5 @@
 import CoordinateList, { Coordinate } from "../index.js";
-import { broadcastGetCoordinateMessage, broadcastMessage, MessageType } from "../../messageProcess.js";
+import { broadcastGetCoordinateMessage, broadcastMessage, MessageType } from "../../PostMessage.js";
 /**
  * 分布式路由
  */

@@ -1,5 +1,5 @@
 import { Coordinate } from "./coordinate/index.js";
-import IframeMessage, { MessageCoordinate } from "./IframeMessage.js";
+import IframeMessage, { MessageCoordinate } from "./Iframe.js"
 import { getAllIframeDoc, getIframeNodeFromCoordinate, getOtherAllIframeDoc, getSelfIframeDoc } from "./loader.js";
 export enum MessageType {
   GeneralMessage, //普通消息
@@ -57,7 +57,7 @@ interface FindExchangeCoordinate {
 /**
  * 监听message事件触发
  */
-window?.addEventListener("message", receiveMessage, false);
+window.addEventListener("message", receiveMessage, false);
 function receiveMessage({ source, data, origin }) {
   const iframeMessage = IframeMessage.getInstance();
   if (typeof data === "object") {

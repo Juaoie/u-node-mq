@@ -69,7 +69,7 @@ var Decentralization = (function (_super) {
                         return [2, coordinate];
                     case 2:
                         error_1 = _a.sent();
-                        throw new Error(exchangeName + " iframe \u8FD8\u6CA1\u6302\u8F7D");
+                        throw new Error("".concat(exchangeName, " iframe \u8FD8\u6CA1\u6302\u8F7D"));
                     case 3: return [2];
                 }
             });

@@ -26,7 +26,7 @@ export function broadcastMessage(type, message) {
         postMessage(item.window, type, message, "*");
     });
 }
-window === null || window === void 0 ? void 0 : window.addEventListener("message", receiveMessage, false);
+window.addEventListener("message", receiveMessage, false);
 function receiveMessage(_a) {
     var source = _a.source, data = _a.data, origin = _a.origin;
     var iframeMessage = IframeMessage.getInstance();
@@ -41,7 +41,7 @@ function receiveMessage(_a) {
                     var findExchangeCoordinate = {
                         exchangeName: name_1,
                         random: data.message.random,
-                        msg: "\u6211\u662F" + name_1 + "\u3002",
+                        msg: "\u6211\u662F".concat(name_1, "\u3002"),
                     };
                     singleMessage(MessageType.SendCoordinateMessage, source, findExchangeCoordinate);
                 }
@@ -74,7 +74,7 @@ export function broadcastGetCoordinateMessage(exchangeName) {
     var findExchangeCoordinate = {
         exchangeName: exchangeName,
         random: random,
-        msg: "\u8C01\u662F" + exchangeName + "\uFF1F",
+        msg: "\u8C01\u662F".concat(exchangeName, "\uFF1F"),
     };
     broadcastMessage(MessageType.FindExchangeMessage, findExchangeCoordinate);
     return new Promise(function (resolve, reject) {

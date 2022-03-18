@@ -9,6 +9,10 @@
     "lib": ["ES6", "dom"],
     "declaration": true,
     "removeComments": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
   }
 }
