@@ -32,8 +32,9 @@ var Consumer = (function () {
                         thenParameter(false);
                     });
                 }
-                else {
-                    thenParameter(Boolean(res));
+                else if (typeof res === "boolean") {
+                    confirm_1 = function () { };
+                    thenParameter(res);
                 }
             }
             catch (error) {

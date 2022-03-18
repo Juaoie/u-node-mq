@@ -4,8 +4,8 @@ import Logs from "./Logs.js";
 import Tools from "../utils/tools.js";
 export var ConsumMode;
 (function (ConsumMode) {
-    ConsumMode[ConsumMode["Random"] = 0] = "Random";
-    ConsumMode[ConsumMode["All"] = 1] = "All";
+    ConsumMode["Random"] = "Random";
+    ConsumMode["All"] = "All";
 })(ConsumMode || (ConsumMode = {}));
 var Queue = (function () {
     function Queue(option) {
@@ -99,7 +99,7 @@ var Queue = (function () {
             return;
         if (this.mode === ConsumMode.Random) {
             var index = Math.round(Math.random() * (this.consumerList.length - 1));
-            var consumer = this.consumerList.slice(index, index + 1)[0];
+            var consumer = this.consumerList[index];
             this.consumption(news, consumer);
         }
         else if (this.mode === ConsumMode.All) {

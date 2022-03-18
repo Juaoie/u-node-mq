@@ -49,20 +49,21 @@ export default class Consumer<D> {
           return thenParameter(true);
         }
         //构建消息确认的方法
-        const confirm: Next = (value = true) => thenParameter(value);
+        let confirm: Next = (value = true) => thenParameter(value);
         //需要确认的消费方法
         const res = this.consume(news.content, confirm, this.payload);
         //如果消息需要确认，且返回的内容为Promise
         if (res instanceof Promise) {
           res
-            .then(onfulfilled => {
+            .then((onfulfilled) => {
               thenParameter(onfulfilled);
             })
             .catch(() => {
               thenParameter(false);
             });
-        } else {
-          thenParameter(Boolean(res));
+        } else if (typeof res === "boolean") {
+          confirm = () => {};
+          thenParameter(res);
         }
       } catch (error) {
         Logs.error("Consumer consumption error");

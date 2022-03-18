@@ -1,16 +1,16 @@
 import unmq from "./index.js";
-window.click2 = () => {
-  unmq.emit("ex1", "发给ex1的消息");
-};
-// unmq.on("qu2", (res) => {
-//   alert(res);
-// });
 
-setTimeout(() => {
-  unmq.once("qu2", (res) => {
-    console.log(res);
-  });
-  // unmq.on("qu2", (res) => {
-  //   alert(res);
-  // })();
-}, 3000);
+/**
+ * ex2.js 模块
+ *
+ * 交换机有ex2
+ *
+ * 队列有qu2
+ *
+ * 通过同时emit 多个消息，展示获取消息
+ */
+const consumer = (res, payload) => {
+  alert(res + "：" + payload);
+};
+
+unmq.on("qu2", consumer, "我是固定的数据");

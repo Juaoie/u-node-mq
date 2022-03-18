@@ -11,8 +11,8 @@ interface Option<D> {
   name?: string;
 }
 export enum ConsumMode {
-  "Random",
-  "All",
+  "Random" = "Random",
+  "All" = "All",
 }
 /**
  * 队列，理论上一个队列的数据格式应该具有一致性
@@ -66,7 +66,7 @@ export default class Queue<D> {
    * @returns
    */
   removeConsumer(consume: Consume<D>) {
-    const index = this.consumerList.findIndex(item => item.consume === consume);
+    const index = this.consumerList.findIndex((item) => item.consume === consume);
     if (index === -1) return false;
     this.consumerList.splice(index, 1);
     return true;
@@ -93,7 +93,7 @@ export default class Queue<D> {
    * @returns
    */
   removeConsumerById(consumerId: string) {
-    const index = this.consumerList.findIndex(item => item.getId() === consumerId);
+    const index = this.consumerList.findIndex((item) => item.getId() === consumerId);
     if (index === -1) return false;
     this.consumerList.splice(index, 1);
     return true;
@@ -104,7 +104,8 @@ export default class Queue<D> {
    */
   pushConsumer(consumer: Consumer<D>) {
     //过滤重复的消费者id
-    if (this.consumerList.findIndex(item => item.getId() === consumer.getId()) === -1) this.consumerList.push(consumer);
+    if (this.consumerList.findIndex((item) => item.getId() === consumer.getId()) === -1)
+      this.consumerList.push(consumer);
 
     if (this.news.length > 0 && this.consumerList.length > 0) this.consumeNews();
   }
@@ -126,7 +127,7 @@ export default class Queue<D> {
 
     if (news.consumedTimes > 0) {
       //过滤重复的消息id
-      if (this.news.findIndex(item => item.getId() === news.getId()) === -1) this.news.push(news);
+      if (this.news.findIndex((item) => item.getId() === news.getId()) === -1) this.news.push(news);
     }
 
     if (this.news.length > 0 && this.consumerList.length > 0) this.consumeNews();
@@ -162,7 +163,7 @@ export default class Queue<D> {
     if (this.mode === ConsumMode.Random) {
       //随机消费者的索引
       const index = Math.round(Math.random() * (this.consumerList.length - 1));
-      const consumer = this.consumerList.slice(index, index + 1)[0];
+      const consumer = this.consumerList[index];
       this.consumption(news, consumer);
     } else if (this.mode === ConsumMode.All) {
       for (const consumer of this.consumerList) {

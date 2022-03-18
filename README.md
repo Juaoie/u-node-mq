@@ -18,6 +18,12 @@
 
 - 更加方便的 websocket 封装方法
 
+## 简单示例地址
+
+[UNodeMQ](https://unpkg.com/u-node-mq/test/unmq/index.html)
+
+[IframeMessage](https://unpkg.com/u-node-mq/test/message/index.html)
+
 ## npm 安装
 
 `yarn add u-node-mq`
@@ -30,6 +36,12 @@ or
 
 ```html
 <script type="module" src="https://unpkg.com/u-node-mq/dist/index.js"></script>
+```
+
+or
+
+```javascript
+import UNodeMQ, { Exchange, Queue } from "https://unpkg.com/u-node-mq/dist/index.js";
 ```
 
 ## 基本使用方法

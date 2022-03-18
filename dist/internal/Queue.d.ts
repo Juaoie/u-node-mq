@@ -9,8 +9,8 @@ interface Option<D> {
     name?: string;
 }
 export declare enum ConsumMode {
-    "Random" = 0,
-    "All" = 1
+    "Random" = "Random",
+    "All" = "All"
 }
 export default class Queue<D> {
     name?: string;
