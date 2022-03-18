@@ -18,7 +18,7 @@
 
 - 更加方便的 websocket 封装方法
 
-## 安装
+## npm 安装
 
 `yarn add u-node-mq`
 
@@ -26,16 +26,26 @@ or
 
 `npm install u-node-mq`
 
+## CDN 安装
+
+```html
+<script type="module" src="https://unpkg.com/u-node-mq/dist/index.js"></script>
+```
+
 ## 基本使用方法
 
 **main.js**
 
 ```javascript
 import UNodeMQ, { Exchange, Queue } from "u-node-mq";
+
 //声明交换机ex1和交换机ex2，以及队列qu1
 const unmq = new UNodeMQ({ ex1: new Exchange({ routes: ["qu1"] }) }, { qu1: new Queue() });
+
 export default unmq;
+
 //可以挂到抬手就摸得到的位置
+
 // Vue.prototype.unmq = unmq;
 ```
 
