@@ -7,24 +7,43 @@
     <title>Document</title>
   </head>
   <body id="body">
-    <h1>22222</h1>
-    <button onclick="click2()">发送消息给ex1</button>
+    <div id="ex2">
+      <h3>ex2模块</h3>
+    </div>
+    <style>
+      body {
+        background-color: aquamarine;
+      }
+    </style>
   </body>
   <script type="module">
-    import { IframeMessage, SelfIframe, OtherIframe, SelfQueue } from "/dist/index.js";
-    const im = IframeMessage.createIframe(
-      "ex2",
-      new SelfIframe({ routes: ["qu2"] }),
-      { ex1: new OtherIframe() },
-      { qu2: new SelfQueue() }
-    );
-    im.on("qu2", (res) => {
-      console.log(res);
-    });
-    window.click2 = () => {
-      im.emit("ex1", "发给ex1的消息");
-    };
-
+    import { IframeMessage, SelfIframe, OtherIframe, SelfQueue } from "../../dist/index.js";
+    const im = IframeMessage.createIframe("ex2", new SelfIframe({ routes: ["qu2"] }), {}, { qu2: new SelfQueue() });
     window.im = im;
+
+    im.on("qu2", (res) => {
+      alert("ex2收到：" + res);
+    });
+
+    const body = document.getElementById("ex2");
+    const button = document.createElement("button");
+    button.innerText = "挂载ex3";
+    button.onclick = () => {
+      if (window.self.length === 1) return;
+      const iframe = document.createElement("iframe");
+      iframe.src = "./index3.html";
+      iframe.id = "ex3";
+      body.appendChild(iframe);
+    };
+    body.appendChild(button);
+
+    const button2 = document.createElement("button");
+    button2.innerText = "卸载ex3";
+    button2.onclick = () => {
+      if (window.self.length === 0) return;
+      const ex3 = document.getElementById("ex3");
+      body.removeChild(ex3);
+    };
+    body.appendChild(button2);
   </script>
 </html>
