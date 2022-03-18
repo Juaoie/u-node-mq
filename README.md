@@ -209,7 +209,7 @@ const im = new IframeMessage.createIframe(name, SelfIframe, ExchangeCollectionTy
 | ExchangeCollection | { string : OtherIframe } | 是   | 其他 iframe 容器的交换机集合 |
 | QueueCollection    | { string : SelfQueue }   | 是   | 当前 iframe 容器的队列集合   |
 
-**uNodeMQ 方法说明**
+**im 方法说明**
 
 | 名称 | 参数类型                           | 说明                                                                             |
 | ---- | ---------------------------------- | -------------------------------------------------------------------------------- |

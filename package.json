@@ -1,6 +1,6 @@
 {
   "name": "u-node-mq",
-  "version": "3.1.1",
+  "version": "3.1.2",
   "author": "hugaojie",
   "description": "基于发布订阅模型的消息通信插件",
   "keywords": [
@@ -20,12 +20,7 @@
   "repository": "https://github.com/Juaoie/u-node-mq.git",
   "homepage": "https://github.com/Juaoie/u-node-mq/",
   "license": "MIT",
-  "scripts": {
-    "test": "gulp && tsc ./test/index.ts && node ./test/index.js",
-    "gtest": "gulp && yarn test",
-    "git:commit": "git add -A . && git commit -am",
-    "av": "node ./script/addVersion.js"
-  },
+  "scripts": {},
   "dependencies": {},
   "devDependencies": {
     "typescript": "^4.5.5"
