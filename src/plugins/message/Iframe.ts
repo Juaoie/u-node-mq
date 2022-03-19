@@ -11,6 +11,12 @@ import { ExchangeCollectionType, OtherIframe, QueueCollectionType, RouteMode, Se
 export interface MessageCoordinate extends Coordinate {
   random: string | number;
 }
+export function getInternalIframeMessageQueueName(queueName: string) {
+  return queueName + "_Message";
+}
+export function getInternalIframeCoordinateQueueName(queueName: string) {
+  return queueName + "_Coordinate";
+}
 /**
  * 使用postMessage api 进行通信
  *
@@ -24,11 +30,6 @@ export default class IframeMessageHandle {
   private unmq: UNodeMQ<any, any>;
   getUnmq() {
     return this.unmq;
-  }
-  //接受来着外界的坐标信息 坐标信息，所有人都消费
-  private acceptCoordinate = new SelfQueue<MessageCoordinate>({ mode: ConsumMode.All });
-  getAcceptCoordinate() {
-    return this.acceptCoordinate;
   }
   //路由表
   private routeTable: RouteTable;
@@ -62,17 +63,20 @@ export default class IframeMessageHandle {
   ) {
     this.name = name;
     //为每个交换机添加默认队列
-    const queueCollection: Record<string, Queue<unknown>> = {};
+    const defaultQueueCollection: Record<string, Queue<unknown>> = {};
     for (const name in otherIframe) {
-      const queueName = name + "_SendMessage";
-      queueCollection[queueName] = new Queue();
-      otherIframe[name].setRoutes([queueName]);
+      //设置普通消息存储的队列
+      const queueMessageName = getInternalIframeMessageQueueName(name);
+      defaultQueueCollection[queueMessageName] = new Queue();
+      //设置队列消息存储的队列
+      const queueCoordinateName = getInternalIframeCoordinateQueueName(name);
+      defaultQueueCollection[queueCoordinateName] = new Queue();
     }
     this.unmq = new UNodeMQ(
       Object.assign(otherIframe, {
         [name]: selfIframe,
       }),
-      Object.assign(selfQueue, queueCollection)
+      Object.assign(selfQueue, defaultQueueCollection)
     );
     //注册路由表
     if (routeMode === "Decentralization") {
@@ -103,10 +107,10 @@ export default class IframeMessageHandle {
       .catch(() => {
         //接受者还没挂载到dom上，
         //先移除所有队列上的所有消费者
-        this.unmq.getQueue(exchangeName + "_SendMessage").removeAllConsumer();
+        this.unmq.getQueue(getInternalIframeMessageQueueName(exchangeName)).removeAllConsumer();
         //再将消息存到指定队列里面
         for (const content of contentList) {
-          this.unmq.emit(exchangeName, content);
+          this.unmq.emitToQueue(getInternalIframeMessageQueueName(exchangeName), content);
         }
       });
     return this;

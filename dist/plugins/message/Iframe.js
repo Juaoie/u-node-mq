@@ -11,23 +11,27 @@ import UNodeMQ, { Queue } from "../../index.js";
 import { broadcastMessage, MessageType, singleMessage } from "./PostMessage.js";
 import Centralization from "./coordinate/mode/Centralization.js";
 import Decentralization from "./coordinate/mode/Decentralization.js";
-import { ConsumMode } from "../../internal/Queue.js";
-import { SelfQueue } from "./index.js";
+export function getInternalIframeMessageQueueName(queueName) {
+    return queueName + "_Message";
+}
+export function getInternalIframeCoordinateQueueName(queueName) {
+    return queueName + "_Coordinate";
+}
 var IframeMessageHandle = (function () {
     function IframeMessageHandle(name, selfIframe, otherIframe, selfQueue, routeMode) {
         var _a;
         if (routeMode === void 0) { routeMode = "Decentralization"; }
-        this.acceptCoordinate = new SelfQueue({ mode: ConsumMode.All });
         this.name = name;
-        var queueCollection = {};
+        var defaultQueueCollection = {};
         for (var name_1 in otherIframe) {
-            var queueName = name_1 + "_SendMessage";
-            queueCollection[queueName] = new Queue();
-            otherIframe[name_1].setRoutes([queueName]);
+            var queueMessageName = getInternalIframeMessageQueueName(name_1);
+            defaultQueueCollection[queueMessageName] = new Queue();
+            var queueCoordinateName = getInternalIframeCoordinateQueueName(name_1);
+            defaultQueueCollection[queueCoordinateName] = new Queue();
         }
         this.unmq = new UNodeMQ(Object.assign(otherIframe, (_a = {},
             _a[name] = selfIframe,
-            _a)), Object.assign(selfQueue, queueCollection));
+            _a)), Object.assign(selfQueue, defaultQueueCollection));
         if (routeMode === "Decentralization") {
             this.routeTable = new Decentralization();
         }
@@ -40,9 +44,6 @@ var IframeMessageHandle = (function () {
     };
     IframeMessageHandle.prototype.getUnmq = function () {
         return this.unmq;
-    };
-    IframeMessageHandle.prototype.getAcceptCoordinate = function () {
-        return this.acceptCoordinate;
     };
     IframeMessageHandle.prototype.getRouteTable = function () {
         return this.routeTable;
@@ -78,10 +79,10 @@ var IframeMessageHandle = (function () {
             }
         })
             .catch(function () {
-            _this.unmq.getQueue(exchangeName + "_SendMessage").removeAllConsumer();
+            _this.unmq.getQueue(getInternalIframeMessageQueueName(exchangeName)).removeAllConsumer();
             for (var _i = 0, contentList_2 = contentList; _i < contentList_2.length; _i++) {
                 var content = contentList_2[_i];
-                _this.unmq.emit(exchangeName, content);
+                _this.unmq.emitToQueue(getInternalIframeMessageQueueName(exchangeName), content);
             }
         });
         return this;

@@ -1,17 +1,17 @@
 import UNodeMQ from "../../index.js";
 import RouteTable, { Coordinate } from "./coordinate/index.js";
-import { ExchangeCollectionType, QueueCollectionType, RouteMode, SelfIframe, SelfQueue } from "./index.js";
+import { ExchangeCollectionType, QueueCollectionType, RouteMode, SelfIframe } from "./index.js";
 export interface MessageCoordinate extends Coordinate {
     random: string | number;
 }
+export declare function getInternalIframeMessageQueueName(queueName: string): string;
+export declare function getInternalIframeCoordinateQueueName(queueName: string): string;
 export default class IframeMessageHandle {
     private static iframeMessage;
     private name;
     getName(): string;
     private unmq;
     getUnmq(): UNodeMQ<any, any>;
-    private acceptCoordinate;
-    getAcceptCoordinate(): SelfQueue<MessageCoordinate>;
     private routeTable;
     getRouteTable(): RouteTable;
     static createIframe<E extends ExchangeCollectionType, Q extends QueueCollectionType>(name: string, selfIframe: SelfIframe<unknown>, otherIframe: E, selfQueue: Q, routeMode?: RouteMode): IframeMessageHandle;

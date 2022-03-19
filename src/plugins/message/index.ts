@@ -1,6 +1,6 @@
-import { Exchange, Queue } from "../../index";
-import { Consume } from "@/internal/Consumer.js";
-import { Option } from "@/internal/Exchange.js";
+import { Exchange, Queue } from "../../index.js";
+import { Consume } from "../../internal/Consumer.js";
+import { Option } from "../../internal/Exchange.js";
 import IframeMessageHandle from "./Iframe.js";
 
 class Iframe<D> extends Exchange<D> {}
@@ -18,7 +18,7 @@ export class SelfQueue<D> extends Queue<D> {}
 export type RouteMode = "Centralization" | "Decentralization";
 
 export type ReturnPanShapeExchange<T> = T extends OtherIframe<infer U> ? U : never;
-export type ReturnPanShapeQueue<T> = T extends SelfQueue<infer U> ? U : never;
+export type ReturnPanShapeQueue<T> = T extends Queue<infer U> ? U : never;
 
 export type ExchangeCollectionType = Record<string, OtherIframe<any>>;
 export type QueueCollectionType = Record<string, SelfQueue<any>>;
@@ -60,7 +60,7 @@ export default class IframeMessage<
   on<Q extends keyof QueueCollection>(
     queueName: Q,
     consume: Consume<ReturnPanShapeQueue<QueueCollection[Q]>>,
-    payload:ReturnPanShapeQueue<QueueCollection[Q]>,
+    payload?: any
   ) {
     this.iframeMessageHandle.on(queueName, consume, payload);
     return () => this.off(queueName, consume);

@@ -1,4 +1,4 @@
-import UNodeMQ, { Exchange, Queue } from "../src/index";
+import UNodeMQ, { Exchange, Queue } from "../dist/index";
 
 const unmq = new UNodeMQ(
   {
@@ -15,18 +15,18 @@ const unmq = new UNodeMQ(
   }
 );
 
-unmq.emit("GET_OPENID", 123);
+unmq.emit("GET_OPENID", "");
 unmq.on("ADD_DEMO_PSEUDO_DATA", (res) => {});
 unmq.on("HOME_ALL_QUESTION", (res) => {});
 
-import IframeMessage, { OtherIframe, SelfIframe, SelfQueue } from "../src/plugins/message";
+import IframeMessage, { OtherIframe, SelfIframe, SelfQueue } from "../dist/plugins/message";
 
 //其他交换机name变成必选了
 const iframeMessage = new IframeMessage(
   "test1",
   new SelfIframe({ routes: ["queue1"] }),
   { ex1: new OtherIframe<number>() },
-  { qu1: new SelfQueue<string>() }
+  { qu1: new Queue<number>() }
 );
 
 iframeMessage.emit("ex1", 1, 2);

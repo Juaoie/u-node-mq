@@ -1,4 +1,4 @@
-import IframeMessage from "./Iframe.js";
+import IframeMessage, { getInternalIframeCoordinateQueueName, getInternalIframeMessageQueueName, } from "./Iframe.js";
 import { getOtherAllIframeDoc } from "./loader.js";
 export var MessageType;
 (function (MessageType) {
@@ -51,7 +51,7 @@ function receiveMessage(_a) {
             }
             else if (data.type === MessageType.SendCoordinateMessage) {
                 var message = data.message;
-                iframeMessage.getAcceptCoordinate().pushContent({
+                iframeMessage.getUnmq().emitToQueue(getInternalIframeCoordinateQueueName(message.exchangeName), {
                     name: message.exchangeName,
                     random: message.random,
                     currentWindow: source,
@@ -59,7 +59,7 @@ function receiveMessage(_a) {
                 });
             }
             else if (data.type === MessageType.OnlineNotificationMessage) {
-                var queueName = data.message.exchangeName + "_SendMessage";
+                var queueName = getInternalIframeMessageQueueName(data.message.exchangeName);
                 if (!iframeMessage.getUnmq().getQueue(queueName))
                     return;
                 iframeMessage.getUnmq().on(queueName, function (content) {
@@ -79,13 +79,14 @@ export function broadcastGetCoordinateMessage(exchangeName) {
     broadcastMessage(MessageType.FindExchangeMessage, findExchangeCoordinate);
     return new Promise(function (resolve, reject) {
         var iframeMessage = IframeMessage.getInstance();
+        var unmq = iframeMessage.getUnmq();
         var id = setTimeout(function () {
-            iframeMessage.getAcceptCoordinate().removeConsumer(getExchangeCoordinae);
+            unmq.off(getInternalIframeCoordinateQueueName(exchangeName), getExchangeCoordinae);
             reject();
         }, 1000);
-        iframeMessage.getAcceptCoordinate().pushConsume(getExchangeCoordinae);
+        unmq.on(getInternalIframeCoordinateQueueName(exchangeName), getExchangeCoordinae);
         function getExchangeCoordinae(messageCoordinate) {
-            iframeMessage.getAcceptCoordinate().removeConsumer(getExchangeCoordinae);
+            unmq.off(getInternalIframeCoordinateQueueName(exchangeName), getExchangeCoordinae);
             if (messageCoordinate.random == random) {
                 clearTimeout(id);
                 resolve(messageCoordinate);

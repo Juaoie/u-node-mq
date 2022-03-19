@@ -22,7 +22,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     }
     return to.concat(ar || Array.prototype.slice.call(from));
 };
-import { Exchange, Queue } from "../../index";
+import { Exchange, Queue } from "../../index.js";
 import IframeMessageHandle from "./Iframe.js";
 var Iframe = (function (_super) {
     __extends(Iframe, _super);
