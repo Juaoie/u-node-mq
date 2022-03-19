@@ -1,10 +1,14 @@
-import { ReturnPanShapeExchange, ReturnPanShapeQueue } from "@/core/UNodeMQ";
-import { Exchange, Queue, News } from "@/index";
-import { Consume } from "@/internal/Consumer";
-import IframeMessageHandle from "./Iframe";
+import { Exchange, Queue } from "../../index";
+import { Consume } from "@/internal/Consumer.js";
+import { Option } from "@/internal/Exchange.js";
+import IframeMessageHandle from "./Iframe.js";
 
-abstract class Iframe<D> extends Exchange<D> {}
-export class SelfIframe<D> extends Iframe<D> {}
+class Iframe<D> extends Exchange<D> {}
+export class SelfIframe<D> extends Iframe<D> {
+  constructor(option?: Option<D>) {
+    super(option);
+  }
+}
 export class OtherIframe<D> extends Iframe<D> {
   constructor(name?: string) {
     super({ name });
@@ -13,8 +17,11 @@ export class OtherIframe<D> extends Iframe<D> {
 export class SelfQueue<D> extends Queue<D> {}
 export type RouteMode = "Centralization" | "Decentralization";
 
-export type ExchangeCollectionType = Record<string, OtherIframe<unknown>>;
-export type QueueCollectionType = Record<string, SelfQueue<unknown>>;
+export type ReturnPanShapeExchange<T> = T extends OtherIframe<infer U> ? U : never;
+export type ReturnPanShapeQueue<T> = T extends SelfQueue<infer U> ? U : never;
+
+export type ExchangeCollectionType = Record<string, OtherIframe<any>>;
+export type QueueCollectionType = Record<string, SelfQueue<any>>;
 export default class IframeMessage<
   ExchangeCollection extends ExchangeCollectionType,
   QueueCollection extends QueueCollectionType
@@ -22,7 +29,7 @@ export default class IframeMessage<
   iframeMessageHandle: IframeMessageHandle = null;
   constructor(
     name: string,
-    selfIframe: SelfIframe<unknown>,
+    selfIframe: SelfIframe<any>,
     otherIframe: ExchangeCollection,
     selfQueue: QueueCollection,
     routeMode: RouteMode = "Decentralization"
@@ -53,7 +60,7 @@ export default class IframeMessage<
   on<Q extends keyof QueueCollection>(
     queueName: Q,
     consume: Consume<ReturnPanShapeQueue<QueueCollection[Q]>>,
-    payload?: any
+    payload:ReturnPanShapeQueue<QueueCollection[Q]>,
   ) {
     this.iframeMessageHandle.on(queueName, consume, payload);
     return () => this.off(queueName, consume);

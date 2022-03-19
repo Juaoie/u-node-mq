@@ -1,41 +1,34 @@
-import UNodeMQ, { Exchange, Queue } from "../dist";
+import UNodeMQ, { Exchange, Queue } from "../src/index";
 
 const unmq = new UNodeMQ(
   {
     //创建获取到openid的交换机
-    GET_OPENID: new Exchange({ routes: ["ADD_DEMO_PSEUDO_DATA"] }),
+    GET_OPENID: new Exchange<string>({ routes: ["ADD_DEMO_PSEUDO_DATA"] }),
     //创建切换问岛tabs索引的交换机
     CHANGE_QUESTION_TABS_CURRENT: new Exchange({ routes: ["HOME_ALL_QUESTION"] }),
   },
   {
     //ADD_DEMO_PSEUDO_DATA 添加用户伪数据
-    ADD_DEMO_PSEUDO_DATA: new Queue(),
+    ADD_DEMO_PSEUDO_DATA: new Queue<string>(),
     //创建切换问岛tabs索引的队列
-    HOME_ALL_QUESTION: new Queue(),
+    HOME_ALL_QUESTION: new Queue<number>(),
   }
 );
-export default unmq;
-unmq.emit("CHANGE_QUESTION_TABS_CURRENT", "aaaa");
-unmq.once("HOME_ALL_QUESTION", (res) => {
-  console.log("🚀 ~ file: index.ts ~ line 21 ~ unmq.on ~ res", res);
-});
 
-import { IframeMessage, OtherIframe, SelfIframe, SelfQueue } from "@/plugins/message/index";
+unmq.emit("GET_OPENID", 123);
+unmq.on("ADD_DEMO_PSEUDO_DATA", (res) => {});
+unmq.on("HOME_ALL_QUESTION", (res) => {});
+
+import IframeMessage, { OtherIframe, SelfIframe, SelfQueue } from "../src/plugins/message";
 
 //其他交换机name变成必选了
-const iframeMessage = IframeMessage.createIframe(
+const iframeMessage = new IframeMessage(
   "test1",
   new SelfIframe({ routes: ["queue1"] }),
-  { test2: new OtherIframe() },
-  { queue1: new SelfQueue() }
+  { ex1: new OtherIframe<number>() },
+  { qu1: new SelfQueue<string>() }
 );
 
-const iframeMessage2 = new IframeMessage(
-  "test1",
-  new SelfIframe({ routes: ["queue1"] }),
-  { test2: new OtherIframe() },
-  { queue1: new SelfQueue() }
-);
+iframeMessage.emit("ex1", 1, 2);
 
-iframeMessage.emit("123");
-iframeMessage2.emit("123");
+iframeMessage.on("qu1", (res) => {});

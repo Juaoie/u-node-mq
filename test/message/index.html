@@ -20,8 +20,8 @@
     </style>
   </body>
   <script type="module">
-    import { IframeMessage, SelfIframe, OtherIframe, SelfQueue } from "../../dist/index.js";
-    const im = IframeMessage.createIframe(
+    import IframeMessage, { SelfIframe, OtherIframe, SelfQueue } from "../../dist/plugins/message/index.js";
+    const im = new IframeMessage(
       "ex1",
       new SelfIframe({ routes: ["qu1"] }),
       { ex2: new OtherIframe(), ex3: new OtherIframe(), ex4: new OtherIframe() },

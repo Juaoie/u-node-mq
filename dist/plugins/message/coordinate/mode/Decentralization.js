@@ -50,7 +50,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 import CoordinateList from "../index.js";
-import { broadcastGetCoordinateMessage } from "../../messageProcess.js";
+import { broadcastGetCoordinateMessage } from "../../PostMessage.js";
 var Decentralization = (function (_super) {
     __extends(Decentralization, _super);
     function Decentralization() {

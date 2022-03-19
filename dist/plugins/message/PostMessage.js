@@ -1,4 +1,4 @@
-import IframeMessage from "./IframeMessage.js";
+import IframeMessage from "./Iframe.js";
 import { getOtherAllIframeDoc } from "./loader.js";
 export var MessageType;
 (function (MessageType) {

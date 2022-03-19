@@ -17,8 +17,8 @@
     </style>
   </body>
   <script type="module">
-    import { IframeMessage, SelfIframe, OtherIframe, SelfQueue } from "../../dist/index.js";
-    const im = IframeMessage.createIframe("ex2", new SelfIframe({ routes: ["qu2"] }), {}, { qu2: new SelfQueue() });
+    import IframeMessage, { SelfIframe, OtherIframe, SelfQueue } from "../../dist/plugins/message/index.js";
+    const im = new IframeMessage("ex2", new SelfIframe({ routes: ["qu2"] }), {}, { qu2: new SelfQueue() });
     window.im = im;
 
     im.on("qu2", (res) => {
