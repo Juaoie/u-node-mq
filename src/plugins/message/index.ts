@@ -3,15 +3,23 @@ import { Consume } from "../../internal/Consumer.js";
 import { Option } from "../../internal/Exchange.js";
 import IframeMessageHandle from "./Iframe.js";
 
-class Iframe<D> extends Exchange<D> {}
+abstract class Iframe<D> extends Exchange<D> {}
+
 export class SelfIframe<D> extends Iframe<D> {
   constructor(option?: Option<D>) {
     super(option);
   }
 }
+
+type OtherIframeOption = {
+  name?: string;
+  origin?: string;
+};
 export class OtherIframe<D> extends Iframe<D> {
-  constructor(name?: string) {
-    super({ name });
+  origin: string = "*";
+  constructor(option?: OtherIframeOption) {
+    super({ name: option?.name });
+    if (option?.origin) this.origin = option.origin;
   }
 }
 export class SelfQueue<D> extends Queue<D> {}

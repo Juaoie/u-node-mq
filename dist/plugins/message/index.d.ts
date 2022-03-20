@@ -2,13 +2,18 @@ import { Exchange, Queue } from "../../index.js";
 import { Consume } from "../../internal/Consumer.js";
 import { Option } from "../../internal/Exchange.js";
 import IframeMessageHandle from "./Iframe.js";
-declare class Iframe<D> extends Exchange<D> {
+declare abstract class Iframe<D> extends Exchange<D> {
 }
 export declare class SelfIframe<D> extends Iframe<D> {
     constructor(option?: Option<D>);
 }
+declare type OtherIframeOption = {
+    name?: string;
+    origin?: string;
+};
 export declare class OtherIframe<D> extends Iframe<D> {
-    constructor(name?: string);
+    origin: string;
+    constructor(option?: OtherIframeOption);
 }
 export declare class SelfQueue<D> extends Queue<D> {
 }

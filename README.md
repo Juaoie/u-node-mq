@@ -6,7 +6,14 @@
 
 - [发布订阅模型](https://www.rabbitmq.com/getstarted.html)
 
+  - 实现类似 rabbitmq 的五种消息模式
+
 - iframe 的跨域通信插件
+
+  - 使用 UNodeMQ 的发布订阅模型解决异步数据通信问题
+  - 使用 postMessage api 进行跨域通信
+  - 实现定位算法实现消息准确发送
+  - 通过 origin 确保数据安全
 
 ## 即将实现功能
 
@@ -44,7 +51,7 @@ or
 import UNodeMQ, { Exchange, Queue } from "https://unpkg.com/u-node-mq/dist/index.js";
 ```
 
-## 基本使用方法
+# u-node-mq 基本使用方法
 
 **main.js**
 
@@ -83,9 +90,9 @@ function getData(data) {
 }
 ```
 
-## 2、u-node-mq 核心概念
+## u-node-mq 核心概念
 
-> u-node-mq 是由多个模块组合而成，你可以自行组合这些模块以实现不同的功能，除了主模块你必须使用以外，其他都可以根据你特定需求来组合
+> u-node-mq 是由多个模块组合而成，你可以自行组合这些模块以实现不同的功能，可以根据你特定需求来组合
 
 - `UNodeMQ` 主模块，一般一个应用只用创建一次，需要根据需求传入其他模块的实例
 
@@ -101,7 +108,7 @@ function getData(data) {
 
 ---
 
-## 3、UNodeMQ
+## 1、UNodeMQ
 
 ```javascript
 import UNodeMQ from "u-node-mq";
@@ -110,7 +117,7 @@ const unmq = new UNodeMQ(ExchangeCollection, QueueCollection);
 
 创建模块
 
-**UNodeMQ 参数说明**
+**UNodeMQ constructor 参数说明**
 
 | 名称               | 类型                  | 必填 | 说明       |
 | ------------------ | --------------------- | ---- | ---------- |
@@ -130,7 +137,7 @@ const unmq = new UNodeMQ(ExchangeCollection, QueueCollection);
 
 ---
 
-## 4、Exchange
+## 2、Exchange
 
 ```javascript
 const exchange = new Exchange(Option);
@@ -148,7 +155,7 @@ const exchange = new Exchange(Option);
 
 ---
 
-## 5、Queue
+## 3、Queue
 
 ```javascript
 const queue = new Option(Option);
@@ -169,7 +176,7 @@ const queue = new Option(Option);
 
 ---
 
-## 6、News
+## 4、News
 
 ```javascript
 const news = new News(Any);
@@ -187,7 +194,7 @@ const news = new News(Any);
 
 ---
 
-## 7、Consumer
+## 5、Consumer
 
 ```javascript
 const consumer = new Consumer(Consume, PayLoad);
@@ -213,16 +220,52 @@ const consumer = new Consumer(Consume, PayLoad);
 
 ---
 
-## 8、IframeMessage Plugin
+# IframeMessage Plugin
+
+- IframeMessage 为单例模式，每个应用只会有一个 IframeMessage 实例对象
+
+## IframeMessage 基本使用方法
+
+**iframe1 应用**
 
 ```javascript
-import { IframeMessage } from "u-node-mq";
-const im = new IframeMessage.createIframe(name, SelfIframe, ExchangeCollectionType, QueueCollectionType, routeMode);
+// https://iframeName1.com
+import IframeMessage, { SelfIframe, OtherIframe, SelfQueue } from "u-node-mq/plugins/message";
+const im = new IframeMessage(
+  "iframeName1",
+  new SelfIframe(),
+  {
+    iframeName2: new OtherIframe("https://iframeName2.com"),
+  },
+  {}
+);
 ```
 
-创建模块；IframeMessage 为单例模式，每个应用只会有一个 IframeMessage 实例对象
+**iframe2 应用**
 
-**IframeMessage.createIframe 参数说明**
+```javascript
+// https://iframeName2.com
+import IframeMessage, { SelfIframe, OtherIframe, SelfQueue } from "u-node-mq/plugins/message";
+const im = new IframeMessage(
+  "iframeName2",
+  new SelfIframe({ routes: ["qu2"] }),
+  {
+    iframeName1: new OtherIframe("https://iframeName1.com"),
+  },
+  {
+    qu2: new SelfQueue(),
+  }
+);
+```
+
+## 1、IframeMessage
+
+```javascript
+import IframeMessage from "u-node-mq/plugins/message";
+const im = new IframeMessage(name, SelfIframe, ExchangeCollectionType, QueueCollectionType);
+```
+
+**IframeMessage constructor 参数说明**
 
 | 名称               | 类型                     | 必填 | 说明                         |
 | ------------------ | ------------------------ | ---- | ---------------------------- |
@@ -240,3 +283,16 @@ const im = new IframeMessage.createIframe(name, SelfIframe, ExchangeCollectionTy
 | off  | (QueueName , ?消费方法)            | 移除队列上的指定消费者或者移除队列上所有消费者，返回 this                        |
 | once | (QueueName , 消费方法 , ?载荷消息) | 只消费一条消息，返回 this                                                        |
 | 更多 | 未知                               | 更多的内部方法                                                                   |
+
+## 2、OtherIframe
+
+- 建议只创建需要发送消息的应用实例，不需要发送消息的应用，则不创建
+
+```javascript
+import { OtherIframe } from "u-node-mq/plugins/message";
+const otherIframe = new OtherIframe({ name: "otherName", origin: "https://iframeName2.com" });
+```
+
+| 名称   | 类型   | 必填 | 说明                                                         |
+| ------ | ------ | ---- | ------------------------------------------------------------ |
+| origin | string | 否   | 默认为"\*"，为了通信安全，建议为每个 OtherIframe 加上 origin |

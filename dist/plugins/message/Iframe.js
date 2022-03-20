@@ -75,7 +75,7 @@ var IframeMessageHandle = (function () {
             .then(function (coordinate) {
             for (var _i = 0, contentList_1 = contentList; _i < contentList_1.length; _i++) {
                 var content = contentList_1[_i];
-                singleMessage(MessageType.GeneralMessage, coordinate.currentWindow, content);
+                singleMessage(MessageType.GeneralMessage, coordinate.currentWindow, content, _this.unmq.getExchange(exchangeName).origin);
             }
         })
             .catch(function () {

@@ -97,11 +97,16 @@ export default class IframeMessageHandle {
     }
     //广播获取路由地址
     this.routeTable
-      .getCoordinate(exchangeName as string)
+      .getCoordinate(exchangeName)
       .then((coordinate: Coordinate) => {
         //获取到路由地址以后，
         for (const content of contentList) {
-          singleMessage(MessageType.GeneralMessage, coordinate.currentWindow, content);
+          singleMessage(
+            MessageType.GeneralMessage,
+            coordinate.currentWindow,
+            content,
+            this.unmq.getExchange(exchangeName).origin
+          );
         }
       })
       .catch(() => {

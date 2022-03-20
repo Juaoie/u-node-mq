@@ -41,8 +41,12 @@ var SelfIframe = (function (_super) {
 export { SelfIframe };
 var OtherIframe = (function (_super) {
     __extends(OtherIframe, _super);
-    function OtherIframe(name) {
-        return _super.call(this, { name: name }) || this;
+    function OtherIframe(option) {
+        var _this = _super.call(this, { name: option === null || option === void 0 ? void 0 : option.name }) || this;
+        _this.origin = "*";
+        if (option === null || option === void 0 ? void 0 : option.origin)
+            _this.origin = option.origin;
+        return _this;
     }
     return OtherIframe;
 }(Iframe));

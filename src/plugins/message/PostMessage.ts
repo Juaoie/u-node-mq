@@ -24,7 +24,7 @@ const postMessage = (
   currentWindow: Window,
   type: MessageType,
   message: any,
-  origin: string = "*",
+  origin?: string,
   transfer?: Transferable[]
 ) => {
   currentWindow.postMessage(
@@ -44,8 +44,8 @@ const postMessage = (
  * @param data
  * @param coordinate
  */
-export function singleMessage(type: MessageType, currentWindow: Window, message: any) {
-  postMessage(currentWindow, type, message);
+export function singleMessage(type: MessageType, currentWindow: Window, message: any, origin?: string) {
+  postMessage(currentWindow, type, message, origin);
 }
 
 /**
@@ -64,6 +64,80 @@ interface FindExchangeCoordinate {
   random: string | number;
   msg: any;
 }
+
+/**
+ * 处理查找交换机消息
+ * @param source
+ * @param data
+ * @param origin
+ */
+function findExchangeMessage(source: Window, data: any, origin: string) {
+  const iframeMessage = IframeMessage.getInstance();
+  const name = iframeMessage.getName();
+  const message: FindExchangeCoordinate = data.message;
+  if (name === message.exchangeName) {
+    const findExchangeCoordinate: FindExchangeCoordinate = {
+      exchangeName: name,
+      random: data.message.random,
+      msg: `我是${name}。`,
+    };
+    singleMessage(MessageType.SendCoordinateMessage, source, findExchangeCoordinate, "*");
+  }
+}
+/**
+ * 处理普通消息
+ * @param source
+ * @param data
+ * @param origin
+ */
+function generalMessage(source: Window, data: any, origin: string) {
+  const iframeMessage = IframeMessage.getInstance();
+  iframeMessage.emit(iframeMessage.getName(), data.message);
+}
+
+/**
+ * 处理发送坐标位置消息
+ * @param source
+ * @param data
+ * @param origin
+ * @returns
+ */
+function sendCoordinateMessage(source: Window, data: any, origin: string) {
+  const iframeMessage = IframeMessage.getInstance();
+  const fromExchange = iframeMessage.getUnmq().getExchange(data.fromName);
+  if (fromExchange === undefined) return;
+  //判断真实的origin 是否是我想要的 origin
+  if (fromExchange.origin !== "*" && fromExchange.origin === origin) return;
+  const message: FindExchangeCoordinate = data.message;
+  iframeMessage.getUnmq().emitToQueue(getInternalIframeCoordinateQueueName(message.exchangeName), {
+    name: message.exchangeName,
+    random: message.random,
+    currentWindow: source,
+    origin: origin,
+  });
+}
+/**
+ * 处理上线通知消息
+ * @param source
+ * @param data
+ * @param origin
+ * @returns
+ */
+function onlineNotificationMessage(source: Window, data: any, origin: string) {
+  const iframeMessage = IframeMessage.getInstance();
+
+  const fromExchange = iframeMessage.getUnmq().getExchange(data.fromName);
+  if (fromExchange === undefined) return;
+  //判断真实的origin 是否是我想要的 origin
+  if (fromExchange.origin !== "*" && fromExchange.origin === origin) return;
+  const message: FindExchangeCoordinate = data.message;
+  const queueName = getInternalIframeMessageQueueName(data.message.exchangeName);
+  if (!iframeMessage.getUnmq().getQueue(queueName)) return; //throw `${data.message.exchangeName} 未注册`;
+  iframeMessage.getUnmq().on(queueName, (content) => {
+    singleMessage(MessageType.GeneralMessage, source, content, fromExchange.origin);
+  })();
+}
+
 /**
  * 监听message事件触发
  */
@@ -72,39 +146,20 @@ function receiveMessage({ source, data, origin }) {
   const iframeMessage = IframeMessage.getInstance();
   if (typeof data === "object") {
     if (data.mask === "u-node-mq-plugin") {
-      //异常消息
+      //应用发送的origin 和 真实的origin 不一致
       if (data.fromOrigin !== origin) return;
       if (data.type === MessageType.FindExchangeMessage) {
         //查找交换机消息
-        const name = iframeMessage.getName();
-        const message: FindExchangeCoordinate = data.message;
-        if (name === message.exchangeName) {
-          const findExchangeCoordinate: FindExchangeCoordinate = {
-            exchangeName: name,
-            random: data.message.random,
-            msg: `我是${name}。`,
-          };
-          singleMessage(MessageType.SendCoordinateMessage, source, findExchangeCoordinate);
-        }
+        findExchangeMessage(source, data, origin);
       } else if (data.type === MessageType.GeneralMessage) {
         //普通消息
-        iframeMessage.emit(iframeMessage.getName(), data.message);
+        generalMessage(source, data, origin);
       } else if (data.type === MessageType.SendCoordinateMessage) {
         // 接受的位置信息消息
-        const message: FindExchangeCoordinate = data.message;
-        iframeMessage.getUnmq().emitToQueue(getInternalIframeCoordinateQueueName(message.exchangeName), {
-          name: message.exchangeName,
-          random: message.random,
-          currentWindow: source,
-          origin: origin,
-        });
+        sendCoordinateMessage(source, data, origin);
       } else if (data.type === MessageType.OnlineNotificationMessage) {
         //上线通知消息
-        const queueName = getInternalIframeMessageQueueName(data.message.exchangeName);
-        if (!iframeMessage.getUnmq().getQueue(queueName)) return; //throw `${data.message.exchangeName} 未注册`;
-        iframeMessage.getUnmq().on(queueName, (content) => {
-          singleMessage(MessageType.GeneralMessage, source, content);
-        })();
+        onlineNotificationMessage(source, data, origin);
       }
     }
   }

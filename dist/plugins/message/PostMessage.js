@@ -8,7 +8,6 @@ export var MessageType;
     MessageType[MessageType["OnlineNotificationMessage"] = 3] = "OnlineNotificationMessage";
 })(MessageType || (MessageType = {}));
 var postMessage = function (currentWindow, type, message, origin, transfer) {
-    if (origin === void 0) { origin = "*"; }
     currentWindow.postMessage({
         mask: "u-node-mq-plugin",
         type: type,
@@ -17,14 +16,61 @@ var postMessage = function (currentWindow, type, message, origin, transfer) {
         fromOrigin: window.origin,
     }, origin, transfer);
 };
-export function singleMessage(type, currentWindow, message) {
-    postMessage(currentWindow, type, message);
+export function singleMessage(type, currentWindow, message, origin) {
+    postMessage(currentWindow, type, message, origin);
 }
 export function broadcastMessage(type, message) {
     var list = getOtherAllIframeDoc();
     list.forEach(function (item) {
         postMessage(item.window, type, message, "*");
     });
+}
+function findExchangeMessage(source, data, origin) {
+    var iframeMessage = IframeMessage.getInstance();
+    var name = iframeMessage.getName();
+    var message = data.message;
+    if (name === message.exchangeName) {
+        var findExchangeCoordinate = {
+            exchangeName: name,
+            random: data.message.random,
+            msg: "\u6211\u662F".concat(name, "\u3002"),
+        };
+        singleMessage(MessageType.SendCoordinateMessage, source, findExchangeCoordinate, "*");
+    }
+}
+function generalMessage(source, data, origin) {
+    var iframeMessage = IframeMessage.getInstance();
+    iframeMessage.emit(iframeMessage.getName(), data.message);
+}
+function sendCoordinateMessage(source, data, origin) {
+    var iframeMessage = IframeMessage.getInstance();
+    var fromExchange = iframeMessage.getUnmq().getExchange(data.fromName);
+    if (fromExchange === undefined)
+        return;
+    if (fromExchange.origin !== "*" && fromExchange.origin === origin)
+        return;
+    var message = data.message;
+    iframeMessage.getUnmq().emitToQueue(getInternalIframeCoordinateQueueName(message.exchangeName), {
+        name: message.exchangeName,
+        random: message.random,
+        currentWindow: source,
+        origin: origin,
+    });
+}
+function onlineNotificationMessage(source, data, origin) {
+    var iframeMessage = IframeMessage.getInstance();
+    var fromExchange = iframeMessage.getUnmq().getExchange(data.fromName);
+    if (fromExchange === undefined)
+        return;
+    if (fromExchange.origin !== "*" && fromExchange.origin === origin)
+        return;
+    var message = data.message;
+    var queueName = getInternalIframeMessageQueueName(data.message.exchangeName);
+    if (!iframeMessage.getUnmq().getQueue(queueName))
+        return;
+    iframeMessage.getUnmq().on(queueName, function (content) {
+        singleMessage(MessageType.GeneralMessage, source, content, fromExchange.origin);
+    })();
 }
 window.addEventListener("message", receiveMessage, false);
 function receiveMessage(_a) {
@@ -35,36 +81,16 @@ function receiveMessage(_a) {
             if (data.fromOrigin !== origin)
                 return;
             if (data.type === MessageType.FindExchangeMessage) {
-                var name_1 = iframeMessage.getName();
-                var message = data.message;
-                if (name_1 === message.exchangeName) {
-                    var findExchangeCoordinate = {
-                        exchangeName: name_1,
-                        random: data.message.random,
-                        msg: "\u6211\u662F".concat(name_1, "\u3002"),
-                    };
-                    singleMessage(MessageType.SendCoordinateMessage, source, findExchangeCoordinate);
-                }
+                findExchangeMessage(source, data, origin);
             }
             else if (data.type === MessageType.GeneralMessage) {
-                iframeMessage.emit(iframeMessage.getName(), data.message);
+                generalMessage(source, data, origin);
             }
             else if (data.type === MessageType.SendCoordinateMessage) {
-                var message = data.message;
-                iframeMessage.getUnmq().emitToQueue(getInternalIframeCoordinateQueueName(message.exchangeName), {
-                    name: message.exchangeName,
-                    random: message.random,
-                    currentWindow: source,
-                    origin: origin,
-                });
+                sendCoordinateMessage(source, data, origin);
             }
             else if (data.type === MessageType.OnlineNotificationMessage) {
-                var queueName = getInternalIframeMessageQueueName(data.message.exchangeName);
-                if (!iframeMessage.getUnmq().getQueue(queueName))
-                    return;
-                iframeMessage.getUnmq().on(queueName, function (content) {
-                    singleMessage(MessageType.GeneralMessage, source, content);
-                })();
+                onlineNotificationMessage(source, data, origin);
             }
         }
     }
