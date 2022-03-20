@@ -107,7 +107,7 @@ function sendCoordinateMessage(source: Window, data: any, origin: string) {
   const fromExchange = iframeMessage.getUnmq().getExchange(data.fromName);
   if (fromExchange === undefined) return;
   //判断真实的origin 是否是我想要的 origin
-  if (fromExchange.origin !== "*" && fromExchange.origin === origin) return;
+  if (fromExchange.origin !== "*" && fromExchange.origin !== origin) return;
   const message: FindExchangeCoordinate = data.message;
   iframeMessage.getUnmq().emitToQueue(getInternalIframeCoordinateQueueName(message.exchangeName), {
     name: message.exchangeName,
@@ -129,7 +129,7 @@ function onlineNotificationMessage(source: Window, data: any, origin: string) {
   const fromExchange = iframeMessage.getUnmq().getExchange(data.fromName);
   if (fromExchange === undefined) return;
   //判断真实的origin 是否是我想要的 origin
-  if (fromExchange.origin !== "*" && fromExchange.origin === origin) return;
+  if (fromExchange.origin !== "*" && fromExchange.origin !== origin) return;
   const message: FindExchangeCoordinate = data.message;
   const queueName = getInternalIframeMessageQueueName(data.message.exchangeName);
   if (!iframeMessage.getUnmq().getQueue(queueName)) return; //throw `${data.message.exchangeName} 未注册`;

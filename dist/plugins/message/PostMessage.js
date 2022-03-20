@@ -47,7 +47,7 @@ function sendCoordinateMessage(source, data, origin) {
     var fromExchange = iframeMessage.getUnmq().getExchange(data.fromName);
     if (fromExchange === undefined)
         return;
-    if (fromExchange.origin !== "*" && fromExchange.origin === origin)
+    if (fromExchange.origin !== "*" && fromExchange.origin !== origin)
         return;
     var message = data.message;
     iframeMessage.getUnmq().emitToQueue(getInternalIframeCoordinateQueueName(message.exchangeName), {
@@ -62,7 +62,7 @@ function onlineNotificationMessage(source, data, origin) {
     var fromExchange = iframeMessage.getUnmq().getExchange(data.fromName);
     if (fromExchange === undefined)
         return;
-    if (fromExchange.origin !== "*" && fromExchange.origin === origin)
+    if (fromExchange.origin !== "*" && fromExchange.origin !== origin)
         return;
     var message = data.message;
     var queueName = getInternalIframeMessageQueueName(data.message.exchangeName);
