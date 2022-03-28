@@ -24,7 +24,7 @@
     const im = new IframeMessage(
       "ex1",
       new SelfIframe({ routes: ["qu1"] }),
-      { ex2: new OtherIframe(), ex3: new OtherIframe(), ex4: new OtherIframe({ origin: "*" }) },
+      { ex2: new OtherIframe(), ex3: new OtherIframe(), ex4: new OtherIframe({ origin: "https://www.baidu.com" }) },
       { qu1: new SelfQueue() }
     );
     window.im = im;

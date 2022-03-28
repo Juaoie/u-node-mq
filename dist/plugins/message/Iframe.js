@@ -52,7 +52,7 @@ var IframeMessageHandle = (function () {
         if (routeMode === void 0) { routeMode = "Decentralization"; }
         if (this.iframeMessage === null) {
             this.iframeMessage = new IframeMessageHandle(name, selfIframe, otherIframe, selfQueue, routeMode);
-            broadcastMessage(MessageType.OnlineNotificationMessage, { exchangeName: name, msg: "".concat(this.name, "\u4E0A\u7EBF\u4E86") });
+            broadcastMessage(MessageType.OnlineNotificationMessage, { exchangeName: name, msg: this.name + "\u4E0A\u7EBF\u4E86" });
         }
         return IframeMessageHandle.iframeMessage;
     };

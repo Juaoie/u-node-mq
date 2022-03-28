@@ -33,7 +33,7 @@ function findExchangeMessage(source, data, origin) {
         var findExchangeCoordinate = {
             exchangeName: name,
             random: data.message.random,
-            msg: "\u6211\u662F".concat(name, "\u3002"),
+            msg: "\u6211\u662F" + name + "\u3002",
         };
         singleMessage(MessageType.SendCoordinateMessage, source, findExchangeCoordinate, "*");
     }
@@ -100,7 +100,7 @@ export function broadcastGetCoordinateMessage(exchangeName) {
     var findExchangeCoordinate = {
         exchangeName: exchangeName,
         random: random,
-        msg: "\u8C01\u662F".concat(exchangeName, "\uFF1F"),
+        msg: "\u8C01\u662F" + exchangeName + "\uFF1F",
     };
     broadcastMessage(MessageType.FindExchangeMessage, findExchangeCoordinate);
     return new Promise(function (resolve, reject) {

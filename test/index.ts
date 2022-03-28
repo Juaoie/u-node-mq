@@ -1,4 +1,4 @@
-import UNodeMQ, { Exchange, Queue } from "../dist/index";
+import UNodeMQ, { Exchange, Queue } from "../src/index";
 
 const unmq = new UNodeMQ(
   {
@@ -15,7 +15,7 @@ const unmq = new UNodeMQ(
   }
 );
 
-unmq.emit("GET_OPENID", "");
+unmq.emit("GET_OPENID", "12");
 unmq.on("ADD_DEMO_PSEUDO_DATA", (res) => {});
 unmq.on("HOME_ALL_QUESTION", (res) => {});
 

@@ -10,7 +10,7 @@ var QueueCollectionHandle = (function () {
     };
     QueueCollectionHandle.prototype.pushNewsToQueue = function (queueName, news) {
         if (this.queueCollection[queueName] === undefined) {
-            Logs.error("".concat(queueName, " not find"));
+            Logs.error(queueName + " not find");
             return false;
         }
         this.queueCollection[queueName].pushNews(news);
@@ -18,7 +18,7 @@ var QueueCollectionHandle = (function () {
     };
     QueueCollectionHandle.prototype.pushContentToQueue = function (queueName, content) {
         if (this.queueCollection[queueName] === undefined) {
-            Logs.error("".concat(queueName, " not find"));
+            Logs.error(queueName + " not find");
             return false;
         }
         this.queueCollection[queueName].pushContent(content);
@@ -26,7 +26,7 @@ var QueueCollectionHandle = (function () {
     };
     QueueCollectionHandle.prototype.subscribeQueue = function (queueName, consume, payload) {
         if (this.queueCollection[queueName] === undefined) {
-            Logs.error("".concat(queueName, " not find"));
+            Logs.error(queueName + " not find");
             return false;
         }
         this.queueCollection[queueName].pushConsume(consume, payload);
@@ -34,7 +34,7 @@ var QueueCollectionHandle = (function () {
     };
     QueueCollectionHandle.prototype.unsubscribeQueue = function (queueName, consume) {
         if (this.queueCollection[queueName] === undefined) {
-            Logs.error("".concat(queueName, " not find"));
+            Logs.error(queueName + " not find");
             return false;
         }
         if (consume === undefined) {

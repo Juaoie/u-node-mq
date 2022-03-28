@@ -18,7 +18,7 @@ const unmq = new UNodeMQ(
     qu3: new Queue(),
     qu4: new Queue(),
     qu5: new Queue(),
-    qu6: new Queue({ mode: "Random" }),
+    qu6: new Queue({ mode: "All" }),
     qu7: new Queue({ ask: true, rcn: 3 }),
     qu8: new Queue(),
   }
