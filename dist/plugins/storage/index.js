@@ -85,7 +85,7 @@ export function createStoragePlugin(storageData, storageConfig) {
     storageConfig = storageConfig || {};
     var __storage = null;
     for (var key in storageData) {
-        __storage[key] = null;
+        __storage[key] = "";
     }
     var _loop_1 = function (name_1) {
         if (storageConfig.storageMemory) {

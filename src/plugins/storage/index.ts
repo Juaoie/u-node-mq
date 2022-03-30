@@ -123,7 +123,7 @@ export function createStoragePlugin<StorageData extends Record<string, StorageOp
   storageConfig = storageConfig || {};
   const __storage: B<StorageData> = null;
   for (const key in storageData) {
-    __storage[key] = null;
+    __storage[key] = "";
   }
 
   for (const name in storageData) {
