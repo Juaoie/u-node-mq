@@ -119,6 +119,12 @@ export function createStoragePlugin<StorageData extends Record<string, StorageOp
   storageConfig = storageConfig || {};
 
   for (const name in storageData) {
+    if (storageConfig.storageMemory) {
+      storageConfig.storageMemory.setData(
+        name,
+        getStorageSync(name, storageData[name].type, storageData[name].key || storageConfig.key)
+      );
+    }
     Object.defineProperty(storageData, name, {
       get() {
         if (storageConfig.storageMemory) {
@@ -140,8 +146,3 @@ export function createStoragePlugin<StorageData extends Record<string, StorageOp
 
   return storageData;
 }
-
-// const sp = new StoragePlugin({
-//   userId: { type: "session" },
-// });
-// abstract
