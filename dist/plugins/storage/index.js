@@ -11,7 +11,4 @@ var StoragePlugin = (function () {
     }
     return StoragePlugin;
 }());
-var sp = new StoragePlugin({
-    userId: { type: "session" },
-});
 export {};

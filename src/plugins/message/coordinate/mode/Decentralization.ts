@@ -3,17 +3,14 @@ import { broadcastGetCoordinateMessage, broadcastMessage, MessageType } from "..
 /**
  * 分布式路由
  */
-export default class Decentralization extends CoordinateList {
-  constructor() {
-    super();
-  }
+export default class Decentralization implements CoordinateList {
   /**
    * 根据名称获取地址
    * @param exchangeName
    * @returns
    */
   async getCoordinate(exchangeName: string) {
-    //先广播查找exchange坐标 
+    //先广播查找exchange坐标
     try {
       const coordinate = await broadcastGetCoordinateMessage(exchangeName);
       return coordinate;

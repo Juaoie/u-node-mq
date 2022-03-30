@@ -21,8 +21,16 @@
   "homepage": "https://github.com/Juaoie/u-node-mq/",
   "license": "MIT",
   "scripts": {},
-  "dependencies": {},
+  "dependencies": {
+    "js-base64": "^3.7.2",
+    "js-md5": "^0.7.3"
+  },
   "devDependencies": {
-    "typescript": "^4.5.5"
-  }
+    "@babel/types": "^7.17.0",
+    "@types/js-md5": "^0.4.3",
+    "pinia": "^2.0.12",
+    "typescript": "^4.5.5",
+    "vue": "^3.2.31"
+  },
+  "peerDependencies": {}
 }
