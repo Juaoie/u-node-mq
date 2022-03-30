@@ -103,11 +103,12 @@ export enum StorageType {
   LOCAL = "local",
 }
 
-type StorageOption = {
-  type: StorageType;
-  data: string;
-  key?: string;
-};
+type StorageOption =
+  | (StorageType & { type: StorageType; key: null })
+  | {
+      type: StorageType;
+      key?: string;
+    };
 type StorageConfig = {
   storageMemory?: StorageAdapterAbstract;
   key?: string;

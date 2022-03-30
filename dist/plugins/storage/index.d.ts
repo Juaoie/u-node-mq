@@ -4,9 +4,11 @@ export declare enum StorageType {
     SESSION = "session",
     LOCAL = "local"
 }
-declare type StorageOption = {
+declare type StorageOption = (StorageType & {
     type: StorageType;
-    data: string;
+    key: null;
+}) | {
+    type: StorageType;
     key?: string;
 };
 declare type StorageConfig = {
