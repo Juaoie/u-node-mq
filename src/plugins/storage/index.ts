@@ -113,11 +113,18 @@ type StorageConfig = {
   storageMemory?: StorageAdapterAbstract;
   key?: string;
 };
+type B<T> = {
+  [k in keyof T]: string;
+};
 export function createStoragePlugin<StorageData extends Record<string, StorageOption>>(
   storageData: StorageData,
   storageConfig?: StorageConfig
-): StorageData {
+): B<StorageData> {
   storageConfig = storageConfig || {};
+  const __storage: B<StorageData> = null;
+  for (const key in storageData) {
+    __storage[key] = null;
+  }
 
   for (const name in storageData) {
     if (storageConfig.storageMemory) {
@@ -126,7 +133,7 @@ export function createStoragePlugin<StorageData extends Record<string, StorageOp
         getStorageSync(name, storageData[name].type, storageData[name].key || storageConfig.key)
       );
     }
-    Object.defineProperty(storageData, name, {
+    Object.defineProperty(__storage, name, {
       get() {
         if (storageConfig.storageMemory) {
           //从缓存中取
@@ -145,5 +152,5 @@ export function createStoragePlugin<StorageData extends Record<string, StorageOp
     });
   }
 
-  return storageData;
+  return __storage;
 }

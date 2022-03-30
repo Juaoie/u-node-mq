@@ -83,11 +83,15 @@ export var StorageType;
 })(StorageType || (StorageType = {}));
 export function createStoragePlugin(storageData, storageConfig) {
     storageConfig = storageConfig || {};
+    var __storage = null;
+    for (var key in storageData) {
+        __storage[key] = null;
+    }
     var _loop_1 = function (name_1) {
         if (storageConfig.storageMemory) {
             storageConfig.storageMemory.setData(name_1, getStorageSync(name_1, storageData[name_1].type, storageData[name_1].key || storageConfig.key));
         }
-        Object.defineProperty(storageData, name_1, {
+        Object.defineProperty(__storage, name_1, {
             get: function () {
                 if (storageConfig.storageMemory) {
                     return storageConfig.storageMemory.getData(name_1);
@@ -107,5 +111,5 @@ export function createStoragePlugin(storageData, storageConfig) {
     for (var name_1 in storageData) {
         _loop_1(name_1);
     }
-    return storageData;
+    return __storage;
 }
