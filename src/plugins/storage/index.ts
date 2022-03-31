@@ -114,7 +114,7 @@ type StorageConfig = {
   key?: string;
 };
 type B<T> = {
-  [k in keyof T]: string | null;
+  [k in keyof T]: any;
 };
 export function createStoragePlugin<StorageData extends Record<string, StorageOption>>(
   storageData: StorageData,
