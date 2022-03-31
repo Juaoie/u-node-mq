@@ -83,7 +83,7 @@ export var StorageType;
 })(StorageType || (StorageType = {}));
 export function createStoragePlugin(storageData, storageConfig) {
     storageConfig = storageConfig || {};
-    var __storage = null;
+    var __storage = {};
     for (var key in storageData) {
         __storage[key] = "";
     }
