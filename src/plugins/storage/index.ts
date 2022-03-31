@@ -94,8 +94,8 @@ const setStorageSync = (name: string, type: StorageType, value: string, key?: st
  * @param type
  */
 const removeStorageSync = (key: string, type: StorageType) => {
-  if (type === "session") sessionStorage.removeItem(md5(key).toUpperCase());
-  else if (type === "local") localStorage.removeItem(md5(key).toUpperCase());
+  if (type === StorageType.SESSION) sessionStorage.removeItem(md5(key).toUpperCase());
+  else if (type === StorageType.LOCAL) localStorage.removeItem(md5(key).toUpperCase());
 };
 
 export enum StorageType {
@@ -104,7 +104,7 @@ export enum StorageType {
 }
 
 type StorageOption =
-  | (StorageType & { type: StorageType; key: null })
+  | (StorageType & { type?: StorageType; key?: string })
   | {
       type: StorageType;
       key?: string;
@@ -114,7 +114,7 @@ type StorageConfig = {
   key?: string;
 };
 type B<T> = {
-  [k in keyof T]: string;
+  [k in keyof T]: string | null;
 };
 export function createStoragePlugin<StorageData extends Record<string, StorageOption>>(
   storageData: StorageData,
@@ -123,7 +123,7 @@ export function createStoragePlugin<StorageData extends Record<string, StorageOp
   storageConfig = storageConfig || {};
   const __storage = {} as B<StorageData>;
   for (const key in storageData) {
-    __storage[key] = "";
+    __storage[key] = null;
   }
 
   for (const name in storageData) {

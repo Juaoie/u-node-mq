@@ -71,9 +71,9 @@ var setStorageSync = function (name, type, value, key) {
     }
 };
 var removeStorageSync = function (key, type) {
-    if (type === "session")
+    if (type === StorageType.SESSION)
         sessionStorage.removeItem(md5(key).toUpperCase());
-    else if (type === "local")
+    else if (type === StorageType.LOCAL)
         localStorage.removeItem(md5(key).toUpperCase());
 };
 export var StorageType;
@@ -85,7 +85,7 @@ export function createStoragePlugin(storageData, storageConfig) {
     storageConfig = storageConfig || {};
     var __storage = {};
     for (var key in storageData) {
-        __storage[key] = "";
+        __storage[key] = null;
     }
     var _loop_1 = function (name_1) {
         if (storageConfig.storageMemory) {
