@@ -15,5 +15,11 @@ declare type StorageConfig = {
     storageMemory?: StorageAdapterAbstract;
     key?: string;
 };
-export declare function createStoragePlugin<StorageData extends Record<string, StorageOption>>(storageData: StorageData, storageConfig?: StorageConfig): () => void;
+declare type B<T> = {
+    [k in keyof T]: any;
+};
+export declare function createStoragePlugin<StorageData extends Record<string, StorageOption>>(storageData: StorageData, storageConfig?: StorageConfig): {
+    storage: B<StorageData>;
+    init: () => void;
+};
 export {};

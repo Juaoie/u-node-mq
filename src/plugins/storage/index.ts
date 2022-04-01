@@ -68,6 +68,7 @@ const getStorageSync = (name: string, type: StorageType, key?: string) => {
     }
   }
 };
+//TODO:通过封装类型来支持存储复杂数据类型
 /**
  * 同步设置缓存
  * @param key
@@ -136,33 +137,38 @@ export function createStoragePlugin<StorageData extends Record<string, StorageOp
   storageConfig?: StorageConfig
 ) {
   storageConfig = storageConfig || {};
-  let i = 0;
-  return () => {
-    if (i === 1) return;
-    i++;
-    for (const name in storageData) {
-      const type = getStorageType(storageData[name]);
-      const key = getStorageKey(storageData[name]) || storageConfig.key;
-      if (storageConfig.storageMemory) {
-        storageConfig.storageMemory.setData(name, getStorageSync(name, type, key));
+  const __storage = {} as B<StorageData>;
+  for (const key in storageData) {
+    __storage[key] = null;
+  }
+
+  return {
+    storage: __storage,
+    init: () => {
+      for (const name in storageData) {
+        const type = getStorageType(storageData[name]);
+        const key = getStorageKey(storageData[name]) || storageConfig.key;
+        if (storageConfig.storageMemory) {
+          storageConfig.storageMemory.setData(name, getStorageSync(name, type, key));
+        }
+        Object.defineProperty(__storage, name, {
+          get() {
+            if (storageConfig.storageMemory) {
+              //从缓存中取
+              return storageConfig.storageMemory.getData(name);
+            } else {
+              //直接取storage
+              return getStorageSync(name, type, key);
+            }
+          },
+          set(value: string) {
+            setStorageSync(name, type, value, key);
+            if (storageConfig.storageMemory) {
+              storageConfig.storageMemory.setData(name, value);
+            }
+          },
+        });
       }
-      Object.defineProperty(storageData, name, {
-        get() {
-          if (storageConfig.storageMemory) {
-            //从缓存中取
-            return storageConfig.storageMemory.getData(name);
-          } else {
-            //直接取storage
-            return getStorageSync(name, type, key);
-          }
-        },
-        set(value: string) {
-          setStorageSync(name, type, value, key);
-          if (storageConfig.storageMemory) {
-            storageConfig.storageMemory.setData(name, value);
-          }
-        },
-      });
-    }
+    },
   };
 }
