@@ -102,7 +102,11 @@ function getStorageKey(storageOption) {
 }
 export function createStoragePlugin(storageData, storageConfig) {
     storageConfig = storageConfig || {};
-    setTimeout(function () {
+    var i = 0;
+    return function () {
+        if (i === 1)
+            return;
+        i++;
         var _loop_1 = function (name_1) {
             var type = getStorageType(storageData[name_1]);
             var key = getStorageKey(storageData[name_1]) || storageConfig.key;
@@ -129,6 +133,5 @@ export function createStoragePlugin(storageData, storageConfig) {
         for (var name_1 in storageData) {
             _loop_1(name_1);
         }
-    });
-    return storageData;
+    };
 }

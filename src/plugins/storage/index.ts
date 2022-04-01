@@ -134,10 +134,12 @@ function getStorageKey(storageOption: StorageOption): string {
 export function createStoragePlugin<StorageData extends Record<string, StorageOption>>(
   storageData: StorageData,
   storageConfig?: StorageConfig
-): B<StorageData> {
+) {
   storageConfig = storageConfig || {};
-
-  setTimeout(() => {
+  let i = 0;
+  return () => {
+    if (i === 1) return;
+    i++;
     for (const name in storageData) {
       const type = getStorageType(storageData[name]);
       const key = getStorageKey(storageData[name]) || storageConfig.key;
@@ -162,7 +164,5 @@ export function createStoragePlugin<StorageData extends Record<string, StorageOp
         },
       });
     }
-  });
-
-  return storageData;
+  };
 }
