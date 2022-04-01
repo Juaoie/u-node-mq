@@ -1,7 +1,7 @@
 import StorageAdapterAbstract from "./StorageAdapterAbstract";
 import md5 from "js-md5";
 import { encode, decode } from "js-base64";
-import { isString, isObject } from "@/index";
+import { isString, isObject } from "../../index";
 /**
  * @name  sign.js
  * @description  数据传输加密

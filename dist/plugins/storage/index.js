@@ -1,6 +1,6 @@
 import md5 from "js-md5";
 import { encode, decode } from "js-base64";
-import { isString, isObject } from "@/index";
+import { isString, isObject } from "../../index";
 export function signFun(obj, appkey) {
     if (!obj.ts)
         obj.ts = new Date().getTime().toString();

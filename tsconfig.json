@@ -11,8 +11,6 @@
     "removeComments": true,
     "esModuleInterop": true,
     "baseUrl": ".",
-    "paths": {
-      "@/*": ["src/*"]
-    }
+    "paths": {}
   }
 }
