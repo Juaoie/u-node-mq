@@ -1,18 +1,20 @@
-import { Store } from "pinia";
+import { StoreDefinition } from "pinia";
 import StorageAdapterAbstract from "../plugins/storage/StorageAdapterAbstract";
 /**
  * 实现简单状态管理
  */
 
 export default class VueStorageAdapter implements StorageAdapterAbstract {
-  private store: Store;
-  constructor(store: Store) {
-    this.store = store;
+  private storeDefinition: StoreDefinition;
+  constructor(storeDefinition: StoreDefinition) {
+    this.storeDefinition = storeDefinition;
   }
   getData(key: string) {
-    return this.store[key];
+    const store = this.storeDefinition();
+    return store[key];
   }
   setData(key: string, value: any) {
-    this.store[key] = value;
+    const store = this.storeDefinition();
+    store[key] = value;
   }
 }
