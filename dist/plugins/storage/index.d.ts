@@ -5,7 +5,7 @@ export declare enum StorageType {
     LOCAL = "local"
 }
 declare type StorageOption = (StorageType & {
-    type: StorageType;
+    type?: StorageType;
     key?: string;
 }) | {
     type: StorageType;

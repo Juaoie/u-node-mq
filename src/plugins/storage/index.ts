@@ -105,7 +105,7 @@ export enum StorageType {
 }
 
 type StorageOption =
-  | (StorageType & { type: StorageType; key?: string })
+  | (StorageType & { type?: StorageType; key?: string })
   | {
       type: StorageType;
       key?: string;
