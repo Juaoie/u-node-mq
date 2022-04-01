@@ -136,35 +136,33 @@ export function createStoragePlugin<StorageData extends Record<string, StorageOp
   storageConfig?: StorageConfig
 ): B<StorageData> {
   storageConfig = storageConfig || {};
-  const __storage = {} as B<StorageData>;
-  for (const key in storageData) {
-    __storage[key] = null;
-  }
 
-  for (const name in storageData) {
-    const type = getStorageType(storageData[name]);
-    const key = getStorageKey(storageData[name]) || storageConfig.key;
-    if (storageConfig.storageMemory) {
-      storageConfig.storageMemory.setData(name, getStorageSync(name, type, key));
+  setTimeout(() => {
+    for (const name in storageData) {
+      const type = getStorageType(storageData[name]);
+      const key = getStorageKey(storageData[name]) || storageConfig.key;
+      if (storageConfig.storageMemory) {
+        storageConfig.storageMemory.setData(name, getStorageSync(name, type, key));
+      }
+      Object.defineProperty(storageData, name, {
+        get() {
+          if (storageConfig.storageMemory) {
+            //从缓存中取
+            return storageConfig.storageMemory.getData(name);
+          } else {
+            //直接取storage
+            return getStorageSync(name, type, key);
+          }
+        },
+        set(value: string) {
+          setStorageSync(name, type, value, key);
+          if (storageConfig.storageMemory) {
+            storageConfig.storageMemory.setData(name, value);
+          }
+        },
+      });
     }
-    Object.defineProperty(__storage, name, {
-      get() {
-        if (storageConfig.storageMemory) {
-          //从缓存中取
-          return storageConfig.storageMemory.getData(name);
-        } else {
-          //直接取storage
-          return getStorageSync(name, type, key);
-        }
-      },
-      set(value: string) {
-        setStorageSync(name, type, value, key);
-        if (storageConfig.storageMemory) {
-          storageConfig.storageMemory.setData(name, value);
-        }
-      },
-    });
-  }
+  });
 
-  return __storage;
+  return storageData;
 }
