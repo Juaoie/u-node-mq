@@ -5,7 +5,7 @@ export declare enum StorageType {
     LOCAL = "local"
 }
 declare type StorageOption = (StorageType & {
-    type?: StorageType;
+    type: StorageType;
     key?: string;
 }) | {
     type: StorageType;
@@ -16,7 +16,7 @@ declare type StorageConfig = {
     key?: string;
 };
 declare type B<T> = {
-    [k in keyof T]: string | null;
+    [k in keyof T]: any;
 };
 export declare function createStoragePlugin<StorageData extends Record<string, StorageOption>>(storageData: StorageData, storageConfig?: StorageConfig): B<StorageData>;
 export {};

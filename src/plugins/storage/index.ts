@@ -1,6 +1,7 @@
 import StorageAdapterAbstract from "./StorageAdapterAbstract";
 import md5 from "js-md5";
 import { encode, decode } from "js-base64";
+import { isString, isObject } from "@/index";
 /**
  * @name  sign.js
  * @description  数据传输加密
@@ -104,7 +105,7 @@ export enum StorageType {
 }
 
 type StorageOption =
-  | (StorageType & { type?: StorageType; key?: string })
+  | (StorageType & { type: StorageType; key?: string })
   | {
       type: StorageType;
       key?: string;
@@ -116,6 +117,20 @@ type StorageConfig = {
 type B<T> = {
   [k in keyof T]: any;
 };
+function getStorageType(storageOption: StorageOption): StorageType {
+  if (isString(storageOption)) return storageOption;
+  else if (isObject(storageOption)) return storageOption.type;
+  else {
+    console.log(`类型错误`);
+  }
+}
+function getStorageKey(storageOption: StorageOption): string {
+  if (isString(storageOption)) return null;
+  else if (isObject(storageOption)) return storageOption.key;
+  else {
+    console.log(`类型错误`);
+  }
+}
 export function createStoragePlugin<StorageData extends Record<string, StorageOption>>(
   storageData: StorageData,
   storageConfig?: StorageConfig
@@ -127,11 +142,10 @@ export function createStoragePlugin<StorageData extends Record<string, StorageOp
   }
 
   for (const name in storageData) {
+    const type = getStorageType(storageData[name]);
+    const key = getStorageKey(storageData[name]) || storageConfig.key;
     if (storageConfig.storageMemory) {
-      storageConfig.storageMemory.setData(
-        name,
-        getStorageSync(name, storageData[name].type, storageData[name].key || storageConfig.key)
-      );
+      storageConfig.storageMemory.setData(name, getStorageSync(name, type, key));
     }
     Object.defineProperty(__storage, name, {
       get() {
@@ -140,11 +154,11 @@ export function createStoragePlugin<StorageData extends Record<string, StorageOp
           return storageConfig.storageMemory.getData(name);
         } else {
           //直接取storage
-          return getStorageSync(name, storageData[name].type, storageData[name].key || storageConfig.key);
+          return getStorageSync(name, type, key);
         }
       },
       set(value: string) {
-        setStorageSync(name, storageData[name].type, value, storageData[name].key || storageConfig.key);
+        setStorageSync(name, type, value, key);
         if (storageConfig.storageMemory) {
           storageConfig.storageMemory.setData(name, value);
         }

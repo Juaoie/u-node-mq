@@ -1,14 +1,12 @@
 var VueStorageAdapter = (function () {
-    function VueStorageAdapter(storeDefinition) {
-        this.storeDefinition = storeDefinition;
+    function VueStorageAdapter(store) {
+        this.store = store;
     }
     VueStorageAdapter.prototype.getData = function (key) {
-        var __store = this.storeDefinition();
-        return __store[key];
+        return this.store[key];
     };
     VueStorageAdapter.prototype.setData = function (key, value) {
-        var __store = this.storeDefinition();
-        __store[key] = value;
+        this.store[key] = value;
     };
     return VueStorageAdapter;
 }());

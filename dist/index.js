@@ -7,3 +7,17 @@ import UNodeMQ, { createUnmq } from "./core/UNodeMQ.js";
 export default UNodeMQ;
 export { createUnmq };
 export { Exchange, Queue, Consumer, News, Logs };
+export var extend = Object.assign;
+export var objectToString = Object.prototype.toString;
+export var toTypeString = function (value) { return objectToString.call(value); };
+export var isArray = Array.isArray;
+export var isMap = function (val) { return toTypeString(val) === "[object Map]"; };
+export var isSet = function (val) { return toTypeString(val) === "[object Set]"; };
+export var isDate = function (val) { return val instanceof Date; };
+export var isFunction = function (val) { return typeof val === "function"; };
+export var isString = function (val) { return typeof val === "string"; };
+export var isSymbol = function (val) { return typeof val === "symbol"; };
+export var isObject = function (val) { return val !== null && typeof val === "object"; };
+export var isPromise = function (val) {
+    return isObject(val) && isFunction(val.then) && isFunction(val.catch);
+};
