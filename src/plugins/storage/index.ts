@@ -76,18 +76,13 @@ const getStorageSync = (name: string, type: StorageType, key?: string) => {
  * @param value
  */
 const setStorageSync = (name: string, type: StorageType, value: string, key?: string) => {
+  if (value === null || value === undefined) return removeStorageSync(name, type, key);
   if (type === StorageType.SESSION) {
-    if (key) {
-      sessionStorage.setItem(md5(name).toUpperCase(), signFun({ value }, key));
-    } else {
-      sessionStorage.setItem(name, value);
-    }
+    if (key) sessionStorage.setItem(md5(name).toUpperCase(), signFun({ value }, key));
+    else sessionStorage.setItem(name, value);
   } else if (type === StorageType.LOCAL) {
-    if (key) {
-      localStorage.setItem(md5(name).toUpperCase(), signFun({ value }, key));
-    } else {
-      localStorage.setItem(name, value);
-    }
+    if (key) localStorage.setItem(md5(name).toUpperCase(), signFun({ value }, key));
+    else localStorage.setItem(name, value);
   }
 };
 /**
@@ -95,9 +90,14 @@ const setStorageSync = (name: string, type: StorageType, value: string, key?: st
  * @param key
  * @param type
  */
-const removeStorageSync = (key: string, type: StorageType) => {
-  if (type === StorageType.SESSION) sessionStorage.removeItem(md5(key).toUpperCase());
-  else if (type === StorageType.LOCAL) localStorage.removeItem(md5(key).toUpperCase());
+const removeStorageSync = (name: string, type: StorageType, key: string) => {
+  if (type === StorageType.SESSION) {
+    if (key) sessionStorage.removeItem(md5(name).toUpperCase());
+    else sessionStorage.removeItem(name);
+  } else if (type === StorageType.LOCAL) {
+    if (key) localStorage.removeItem(md5(name).toUpperCase());
+    else localStorage.removeItem(name);
+  }
 };
 
 export enum StorageType {
