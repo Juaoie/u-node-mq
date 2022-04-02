@@ -3,6 +3,7 @@ import StorageAdapterAbstract from "../plugins/storage/StorageAdapterAbstract";
 /**
  * 实现简单状态管理
  */
+//TODO:不让用户填入数据，数据通过storage自动填入
 
 export default class VueStorageAdapter implements StorageAdapterAbstract {
   private storeDefinition: StoreDefinition;
