@@ -1,7 +1,7 @@
 import { StorageType } from ".";
 import md5 from "js-md5";
+import { envalue, devalue } from "./storageTypeof";
 import { signFun, storageDecode } from "./sign";
-
 
 /**
  * 同步获取缓存
@@ -10,27 +10,19 @@ import { signFun, storageDecode } from "./sign";
  * @returns
  */
 export const getStorageSync = (name: string, type: StorageType, key?: string) => {
+  let value = null;
   if (type === StorageType.SESSION) {
     if (key) {
       const storage = sessionStorage.getItem(md5(name).toUpperCase());
-      if (storage) return storageDecode(name, type, storage, key);
-      else return null;
-    } else {
-      const storage = sessionStorage.getItem(name);
-      if (storage) return storage;
-      else return null;
-    }
+      if (storage) value = storageDecode(name, type, storage, key);
+    } else value = sessionStorage.getItem(name);
   } else if (type === StorageType.LOCAL) {
     if (key) {
       const storage = localStorage.getItem(md5(name).toUpperCase());
-      if (storage) return storageDecode(name, type, storage, key);
-      else return null;
-    } else {
-      const storage = localStorage.getItem(name);
-      if (storage) return storage;
-      else return null;
-    }
+      if (storage) value = storageDecode(name, type, storage, key);
+    } else value = localStorage.getItem(name);
   }
+  return value || devalue(value);
 };
 /**
  * 同步设置缓存
@@ -40,6 +32,7 @@ export const getStorageSync = (name: string, type: StorageType, key?: string) =>
  */
 export const setStorageSync = (name: string, type: StorageType, value: string, key?: string) => {
   if (value === null || value === undefined) return removeStorageSync(name, type, key);
+  value = envalue(value);
   if (type === StorageType.SESSION) {
     if (key) sessionStorage.setItem(md5(name).toUpperCase(), signFun({ value }, key));
     else sessionStorage.setItem(name, value);

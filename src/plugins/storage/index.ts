@@ -45,7 +45,7 @@ export function createStoragePlugin<StorageData extends Record<string, StorageOp
   for (const key in storageData) {
     __storage[key] = null;
   }
-  storageConfig.storageMemory.init(__storage);
+  storageConfig.storageMemory.init(JSON.parse(JSON.stringify(__storage)));
 
   return {
     storage: __storage,
@@ -63,11 +63,11 @@ export function createStoragePlugin<StorageData extends Record<string, StorageOp
               return storageConfig.storageMemory.getData(name);
             } else {
               //直接取storage
-              return devalue(getStorageSync(name, type, key));
+              return getStorageSync(name, type, key);
             }
           },
           set(value: string) {
-            setStorageSync(name, type, envalue(value), key);
+            setStorageSync(name, type, value, key);
             if (storageConfig.storageMemory) {
               storageConfig.storageMemory.setData(name, value);
             }

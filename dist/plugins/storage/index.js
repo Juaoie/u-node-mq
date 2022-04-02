@@ -1,6 +1,5 @@
 import { isString, isObject } from "../../index";
 import { getStorageSync, setStorageSync } from "./storageHandle";
-import { devalue, envalue } from "./storageTypeof";
 export var StorageType;
 (function (StorageType) {
     StorageType["SESSION"] = "session";
@@ -30,7 +29,7 @@ export function createStoragePlugin(storageData, storageConfig) {
     for (var key in storageData) {
         __storage[key] = null;
     }
-    storageConfig.storageMemory.init(__storage);
+    storageConfig.storageMemory.init(JSON.parse(JSON.stringify(__storage)));
     return {
         storage: __storage,
         init: function () {
@@ -46,11 +45,11 @@ export function createStoragePlugin(storageData, storageConfig) {
                             return storageConfig.storageMemory.getData(name_1);
                         }
                         else {
-                            return devalue(getStorageSync(name_1, type, key));
+                            return getStorageSync(name_1, type, key);
                         }
                     },
                     set: function (value) {
-                        setStorageSync(name_1, type, envalue(value), key);
+                        setStorageSync(name_1, type, value, key);
                         if (storageConfig.storageMemory) {
                             storageConfig.storageMemory.setData(name_1, value);
                         }
