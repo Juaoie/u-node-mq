@@ -22,7 +22,9 @@ export const getStorageSync = (name: string, type: StorageType, key?: string) =>
       if (storage) value = storageDecode(name, type, storage, key);
     } else value = localStorage.getItem(name);
   }
-  return value || devalue(value);
+  if (value) {
+    return devalue(value);
+  } else return null;
 };
 /**
  * 同步设置缓存

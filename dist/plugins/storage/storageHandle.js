@@ -22,7 +22,11 @@ export var getStorageSync = function (name, type, key) {
         else
             value = localStorage.getItem(name);
     }
-    return value || devalue(value);
+    if (value) {
+        return devalue(value);
+    }
+    else
+        return null;
 };
 export var setStorageSync = function (name, type, value, key) {
     if (value === null || value === undefined)
