@@ -1,82 +1,6 @@
-import md5 from "js-md5";
-import { encode, decode } from "js-base64";
 import { isString, isObject } from "../../index";
-export function signFun(obj, appkey) {
-    if (!obj.ts)
-        obj.ts = new Date().getTime().toString();
-    var params = new URLSearchParams(obj);
-    params.sort();
-    var str = md5(params.toString() + appkey).toUpperCase();
-    Object.assign(obj, { sn: str });
-    return encode(JSON.stringify(obj));
-}
-var storageDecode = function (name, type, storage, key) {
-    var _a = JSON.parse(decode(storage)), value = _a.value, ts = _a.ts;
-    if (signFun({ value: value, ts: ts }, key) === storage)
-        return value;
-    else {
-        removeStorageSync(name, type);
-        throw "服务器正遭受攻击，部分功能可能出现异常。给您带来不便，我们深表歉意！";
-    }
-};
-var getStorageSync = function (name, type, key) {
-    if (type === StorageType.SESSION) {
-        if (key) {
-            var storage = sessionStorage.getItem(md5(name).toUpperCase());
-            if (storage)
-                return storageDecode(name, type, storage, key);
-            else
-                return null;
-        }
-        else {
-            var storage = sessionStorage.getItem(name);
-            if (storage)
-                return storage;
-            else
-                return null;
-        }
-    }
-    else if (type === StorageType.LOCAL) {
-        if (key) {
-            var storage = localStorage.getItem(md5(name).toUpperCase());
-            if (storage)
-                return storageDecode(name, type, storage, key);
-            else
-                return null;
-        }
-        else {
-            var storage = localStorage.getItem(name);
-            if (storage)
-                return storage;
-            else
-                return null;
-        }
-    }
-};
-var setStorageSync = function (name, type, value, key) {
-    if (type === StorageType.SESSION) {
-        if (key) {
-            sessionStorage.setItem(md5(name).toUpperCase(), signFun({ value: value }, key));
-        }
-        else {
-            sessionStorage.setItem(name, value);
-        }
-    }
-    else if (type === StorageType.LOCAL) {
-        if (key) {
-            localStorage.setItem(md5(name).toUpperCase(), signFun({ value: value }, key));
-        }
-        else {
-            localStorage.setItem(name, value);
-        }
-    }
-};
-var removeStorageSync = function (key, type) {
-    if (type === StorageType.SESSION)
-        sessionStorage.removeItem(md5(key).toUpperCase());
-    else if (type === StorageType.LOCAL)
-        localStorage.removeItem(md5(key).toUpperCase());
-};
+import { getStorageSync, setStorageSync } from "./storageHandle";
+import { devalue, envalue } from "./storageTypeof";
 export var StorageType;
 (function (StorageType) {
     StorageType["SESSION"] = "session";
@@ -121,11 +45,11 @@ export function createStoragePlugin(storageData, storageConfig) {
                             return storageConfig.storageMemory.getData(name_1);
                         }
                         else {
-                            return getStorageSync(name_1, type, key);
+                            return devalue(getStorageSync(name_1, type, key));
                         }
                     },
                     set: function (value) {
-                        setStorageSync(name_1, type, value, key);
+                        setStorageSync(name_1, type, envalue(value), key);
                         if (storageConfig.storageMemory) {
                             storageConfig.storageMemory.setData(name_1, value);
                         }

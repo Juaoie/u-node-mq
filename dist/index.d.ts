@@ -21,6 +21,8 @@ export declare const isSet: (val: unknown) => val is Set<any>;
 export declare const isDate: (val: unknown) => val is Date;
 export declare const isFunction: (val: unknown) => val is Function;
 export declare const isString: (val: unknown) => val is string;
+export declare const isNumber: (val: unknown) => val is number;
+export declare const isBoolean: (val: unknown) => val is boolean;
 export declare const isSymbol: (val: unknown) => val is symbol;
 export declare const isObject: (val: unknown) => val is Record<any, any>;
 export declare const isPromise: <T = any>(val: unknown) => val is Promise<T>;

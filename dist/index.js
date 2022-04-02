@@ -16,6 +16,8 @@ export var isSet = function (val) { return toTypeString(val) === "[object Set]";
 export var isDate = function (val) { return val instanceof Date; };
 export var isFunction = function (val) { return typeof val === "function"; };
 export var isString = function (val) { return typeof val === "string"; };
+export var isNumber = function (val) { return typeof val === "number"; };
+export var isBoolean = function (val) { return typeof val === "boolean"; };
 export var isSymbol = function (val) { return typeof val === "symbol"; };
 export var isObject = function (val) { return val !== null && typeof val === "object"; };
 export var isPromise = function (val) {

@@ -1,5 +1,4 @@
 import StorageAdapterAbstract from "./StorageAdapterAbstract";
-export declare function signFun(obj: Record<string, string>, appkey: string): string;
 export declare enum StorageType {
     SESSION = "session",
     LOCAL = "local"
