@@ -45,6 +45,7 @@ export function createStoragePlugin<StorageData extends Record<string, StorageOp
   for (const key in storageData) {
     __storage[key] = null;
   }
+  storageConfig.storageMemory.init(__storage);
 
   return {
     storage: __storage,

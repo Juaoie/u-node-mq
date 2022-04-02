@@ -1,7 +1,12 @@
+import { defineStore } from "pinia";
 var VueStorageAdapter = (function () {
-    function VueStorageAdapter(storeDefinition) {
-        this.storeDefinition = storeDefinition;
+    function VueStorageAdapter() {
     }
+    VueStorageAdapter.prototype.init = function (o) {
+        this.storeDefinition = defineStore("__storage", {
+            state: function () { return o; },
+        });
+    };
     VueStorageAdapter.prototype.getData = function (key) {
         var store = this.storeDefinition();
         return store[key];

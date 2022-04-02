@@ -30,6 +30,7 @@ export function createStoragePlugin(storageData, storageConfig) {
     for (var key in storageData) {
         __storage[key] = null;
     }
+    storageConfig.storageMemory.init(__storage);
     return {
         storage: __storage,
         init: function () {
