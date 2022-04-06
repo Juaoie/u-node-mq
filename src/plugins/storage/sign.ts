@@ -17,9 +17,13 @@ import { removeStorageSync } from "./storageHandle";
  */
 export function signFun(obj: Record<string, string>, appkey: string): string {
   if (!obj.ts) obj.ts = new Date().getTime().toString();
-  const params = new URLSearchParams(obj);
-  params.sort();
-  const str = md5(params.toString() + appkey).toUpperCase();
+  const str = md5(
+    Object.entries(obj)
+      .filter((item) => item[1] !== undefined)
+      .map((item) => item[0] + "=" + item[1])
+      .sort()
+      .join("&") + appkey
+  ).toUpperCase();
   Object.assign(obj, { sn: str });
   return encode(JSON.stringify(obj));
 }
