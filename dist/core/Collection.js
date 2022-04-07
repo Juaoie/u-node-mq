@@ -1,12 +1,41 @@
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
+import { isFunction } from "../index.js";
 import ExchangeCollectionHandle from "./ExchangeCollectionHandle.js";
 import QueueCollectionHandle from "./QueueCollectionHandle.js";
 var Collection = (function () {
     function Collection(exchangeCollection, queueCollection) {
         this.exchangeCollectionHandle = new ExchangeCollectionHandle();
         this.queueCollectionHandle = new QueueCollectionHandle();
+        this.installedPlugins = new Set();
         this.exchangeCollectionHandle.setExchangeCollection(exchangeCollection);
         this.queueCollectionHandle.setQueueCollection(queueCollection);
     }
+    Collection.prototype.use = function (plugin) {
+        var options = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            options[_i - 1] = arguments[_i];
+        }
+        if (this.installedPlugins.has(plugin)) {
+            console.log("Plugin has already been applied to target app.");
+        }
+        else if (plugin && isFunction(plugin.install)) {
+            this.installedPlugins.add(plugin);
+            plugin.install.apply(plugin, __spreadArray([this], options, false));
+        }
+        else if (isFunction(plugin)) {
+            this.installedPlugins.add(plugin);
+            plugin.apply(void 0, __spreadArray([this], options, false));
+        }
+        return this;
+    };
     Collection.prototype.getExchange = function (exchangeName) {
         return this.exchangeCollectionHandle.getExchange(exchangeName);
     };

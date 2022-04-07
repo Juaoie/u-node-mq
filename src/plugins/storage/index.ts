@@ -1,7 +1,8 @@
 import StorageAdapterAbstract from "./StorageAdapterAbstract";
 import { isString, isObject } from "../../index";
 import { getStorageSync, setStorageSync } from "./storageHandle";
-import { devalue, envalue } from "./storageTypeof";
+
+//TODO:实现storage存储超出警告
 
 export enum StorageType {
   SESSION = "session",

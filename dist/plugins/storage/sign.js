@@ -4,9 +4,11 @@ import { removeStorageSync } from "./storageHandle";
 export function signFun(obj, appkey) {
     if (!obj.ts)
         obj.ts = new Date().getTime().toString();
-    var params = new URLSearchParams(obj);
-    params.sort();
-    var str = md5(params.toString() + appkey).toUpperCase();
+    var str = md5(Object.entries(obj)
+        .filter(function (item) { return item[1] !== undefined; })
+        .map(function (item) { return item[0] + "=" + item[1]; })
+        .sort()
+        .join("&") + appkey).toUpperCase();
     Object.assign(obj, { sn: str });
     return encode(JSON.stringify(obj));
 }
