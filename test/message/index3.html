@@ -17,16 +17,22 @@
     </style>
   </body>
   <script type="module">
-    import IframeMessage, { SelfIframe, OtherIframe, SelfQueue } from "../../dist/plugins/message/index.js";
-    const im = new IframeMessage(
-      "ex3",
-      new SelfIframe({ routes: ["qu3"] }),
-      { ex1: new OtherIframe(), ex2: new OtherIframe(), ex4: new OtherIframe() },
-      { qu3: new SelfQueue() }
+      import IframeMessage from "../../dist/plugins/iframe/index.js";
+    import UNodeMQ, { Exchange, Queue } from "../../dist/index.js";
+    const unmq = new UNodeMQ(
+      {
+        ex1: new Exchange(),
+        ex2: new Exchange(),
+        ex3: new Exchange({ routes: ["qu3"] }),
+        ex4: new Exchange(),
+      },
+      {
+        qu3: new Queue(),
+      }
     );
-    window.im = im;
+    unmq.use(new IframeMessage("ex3"));
 
-    im.on("qu3", (res) => {
+    unmq.on("qu3", (res) => {
       alert("ex3收到：" + res);
     });
 
@@ -37,7 +43,7 @@
     button1.innerText = "发送消息给ex1";
     button1.onclick = function () {
       console.log("ex3 发送了一条消息给 ex1");
-      im.emit("ex1", "发给ex1");
+      unmq.emit("ex1", "发给ex1");
     };
     body.appendChild(button1);
 
@@ -46,7 +52,7 @@
     button2.innerText = "发送消息给ex2";
     button2.onclick = function () {
       console.log("ex3 发送了一条消息给 ex2");
-      im.emit("ex2", "发给ex2");
+      unmq.emit("ex2", "发给ex2");
     };
     body.appendChild(button2);
 
@@ -55,7 +61,7 @@
     button4.innerText = "发送消息给ex4";
     button4.onclick = function () {
       console.log("ex3 发送了一条消息给 ex4");
-      im.emit("ex4", "ex3发给ex4的消息");
+      unmq.emit("ex4", "ex3发给ex4的消息");
     };
     body.appendChild(button4);
   </script>

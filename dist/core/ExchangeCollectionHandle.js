@@ -31,7 +31,7 @@ var ExchangeCollectionHandle = (function () {
         if (this.exchangeCollection.has(exchangeName))
             return true;
         else {
-            Logs.error(exchangeName + " not find");
+            Logs.error("".concat(exchangeName, " not find"));
             return false;
         }
     };

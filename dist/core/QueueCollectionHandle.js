@@ -31,7 +31,7 @@ var QueueCollectionHandle = (function () {
         if (this.queueCollection.has(queueName))
             return true;
         else {
-            Logs.error(queueName + " not find");
+            Logs.error("".concat(queueName, " not find"));
             return false;
         }
     };

@@ -24,12 +24,23 @@
     </style>
   </body>
   <script type="module">
-    import IframeMessage, { SelfIframe, OtherIframe, SelfQueue } from "../../dist/plugins/message/index.js";
-    const im = new IframeMessage("ex4", new SelfIframe({ routes: ["qu4"] }), {}, { qu4: new SelfQueue() });
-    window.im = im;
+    import IframeMessage from "../../dist/plugins/iframe/index.js";
+    import UNodeMQ, { Exchange, Queue } from "../../dist/index.js";
+    const unmq = new UNodeMQ(
+      {
+        ex1: new Exchange(),
+        ex2: new Exchange(),
+        ex3: new Exchange(),
+        ex4: new Exchange({ routes: ["qu4"] }),
+      },
+      {
+        qu4: new Queue(),
+      }
+    );
+    unmq.use(new IframeMessage("ex4"));
 
     const body = document.getElementById("ex4");
-    im.on("qu4", (res) => {
+    unmq.on("qu4", (res) => {
       const span = document.createElement("span");
       span.innerText = res;
       span.style = "display: inline-block;";

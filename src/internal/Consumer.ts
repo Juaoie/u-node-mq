@@ -1,3 +1,4 @@
+import { isPromise } from "../index.js";
 import Tools from "../utils/tools.js";
 import Logs from "./Logs.js";
 import News from "./News.js";
@@ -45,7 +46,7 @@ export default class Consumer<D> {
       try {
         if (!ask) {
           //不需要确认的消费方法
-          this.consume(news.content, this.payload);
+          this.consume(news.content, null, this.payload);
           return thenParameter(true);
         }
         //构建消息确认的方法
@@ -53,10 +54,10 @@ export default class Consumer<D> {
         //需要确认的消费方法
         const res = this.consume(news.content, confirm, this.payload);
         //如果消息需要确认，且返回的内容为Promise
-        if (res instanceof Promise) {
+        if (isPromise(res)) {
           res
             .then((onfulfilled) => {
-              thenParameter(onfulfilled);
+              thenParameter(Boolean(onfulfilled));
             })
             .catch(() => {
               thenParameter(false);

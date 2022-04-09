@@ -17,11 +17,22 @@
     </style>
   </body>
   <script type="module">
-    import IframeMessage, { SelfIframe, OtherIframe, SelfQueue } from "../../dist/plugins/message/index.js";
-    const im = new IframeMessage("ex2", new SelfIframe({ routes: ["qu2"] }), {}, { qu2: new SelfQueue() });
-    window.im = im;
+    import IframeMessage from "../../dist/plugins/iframe/index.js";
+    import UNodeMQ, { Exchange, Queue } from "../../dist/index.js";
+    const unmq = new UNodeMQ(
+      {
+        ex1: new Exchange(),
+        ex2: new Exchange({ routes: ["qu2"] }),
+        ex3: new Exchange(),
+        ex4: new Exchange(),
+      },
+      {
+        qu2: new Queue(),
+      }
+    );
+    unmq.use(new IframeMessage("ex2"));
 
-    im.on("qu2", (res) => {
+    unmq.on("qu2", (res) => {
       alert("ex2收到：" + res);
     });
 

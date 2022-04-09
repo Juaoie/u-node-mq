@@ -23,13 +23,6 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     }
     return to.concat(ar || Array.prototype.slice.call(from));
 };
-export function getIframeNodeFromCoordinate(coordinate) {
-    var list = getAllIframeDoc(window.top, 0, 0);
-    var w = list.find(function (item) { return item.x === coordinate.x && item.y === coordinate.y; });
-    if (w === undefined)
-        return null;
-    return w.window;
-}
 export function getOtherAllIframeDoc() {
     var list = getAllIframeDoc(window.top, 0, 0);
     return list.filter(function (item) { return item.window !== window.self; });

@@ -1,3 +1,4 @@
+import { isPromise } from "../index.js";
 import Tools from "../utils/tools.js";
 import Logs from "./Logs.js";
 var Consumer = (function () {
@@ -15,7 +16,7 @@ var Consumer = (function () {
         var then = function (thenParameter) {
             try {
                 if (!ask) {
-                    _this.consume(news.content, _this.payload);
+                    _this.consume(news.content, null, _this.payload);
                     return thenParameter(true);
                 }
                 var confirm_1 = function (value) {
@@ -23,10 +24,10 @@ var Consumer = (function () {
                     return thenParameter(value);
                 };
                 var res = _this.consume(news.content, confirm_1, _this.payload);
-                if (res instanceof Promise) {
+                if (isPromise(res)) {
                     res
                         .then(function (onfulfilled) {
-                        thenParameter(onfulfilled);
+                        thenParameter(Boolean(onfulfilled));
                     })
                         .catch(function () {
                         thenParameter(false);

@@ -1,5 +1,3 @@
-import { Coordinate } from "./coordinate/index.js";
-
 /**
  * 饼平化方便取值
  * 但是需要标记每个window在多维数组中的位置
@@ -16,30 +14,20 @@ import { Coordinate } from "./coordinate/index.js";
  */
 
 /**
- * 根据坐标获取节点
- * @param coordinate
- */
-export function getIframeNodeFromCoordinate(coordinate: Pick<Coordinate, "x" | "y">): Window {
-  const list = getAllIframeDoc(window.top, 0, 0);
-  const w = list.find(item => item.x === coordinate.x && item.y === coordinate.y);
-  if (w === undefined) return null;
-  return w.window;
-}
-/**
  * 获取其他所有Iframe doc
  * @returns
  */
 export function getOtherAllIframeDoc(): T[] {
   const list = getAllIframeDoc(window.top, 0, 0);
-  return list.filter(item => item.window !== window.self);
+  return list.filter((item) => item.window !== window.self);
 }
 /**
  * 获取自己的iframe doc
- * @returns 
+ * @returns
  */
-export function getSelfIframeDoc(){
+export function getSelfIframeDoc() {
   const list = getAllIframeDoc(window.top, 0, 0);
-  return list.find(item => item.window === window.self);
+  return list.find((item) => item.window === window.self);
 }
 type T = {
   window: Window;
