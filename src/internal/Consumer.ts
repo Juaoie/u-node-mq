@@ -3,7 +3,7 @@ import Logs from "./Logs.js";
 import News from "./News.js";
 export type Next = (value?: boolean) => void;
 
-export type Consume<D> = (content: D, next?: Next, payload?: any) => Promise<boolean> | boolean | void;
+export type Consume<D> = (content: D, next?: Next, payload?: any) => Promise<boolean | void> | boolean | void;
 type ThenParameter<D> = (isOk: boolean) => void;
 interface Payload<D> {
   then: (res: ThenParameter<D>) => void;

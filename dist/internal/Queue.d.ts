@@ -13,6 +13,7 @@ export declare enum ConsumMode {
     "All" = "All"
 }
 export default class Queue<D> {
+    [k: string]: any;
     name?: string;
     private readonly id;
     getId(): string;

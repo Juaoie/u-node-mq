@@ -13,6 +13,22 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __read = (this && this.__read) || function (o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+};
 var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
         if (ar || !(i in from)) {
@@ -71,7 +87,7 @@ var IframeMessage = (function () {
         for (var _i = 1; _i < arguments.length; _i++) {
             contentList[_i - 1] = arguments[_i];
         }
-        (_a = this.iframeMessageHandle).emit.apply(_a, __spreadArray([exchangeName], contentList, false));
+        (_a = this.iframeMessageHandle).emit.apply(_a, __spreadArray([exchangeName], __read(contentList), false));
         return this;
     };
     IframeMessage.prototype.on = function (queueName, consume, payload) {

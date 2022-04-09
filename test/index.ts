@@ -15,9 +15,10 @@ const unmq = new UNodeMQ(
   }
 );
 
-unmq.emit("GET_OPENID", "12");
+unmq.emit("GET_OPENID", 1);
 unmq.on("ADD_DEMO_PSEUDO_DATA", (res) => {});
 unmq.on("HOME_ALL_QUESTION", (res) => {});
+unmq.getExchange("GET_OPENID1")
 
 import IframeMessage, { OtherIframe, SelfIframe, SelfQueue } from "../src/plugins/message";
 

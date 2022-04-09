@@ -14,6 +14,7 @@ export type Option<D> = {
  * 交换机
  */
 export default class Exchange<D> {
+  [k: string]: any;
   name?: string;
   /**
    * id
@@ -58,7 +59,7 @@ export default class Exchange<D> {
    */
   removeRoutes(routes?: string[]) {
     if (routes === undefined) this.routes = [];
-    else this.routes = this.routes.filter(item => routes.indexOf(item) !== -1);
+    else this.routes = this.routes.filter((item) => routes.indexOf(item) !== -1);
   }
 
   /**

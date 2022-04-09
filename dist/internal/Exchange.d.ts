@@ -5,6 +5,7 @@ export declare type Option<D> = {
     name?: string;
 };
 export default class Exchange<D> {
+    [k: string]: any;
     name?: string;
     private readonly id;
     getId(): string;

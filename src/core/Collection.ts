@@ -1,50 +1,45 @@
-import { Exchange, Queue, News, isFunction } from "../index.js";
+import { Exchange, Queue, News } from "../index.js";
 import { Consume } from "../internal/Consumer.js";
 import ExchangeCollectionHandle from "./ExchangeCollectionHandle.js";
 import QueueCollectionHandle from "./QueueCollectionHandle.js";
-
-type PluginInstallFunction = (app: Collection<any, any>, ...options: any[]) => any;
-export type Plugin =
-  | (PluginInstallFunction & { install?: PluginInstallFunction })
-  | {
-      install: PluginInstallFunction;
-    };
 export default class Collection<
   ExchangeCollection extends Record<string, Exchange<unknown>>,
   QueueCollection extends Record<string, Queue<unknown>>
 > {
-  private readonly exchangeCollectionHandle = new ExchangeCollectionHandle<ExchangeCollection>();
-  private readonly queueCollectionHandle = new QueueCollectionHandle<QueueCollection>();
-  private readonly installedPlugins: Set<Plugin> = new Set();
-  use(plugin: Plugin, ...options: any[]) {
-    //thanks， Evan You
-    if (this.installedPlugins.has(plugin)) {
-      console.log(`Plugin has already been applied to target app.`);
-    } else if (plugin && isFunction(plugin.install)) {
-      this.installedPlugins.add(plugin);
-      plugin.install(this, ...options);
-    } else if (isFunction(plugin)) {
-      this.installedPlugins.add(plugin);
-      plugin(this, ...options);
-    }
-    return this;
-  }
+  private readonly exchangeCollectionHandle = new ExchangeCollectionHandle();
+  private readonly queueCollectionHandle = new QueueCollectionHandle();
+
   constructor(exchangeCollection: ExchangeCollection, queueCollection: QueueCollection) {
+    for (const name in exchangeCollection) {
+      exchangeCollection[name].name = name;
+    }
+    for (const name in queueCollection) {
+      queueCollection[name].name = name;
+    }
     this.exchangeCollectionHandle.setExchangeCollection(exchangeCollection);
     this.queueCollectionHandle.setQueueCollection(queueCollection);
   }
-  getExchange<E extends keyof ExchangeCollection>(exchangeName: E) {
+  getExchange<E extends keyof ExchangeCollection & string>(exchangeName: E) {
     return this.exchangeCollectionHandle.getExchange(exchangeName);
   }
-  getQueue<Q extends keyof QueueCollection>(queueName: Q) {
+  getExchangeList() {
+    return this.exchangeCollectionHandle.getExchangeList();
+  }
+  getQueue<Q extends keyof QueueCollection & string>(queueName: Q) {
     return this.queueCollectionHandle.getQueue(queueName);
+  }
+  getQueueList() {
+    return this.queueCollectionHandle.getQueueList();
+  }
+  addQueue(queue: Queue<unknown>) {
+    this.queueCollectionHandle.addQueue(queue);
   }
   /**
    * 发送消息到交换机
    * @param exchangeName
    * @param news
    */
-  pushNewsListToExchange<E extends keyof ExchangeCollection>(exchangeName: E, ...news: News<unknown>[]) {
+  pushNewsListToExchange<E extends keyof ExchangeCollection & string>(exchangeName: E, ...news: News<unknown>[]) {
     for (const newsItem of news) {
       //分别发送每一条消息
       this.exchangeCollectionHandle.getQueueNameList(exchangeName, newsItem.content).then((queueNameList) => {
@@ -59,7 +54,7 @@ export default class Collection<
    * @param queueName
    * @param news
    */
-  pushNewsListToQueue<Q extends keyof QueueCollection>(queueName: Q, ...news: News<unknown>[]) {
+  pushNewsListToQueue<Q extends keyof QueueCollection & string>(queueName: Q, ...news: News<unknown>[]) {
     for (const newsItem of news) {
       //分别发送每一条消息
       this.queueCollectionHandle.pushNewsToQueue(queueName, newsItem);
@@ -70,7 +65,7 @@ export default class Collection<
    * @param exchangeName
    * @param contentList
    */
-  pushContentListToExchange<E extends keyof ExchangeCollection>(exchangeName: E, ...contentList: unknown[]) {
+  pushContentListToExchange<E extends keyof ExchangeCollection & string>(exchangeName: E, ...contentList: unknown[]) {
     for (const content of contentList) {
       //分别发送每一条消息
       this.exchangeCollectionHandle.getQueueNameList(exchangeName, content).then((queueNameList) => {
@@ -85,7 +80,7 @@ export default class Collection<
    * @param queueName
    * @param contentList
    */
-  pushContentListToQueue<Q extends keyof QueueCollection>(queueName: Q, ...contentList: unknown[]) {
+  pushContentListToQueue<Q extends keyof QueueCollection & string>(queueName: Q, ...contentList: unknown[]) {
     for (const content of contentList) {
       //分别发送每一条消息
       this.queueCollectionHandle.pushContentToQueue(queueName, content);
@@ -97,13 +92,13 @@ export default class Collection<
    * @param consume
    * @param payload
    */
-  subscribeQueue<Q extends keyof QueueCollection>(queueName: Q, consume: Consume<unknown>, payload?: any) {
+  subscribeQueue<Q extends keyof QueueCollection & string>(queueName: Q, consume: Consume<unknown>, payload?: any) {
     this.queueCollectionHandle.subscribeQueue(queueName, consume, payload);
   }
   /**
    * 取消订阅队列
    */
-  unsubscribeQueue<Q extends keyof QueueCollection>(queueName: Q, consume?: Consume<unknown>) {
+  unsubscribeQueue<Q extends keyof QueueCollection & string>(queueName: Q, consume?: Consume<unknown>) {
     this.queueCollectionHandle.unsubscribeQueue(queueName, consume);
   }
 }

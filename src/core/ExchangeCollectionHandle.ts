@@ -1,13 +1,24 @@
 import { Exchange } from "../index.js";
 import Logs from "../internal/Logs.js";
 
-export default class ExchangeCollectionHandle<ExchangeCollection extends Record<string, Exchange<unknown>>> {
-  private exchangeCollection: ExchangeCollection;
-  setExchangeCollection(exchangeCollection: ExchangeCollection) {
-    this.exchangeCollection = exchangeCollection;
+export default class ExchangeCollectionHandle {
+  private exchangeCollection: Map<string, Exchange<any>>;
+  has(exchangeName: string) {
+    if (this.exchangeCollection.has(exchangeName)) return true;
+    else {
+      Logs.error(`${exchangeName} not find`);
+      return false;
+    }
   }
-  getExchange<E extends keyof ExchangeCollection>(exchangeName: E) {
-    return this.exchangeCollection[exchangeName];
+  setExchangeCollection(exchangeCollection: Record<string, Exchange<unknown>>) {
+    this.exchangeCollection = new Map(Object.entries(exchangeCollection));
+  }
+  getExchange(exchangeName: string) {
+    if (!this.has(exchangeName)) return;
+    return this.exchangeCollection.get(exchangeName);
+  }
+  getExchangeList() {
+    return [...this.exchangeCollection.values()];
   }
   /**
    * 根据交换机名称获取队列名称列表
@@ -15,11 +26,8 @@ export default class ExchangeCollectionHandle<ExchangeCollection extends Record<
    * @param content
    * @returns
    */
-  getQueueNameList<E extends keyof ExchangeCollection>(exchangeName: E, content: unknown) {
-    if (this.exchangeCollection[exchangeName] === undefined) {
-      Logs.error(`${exchangeName} not find`);
-      throw `${exchangeName} not find`;
-    }
-    return this.exchangeCollection[exchangeName].getQueueNameList(content);
+  getQueueNameList(exchangeName: string, content: unknown) {
+    if (!this.has(exchangeName)) return;
+    return this.getExchange(exchangeName).getQueueNameList(content);
   }
 }

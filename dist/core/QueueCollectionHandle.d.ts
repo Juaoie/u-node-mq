@@ -1,11 +1,14 @@
 import { Queue, News } from "../index.js";
 import { Consume } from "../internal/Consumer.js";
-export default class QueueCollectionHandle<QueueCollection extends Record<string, Queue<unknown>>> {
+export default class QueueCollectionHandle {
     private queueCollection;
-    setQueueCollection(queueCollection: QueueCollection): void;
-    getQueue<Q extends keyof QueueCollection>(queueName: Q): QueueCollection[Q];
-    pushNewsToQueue<Q extends keyof QueueCollection>(queueName: Q, news: News<unknown>): boolean;
-    pushContentToQueue<Q extends keyof QueueCollection>(queueName: Q, content: unknown): boolean;
-    subscribeQueue<Q extends keyof QueueCollection>(queueName: Q, consume: Consume<unknown>, payload?: any): boolean;
-    unsubscribeQueue<Q extends keyof QueueCollection>(queueName: Q, consume?: Consume<unknown>): boolean;
+    has(queueName: string): boolean;
+    setQueueCollection(queueCollection: Record<string, Queue<unknown>>): void;
+    getQueue(queueName: string): Queue<any>;
+    getQueueList(): Queue<any>[];
+    addQueue(queue: Queue<unknown>): void;
+    pushNewsToQueue(queueName: string, news: News<unknown>): void;
+    pushContentToQueue(queueName: string, content: unknown): void;
+    subscribeQueue(queueName: string, consume: Consume<unknown>, payload?: any): void;
+    unsubscribeQueue(queueName: string, consume?: Consume<unknown>): boolean;
 }

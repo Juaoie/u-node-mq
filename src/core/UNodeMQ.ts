@@ -1,4 +1,4 @@
-import { Exchange, Queue, News } from "../index.js";
+import { Exchange, Queue, isFunction } from "../index.js";
 import { Consume, Next } from "../internal/Consumer.js";
 
 import Collection from "./Collection.js";
@@ -6,8 +6,12 @@ import Collection from "./Collection.js";
 export type ReturnPanShapeExchange<T> = T extends Exchange<infer U> ? U : never;
 export type ReturnPanShapeQueue<T> = T extends Queue<infer U> ? U : never;
 
-export type UnionAttribute<T> = keyof T;
-
+type PluginInstallFunction = (unmq: UNodeMQ<any, any>, ...options: any[]) => any;
+export type Plugin =
+  | (PluginInstallFunction & { install?: PluginInstallFunction })
+  | {
+      install: PluginInstallFunction;
+    };
 export function createUnmq<
   ExchangeCollection extends Record<string, Exchange<any>>,
   QueueCollection extends Record<string, Queue<any>>
@@ -23,20 +27,28 @@ export default class UNodeMQ<
   QueueCollection extends Record<string, Queue<any>>
 > extends Collection<ExchangeCollection, QueueCollection> {
   constructor(exchangeCollection: ExchangeCollection, queueCollection: QueueCollection) {
-    for (const name in exchangeCollection) {
-      exchangeCollection[name].name = name;
-    }
-    for (const name in queueCollection) {
-      queueCollection[name].name = name;
-    }
     super(exchangeCollection, queueCollection);
+  }
+  private readonly installedPlugins: Set<Plugin> = new Set();
+  use(plugin: Plugin, ...options: any[]) {
+    //thanks， Evan You
+    if (this.installedPlugins.has(plugin)) {
+      console.log(`Plugin has already been applied to target unmq.`);
+    } else if (plugin && isFunction(plugin.install)) {
+      this.installedPlugins.add(plugin);
+      plugin.install(this, ...options);
+    } else if (isFunction(plugin)) {
+      this.installedPlugins.add(plugin);
+      plugin(this, ...options);
+    }
+    return this;
   }
   /**
    * 发射数据到交换机
    * @param contentList 消息体列表
    * @returns
    */
-  emit<E extends keyof ExchangeCollection>(
+  emit<E extends keyof ExchangeCollection & string>(
     exchangeName: E,
     ...contentList: ReturnPanShapeExchange<ExchangeCollection[E]>[]
   ) {
@@ -49,7 +61,7 @@ export default class UNodeMQ<
    * @param contentList
    * @returns
    */
-  emitToQueue<Q extends keyof QueueCollection>(
+  emitToQueue<Q extends keyof QueueCollection & string>(
     queueName: Q,
     ...contentList: ReturnPanShapeQueue<QueueCollection[Q]>[]
   ) {
@@ -66,7 +78,7 @@ export default class UNodeMQ<
    * @param payload 固定参数，有效载荷，在每次消费的时候都传给消费者
    * @returns
    */
-  on<Q extends keyof QueueCollection>(
+  on<Q extends keyof QueueCollection & string>(
     queueName: Q,
     consume: Consume<ReturnPanShapeQueue<QueueCollection[Q]>>,
     payload?: any
@@ -82,7 +94,7 @@ export default class UNodeMQ<
    */
   off<Q extends keyof QueueCollection>(queueName: Q, consume: Consume<ReturnPanShapeQueue<QueueCollection[Q]>>): this;
   off<Q extends keyof QueueCollection>(queueName: Q): this;
-  off<Q extends keyof QueueCollection>(x: Q, y?: Consume<ReturnPanShapeQueue<QueueCollection[Q]>>): this {
+  off<Q extends keyof QueueCollection & string>(x: Q, y?: Consume<ReturnPanShapeQueue<QueueCollection[Q]>>): this {
     super.unsubscribeQueue(x, y);
     return this;
   }
@@ -94,7 +106,7 @@ export default class UNodeMQ<
    * @param payload
    * @returns
    */
-  once<Q extends keyof QueueCollection>(
+  once<Q extends keyof QueueCollection & string>(
     queueName: Q,
     consume: Consume<ReturnPanShapeQueue<QueueCollection[Q]>>,
     payload?: any

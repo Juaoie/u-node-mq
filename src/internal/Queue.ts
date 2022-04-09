@@ -18,6 +18,7 @@ export enum ConsumMode {
  * 队列，理论上一个队列的数据格式应该具有一致性
  */
 export default class Queue<D> {
+  [k: string]: any;
   name?: string;
   /**
    * id

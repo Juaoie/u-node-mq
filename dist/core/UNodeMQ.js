@@ -13,6 +13,22 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __read = (this && this.__read) || function (o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+};
 var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
         if (ar || !(i in from)) {
@@ -22,6 +38,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     }
     return to.concat(ar || Array.prototype.slice.call(from));
 };
+import { isFunction } from "../index.js";
 import Collection from "./Collection.js";
 export function createUnmq(exchangeCollection, queueCollection) {
     return new UNodeMQ(exchangeCollection, queueCollection);
@@ -29,22 +46,34 @@ export function createUnmq(exchangeCollection, queueCollection) {
 var UNodeMQ = (function (_super) {
     __extends(UNodeMQ, _super);
     function UNodeMQ(exchangeCollection, queueCollection) {
-        var _this = this;
-        for (var name_1 in exchangeCollection) {
-            exchangeCollection[name_1].name = name_1;
-        }
-        for (var name_2 in queueCollection) {
-            queueCollection[name_2].name = name_2;
-        }
-        _this = _super.call(this, exchangeCollection, queueCollection) || this;
+        var _this = _super.call(this, exchangeCollection, queueCollection) || this;
+        _this.installedPlugins = new Set();
         return _this;
     }
+    UNodeMQ.prototype.use = function (plugin) {
+        var options = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            options[_i - 1] = arguments[_i];
+        }
+        if (this.installedPlugins.has(plugin)) {
+            console.log("Plugin has already been applied to target unmq.");
+        }
+        else if (plugin && isFunction(plugin.install)) {
+            this.installedPlugins.add(plugin);
+            plugin.install.apply(plugin, __spreadArray([this], __read(options), false));
+        }
+        else if (isFunction(plugin)) {
+            this.installedPlugins.add(plugin);
+            plugin.apply(void 0, __spreadArray([this], __read(options), false));
+        }
+        return this;
+    };
     UNodeMQ.prototype.emit = function (exchangeName) {
         var contentList = [];
         for (var _i = 1; _i < arguments.length; _i++) {
             contentList[_i - 1] = arguments[_i];
         }
-        _super.prototype.pushContentListToExchange.apply(this, __spreadArray([exchangeName], contentList, false));
+        _super.prototype.pushContentListToExchange.apply(this, __spreadArray([exchangeName], __read(contentList), false));
         return this;
     };
     UNodeMQ.prototype.emitToQueue = function (queueName) {
@@ -52,7 +81,7 @@ var UNodeMQ = (function (_super) {
         for (var _i = 1; _i < arguments.length; _i++) {
             contentList[_i - 1] = arguments[_i];
         }
-        _super.prototype.pushContentListToQueue.apply(this, __spreadArray([queueName], contentList, false));
+        _super.prototype.pushContentListToQueue.apply(this, __spreadArray([queueName], __read(contentList), false));
         return this;
     };
     UNodeMQ.prototype.on = function (queueName, consume, payload) {

@@ -4,21 +4,31 @@ import { Consume } from "../internal/Consumer.js";
 /**
  * 队列集合
  */
-export default class QueueCollectionHandle<QueueCollection extends Record<string, Queue<unknown>>> {
-  private queueCollection: QueueCollection;
-  setQueueCollection(queueCollection: QueueCollection) {
-    this.queueCollection = queueCollection;
-  }
-  getQueue<Q extends keyof QueueCollection>(queueName: Q) {
-    return this.queueCollection[queueName];
-  }
-  pushNewsToQueue<Q extends keyof QueueCollection>(queueName: Q, news: News<unknown>) {
-    if (this.queueCollection[queueName] === undefined) {
+export default class QueueCollectionHandle {
+  private queueCollection: Map<string, Queue<any>>;
+  has(queueName: string) {
+    if (this.queueCollection.has(queueName)) return true;
+    else {
       Logs.error(`${queueName} not find`);
       return false;
     }
-    this.queueCollection[queueName].pushNews(news);
-    return true;
+  }
+  setQueueCollection(queueCollection: Record<string, Queue<unknown>>) {
+    this.queueCollection = new Map(Object.entries(queueCollection));
+  }
+  getQueue(queueName: string) {
+    if (!this.has(queueName)) return;
+    return this.queueCollection.get(queueName);
+  }
+  getQueueList() {
+    return [...this.queueCollection.values()];
+  }
+  addQueue(queue: Queue<unknown>) {
+    this.queueCollection.set(queue.name, queue);
+  }
+  pushNewsToQueue(queueName: string, news: News<unknown>) {
+    if (!this.has(queueName)) return;
+    this.queueCollection.get(queueName).pushNews(news);
   }
   /**
    * 添加一个消息内容到队列
@@ -26,13 +36,9 @@ export default class QueueCollectionHandle<QueueCollection extends Record<string
    * @param content
    * @returns
    */
-  pushContentToQueue<Q extends keyof QueueCollection>(queueName: Q, content: unknown) {
-    if (this.queueCollection[queueName] === undefined) {
-      Logs.error(`${queueName} not find`);
-      return false;
-    }
-    this.queueCollection[queueName].pushContent(content);
-    return true;
+  pushContentToQueue(queueName: string, content: unknown) {
+    if (!this.has(queueName)) return;
+    this.queueCollection.get(queueName).pushContent(content);
   }
   /**
    * 订阅队列
@@ -41,28 +47,21 @@ export default class QueueCollectionHandle<QueueCollection extends Record<string
    * @param payload
    * @returns
    */
-  subscribeQueue<Q extends keyof QueueCollection>(queueName: Q, consume: Consume<unknown>, payload?: any) {
-    if (this.queueCollection[queueName] === undefined) {
-      Logs.error(`${queueName} not find`);
-      return false;
-    }
-    this.queueCollection[queueName].pushConsume(consume, payload);
-    return true;
+  subscribeQueue(queueName: string, consume: Consume<unknown>, payload?: any) {
+    if (!this.has(queueName)) return;
+    this.queueCollection.get(queueName).pushConsume(consume, payload);
   }
   /**
    * 取消订阅队列
    * @param queueName
    * @param consume
    */
-  unsubscribeQueue<Q extends keyof QueueCollection>(queueName: Q, consume?: Consume<unknown>) {
-    if (this.queueCollection[queueName] === undefined) {
-      Logs.error(`${queueName} not find`);
-      return false;
-    }
+  unsubscribeQueue(queueName: string, consume?: Consume<unknown>) {
+    if (!this.has(queueName)) return;
     if (consume === undefined) {
-      return this.queueCollection[queueName].removeAllConsumer();
+      return this.queueCollection.get(queueName).removeAllConsumer();
     } else {
-      return this.queueCollection[queueName].removeConsumer(consume);
+      return this.queueCollection.get(queueName).removeConsumer(consume);
     }
   }
 }
