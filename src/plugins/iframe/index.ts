@@ -1,10 +1,12 @@
 import UNodeMQ, { Exchange, isObject, isString, Queue } from "../../index.js";
 import { getOtherAllIframeDoc } from "./loader.js";
 //TODO:解决插件引用路径长度问题
+//TODO:跨iframe共享storage
+//TODO:单元测试框架集成
 export enum MessageType {
   GeneralMessage, //普通消息
   FindExchangeMessage, //广播查找交换机消息
-  SendCoordinateMessage, //发送exchange消息
+  SendCoordinateMessage, //发送exchange坐标消息
   OnlineNotificationMessage, //上线通知消息
 }
 
