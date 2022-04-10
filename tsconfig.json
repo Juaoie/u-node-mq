@@ -2,10 +2,10 @@
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "test/*.ts"],
   "compilerOptions": {
-    "target": "ES5",
+    "target": "ES6",
     "module": "ES6",
     "moduleResolution": "Node",
-    "outDir": "dist/",
+    "outDir": "./",
     "lib": ["dom", "ESNext"],
     "declaration": true,
     "removeComments": true,

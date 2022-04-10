@@ -15,21 +15,7 @@ const unmq = new UNodeMQ(
   }
 );
 
-unmq.emit("GET_OPENID", 1);
+unmq.emit("GET_OPENID", "");
 unmq.on("ADD_DEMO_PSEUDO_DATA", (res) => {});
 unmq.on("HOME_ALL_QUESTION", (res) => {});
-unmq.getExchange("GET_OPENID1")
-
-import IframeMessage, { OtherIframe, SelfIframe, SelfQueue } from "../src/plugins/message";
-
-//其他交换机name变成必选了
-const iframeMessage = new IframeMessage(
-  "test1",
-  new SelfIframe({ routes: ["queue1"] }),
-  { ex1: new OtherIframe<number>() },
-  { qu1: new SelfQueue<number>() }
-);
-
-iframeMessage.emit("ex1", 1, 2);
-
-iframeMessage.on("qu1", (res) => {});
+unmq.getExchange("GET_OPENID");
