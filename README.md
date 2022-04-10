@@ -1,12 +1,8 @@
 # u-node-mq
 
-基于发布订阅模型的消息通信插件，保证在异步模式下消息必消费，有完整的类型提示，也可进行跨 ifram 通信；
+基于发布订阅模型的消息通信工具，解决模块异步通信功能，有完整的 ts 类型提示；
 
-## 已实现功能
-
-- [发布订阅模型](https://www.rabbitmq.com/getstarted.html)
-
-  - 实现类似 rabbitmq 的五种消息模式
+## u-node-mq 内置插件集合
 
 - iframe 的跨域通信插件
 
@@ -15,21 +11,25 @@
   - 实现定位算法实现消息准确发送
   - 通过 origin 确保数据安全
 
+- storage 处理插件
+
+  - 内置可配置 md5 加密 storage
+  - 实现了 storage 存储复杂数据类型的功能
+  - 使用 pinia 或其他状态管理插件共享 storage 数据
+
 ## 即将实现功能
 
 - 基于 rxjs pipeline
 
 - 重写 process 流程执行器，2.x 部分有完整版
 
-- 基于发布订阅的状态管理
-
 - 更加方便的 websocket 封装方法
 
 ## 简单示例地址
 
-[UNodeMQ](https://unpkg.com/u-node-mq/test/unmq/index.html)
+[UNodeMQ](https://unpkg.com/u-node-mq/docs/unmq/index.html)
 
-[IframeMessage](https://unpkg.com/u-node-mq/test/message/index.html)
+[IframeMessage](https://unpkg.com/u-node-mq/docs/iframe/index.html)
 
 ## npm 安装
 
@@ -222,7 +222,10 @@ const consumer = new Consumer(Consume, PayLoad);
 
 # IframeMessage Plugin
 
-- IframeMessage 为单例模式，每个应用只会有一个 IframeMessage 实例对象
+- u-node-mq 集成 IframeMessage 以后，unmq 的每个 Exchange 将对应一个 iframe 容器，且其他 Exchange 路由和中继器将会被重写；
+- 一个 iframe 应用一般情况下应该只注册一个 IframeMessage 插件；
+- 被集成了 IframeMessage 插件的 unmq，开发者只需要维护自己 Exchange 下的队列；
+- 可以在其他 Exchange 应用上添加 origin 用来验证 iframe 的 url
 
 ## IframeMessage 基本使用方法
 
@@ -230,69 +233,59 @@ const consumer = new Consumer(Consume, PayLoad);
 
 ```javascript
 // https://iframeName1.com
-import IframeMessage, { SelfIframe, OtherIframe, SelfQueue } from "u-node-mq/plugins/message";
-const im = new IframeMessage(
-  "iframeName1",
-  new SelfIframe(),
+import IframeMessage from "u-node-mq/plugins/iframe";
+import UNodeMQ from "u-node-mq";
+const unmq = new UNodeMQ(
   {
-    iframeName2: new OtherIframe("https://iframeName2.com"),
+    iframeName1: new Exchange({ routes: ["qu1"] }),
+    iframeName2: new Exchange(),
   },
-  {}
+  {
+    qu1: new Queue(),
+  }
 );
+unmq.use(new IframeMessage("iframeName1"));
+unmq.emit("iframeName2", "发送给iframeName2的消息");
 ```
 
 **iframe2 应用**
 
 ```javascript
 // https://iframeName2.com
-import IframeMessage, { SelfIframe, OtherIframe, SelfQueue } from "u-node-mq/plugins/message";
-const im = new IframeMessage(
-  "iframeName2",
-  new SelfIframe({ routes: ["qu2"] }),
+import IframeMessage from "u-node-mq/plugins/iframe";
+import UNodeMQ from "u-node-mq";
+const unmq = new UNodeMQ(
   {
-    iframeName1: new OtherIframe("https://iframeName1.com"),
+    iframeName1: new Exchange(),
+    iframeName2: new Exchange({ routes: ["qu2"] }),
   },
   {
-    qu2: new SelfQueue(),
+    qu2: new Queue(),
   }
 );
+unmq.use(new IframeMessage("iframeName2"));
+unmq.on("qu2", (res) => {
+  console.log("接受来自其他iframe容器的消息", res);
+});
 ```
 
 ## 1、IframeMessage
 
 ```javascript
-import IframeMessage from "u-node-mq/plugins/message";
-const im = new IframeMessage(name, SelfIframe, ExchangeCollectionType, QueueCollectionType);
+import IframeMessage from "u-node-mq/plugins/iframe";
+const im = new IframeMessage(name);
 ```
 
 **IframeMessage constructor 参数说明**
 
-| 名称               | 类型                     | 必填 | 说明                         |
-| ------------------ | ------------------------ | ---- | ---------------------------- |
-| name               | string                   | 是   | 当前 iframe 容器的名称       |
-| SelfIframe         | SelfIframe               | 是   | 当前 iframe 容器的交换机，   |
-| ExchangeCollection | { string : OtherIframe } | 是   | 其他 iframe 容器的交换机集合 |
-| QueueCollection    | { string : SelfQueue }   | 是   | 当前 iframe 容器的队列集合   |
+| 名称 | 类型   | 必填 | 说明                   |
+| ---- | ------ | ---- | ---------------------- |
+| name | string | 是   | 当前 iframe 容器的名称 |
 
-**im 方法说明**
+## 2、OtherIframe | OtherExchange
 
-| 名称 | 参数类型                           | 说明                                                                             |
-| ---- | ---------------------------------- | -------------------------------------------------------------------------------- |
-| emit | (ExchangeName , ...消息)           | 发送数据到其他 iframe 容器交换机，返回 this                                      |
-| on   | (QueueName , 消费方法 , ?载荷消息) | 订阅队列消息，其他 iframe 容器发送消息到当前应用会将触发消费，返回取消订阅的函数 |
-| off  | (QueueName , ?消费方法)            | 移除队列上的指定消费者或者移除队列上所有消费者，返回 this                        |
-| once | (QueueName , 消费方法 , ?载荷消息) | 只消费一条消息，返回 this                                                        |
-| 更多 | 未知                               | 更多的内部方法                                                                   |
+- 建议只创建需要发送消息的应用实例，不需要发送消息的应用则不创建
 
-## 2、OtherIframe
-
-- 建议只创建需要发送消息的应用实例，不需要发送消息的应用，则不创建
-
-```javascript
-import { OtherIframe } from "u-node-mq/plugins/message";
-const otherIframe = new OtherIframe({ name: "otherName", origin: "https://iframeName2.com" });
-```
-
-| 名称   | 类型   | 必填 | 说明                                                         |
-| ------ | ------ | ---- | ------------------------------------------------------------ |
-| origin | string | 否   | 默认为"\*"，为了通信安全，建议为每个 OtherIframe 加上 origin |
+| 名称   | 类型   | 必填 | 说明                                             |
+| ------ | ------ | ---- | ------------------------------------------------ |
+| origin | string | 否   | 为了通信安全，建议为每个 OtherIframe 加上 origin |
