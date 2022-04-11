@@ -16,7 +16,7 @@
     "iframe通信",
     "微前端"
   ],
-  "main": "./index.js",
+  "main": "./index.neutral.min.js",
   "types": "./types/index.d.ts",
   "repository": "https://github.com/Juaoie/u-node-mq.git",
   "homepage": "https://github.com/Juaoie/u-node-mq/",
