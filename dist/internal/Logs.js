@@ -1,13 +1,9 @@
-var Logs = (function () {
-    function Logs() {
-    }
-    Logs.error = function (message) {
+export default class Logs {
+    static error(message) {
         console.error(message);
-    };
-    Logs.log = function (message) {
+    }
+    static log(message) {
         console.log(message);
-    };
-    Logs.unmq = null;
-    return Logs;
-}());
-export default Logs;
+    }
+}
+Logs.unmq = null;

@@ -1,14 +1,3 @@
-var __values = (this && this.__values) || function(o) {
-    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
-    if (m) return m.call(o);
-    if (o && typeof o.length === "number") return {
-        next: function () {
-            if (o && i >= o.length) o = void 0;
-            return { value: o && o[i++], done: !o };
-        }
-    };
-    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
-};
 import News from "./News.js";
 import Consumer from "./Consumer.js";
 import Logs from "./Logs.js";
@@ -18,8 +7,8 @@ export var ConsumMode;
     ConsumMode["Random"] = "Random";
     ConsumMode["All"] = "All";
 })(ConsumMode || (ConsumMode = {}));
-var Queue = (function () {
-    function Queue(option) {
+export default class Queue {
+    constructor(option) {
         this.id = Tools.random();
         this.ask = false;
         this.rcn = 3;
@@ -39,112 +28,98 @@ var Queue = (function () {
         if ((option === null || option === void 0 ? void 0 : option.name) !== undefined)
             this.name = option.name;
     }
-    Queue.prototype.getId = function () {
+    getId() {
         return this.id;
-    };
-    Queue.prototype.getNews = function () {
+    }
+    getNews() {
         return this.news;
-    };
-    Queue.prototype.getConsumerList = function () {
+    }
+    getConsumerList() {
         return this.consumerList;
-    };
-    Queue.prototype.removeConsumer = function (consume) {
-        var index = this.consumerList.findIndex(function (item) { return item.consume === consume; });
+    }
+    removeConsumer(consume) {
+        const index = this.consumerList.findIndex((item) => item.consume === consume);
         if (index === -1)
             return false;
         this.consumerList.splice(index, 1);
         return true;
-    };
-    Queue.prototype.removeAllConsumer = function () {
+    }
+    removeAllConsumer() {
         this.consumerList = [];
         return true;
-    };
-    Queue.prototype.removeAllNews = function () {
+    }
+    removeAllNews() {
         this.news = [];
         return true;
-    };
-    Queue.prototype.removeConsumerById = function (consumerId) {
-        var index = this.consumerList.findIndex(function (item) { return item.getId() === consumerId; });
+    }
+    removeConsumerById(consumerId) {
+        const index = this.consumerList.findIndex((item) => item.getId() === consumerId);
         if (index === -1)
             return false;
         this.consumerList.splice(index, 1);
         return true;
-    };
-    Queue.prototype.pushConsumer = function (consumer) {
-        if (this.consumerList.findIndex(function (item) { return item.getId() === consumer.getId(); }) === -1)
+    }
+    pushConsumer(consumer) {
+        if (this.consumerList.findIndex((item) => item.getId() === consumer.getId()) === -1)
             this.consumerList.push(consumer);
         if (this.news.length > 0 && this.consumerList.length > 0)
             this.consumeNews();
-    };
-    Queue.prototype.pushConsume = function (consume, payload) {
-        var consumer = new Consumer(consume, payload);
+    }
+    pushConsume(consume, payload) {
+        const consumer = new Consumer(consume, payload);
         this.pushConsumer(consumer);
-    };
-    Queue.prototype.pushNews = function (news) {
+    }
+    pushNews(news) {
         if (news.consumedTimes === -1)
             news.consumedTimes = this.rcn;
         if (news.consumedTimes > 0) {
-            if (this.news.findIndex(function (item) { return item.getId() === news.getId(); }) === -1)
+            if (this.news.findIndex((item) => item.getId() === news.getId()) === -1)
                 this.news.push(news);
         }
         if (this.news.length > 0 && this.consumerList.length > 0)
             this.consumeNews();
-    };
-    Queue.prototype.pushContent = function (content) {
-        var news = new News(content);
+    }
+    pushContent(content) {
+        const news = new News(content);
         this.pushNews(news);
-    };
-    Queue.prototype.eject = function () {
+    }
+    eject() {
         if (this.news.length > 0)
             return this.news.splice(0, 1)[0];
         else
             null;
-    };
-    Queue.prototype.consumeNews = function () {
-        var e_1, _a;
+    }
+    consumeNews() {
         if (this.news.length === 0)
             return;
         if (this.consumerList.length === 0)
             return;
-        var news = this.eject();
+        const news = this.eject();
         if (news === null)
             return;
         if (this.mode === ConsumMode.Random) {
-            var index = Math.round(Math.random() * (this.consumerList.length - 1));
-            var consumer = this.consumerList[index];
+            const index = Math.round(Math.random() * (this.consumerList.length - 1));
+            const consumer = this.consumerList[index];
             this.consumption(news, consumer);
         }
         else if (this.mode === ConsumMode.All) {
-            try {
-                for (var _b = __values(this.consumerList), _c = _b.next(); !_c.done; _c = _b.next()) {
-                    var consumer = _c.value;
-                    this.consumption(news, consumer);
-                }
-            }
-            catch (e_1_1) { e_1 = { error: e_1_1 }; }
-            finally {
-                try {
-                    if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
-                }
-                finally { if (e_1) throw e_1.error; }
+            for (const consumer of this.consumerList) {
+                this.consumption(news, consumer);
             }
         }
-    };
-    Queue.prototype.consumption = function (news, consumer) {
-        var _this = this;
-        consumer.consumption(news, this.ask).then(function (isOk) {
+    }
+    consumption(news, consumer) {
+        consumer.consumption(news, this.ask).then((isOk) => {
             if (isOk) {
-                Logs.log("\u961F\u5217 \u6D88\u8D39\u6210\u529F");
+                Logs.log(`队列 消费成功`);
             }
             else {
-                Logs.log("\u961F\u5217 \u6D88\u8D39\u5931\u8D25");
+                Logs.log(`队列 消费失败`);
                 news.consumedTimes--;
-                _this.pushNews(news);
+                this.pushNews(news);
             }
-            if (_this.news.length > 0)
-                _this.consumeNews();
+            if (this.news.length > 0)
+                this.consumeNews();
         });
-    };
-    return Queue;
-}());
-export default Queue;
+    }
+}

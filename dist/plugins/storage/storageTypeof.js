@@ -1,6 +1,6 @@
 import { isString } from "../../index";
-var stringType = "s###";
-var nostringType = "n###";
+const stringType = "s###";
+const nostringType = "n###";
 export function envalue(value) {
     if (isString(value))
         return stringType + value;
@@ -8,7 +8,7 @@ export function envalue(value) {
         return nostringType + JSON.stringify(value);
 }
 export function devalue(value) {
-    var type = value.slice(0, 4);
+    const type = value.slice(0, 4);
     if (type === stringType) {
         return value.slice(4);
     }

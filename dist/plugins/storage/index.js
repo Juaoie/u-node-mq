@@ -11,7 +11,7 @@ function getStorageType(storageOption) {
     else if (isObject(storageOption))
         return storageOption.type;
     else {
-        console.log("\u7C7B\u578B\u9519\u8BEF");
+        console.log(`类型错误`);
     }
 }
 function getStorageKey(storageOption) {
@@ -20,44 +20,41 @@ function getStorageKey(storageOption) {
     else if (isObject(storageOption))
         return storageOption.key;
     else {
-        console.log("\u7C7B\u578B\u9519\u8BEF");
+        console.log(`类型错误`);
     }
 }
 export function createStoragePlugin(storageData, storageConfig) {
     storageConfig = storageConfig || {};
-    var __storage = {};
-    for (var key in storageData) {
+    const __storage = {};
+    for (const key in storageData) {
         __storage[key] = null;
     }
     storageConfig.storageMemory.init(JSON.parse(JSON.stringify(__storage)));
     return {
         storage: __storage,
-        init: function () {
-            var _loop_1 = function (name_1) {
-                var type = getStorageType(storageData[name_1]);
-                var key = getStorageKey(storageData[name_1]) || storageConfig.key;
+        init: () => {
+            for (const name in storageData) {
+                const type = getStorageType(storageData[name]);
+                const key = getStorageKey(storageData[name]) || storageConfig.key;
                 if (storageConfig.storageMemory) {
-                    storageConfig.storageMemory.setData(name_1, getStorageSync(name_1, type, key));
+                    storageConfig.storageMemory.setData(name, getStorageSync(name, type, key));
                 }
-                Object.defineProperty(__storage, name_1, {
-                    get: function () {
+                Object.defineProperty(__storage, name, {
+                    get() {
                         if (storageConfig.storageMemory) {
-                            return storageConfig.storageMemory.getData(name_1);
+                            return storageConfig.storageMemory.getData(name);
                         }
                         else {
-                            return getStorageSync(name_1, type, key);
+                            return getStorageSync(name, type, key);
                         }
                     },
-                    set: function (value) {
-                        setStorageSync(name_1, type, value, key);
+                    set(value) {
+                        setStorageSync(name, type, value, key);
                         if (storageConfig.storageMemory) {
-                            storageConfig.storageMemory.setData(name_1, value);
+                            storageConfig.storageMemory.setData(name, value);
                         }
                     },
                 });
-            };
-            for (var name_1 in storageData) {
-                _loop_1(name_1);
             }
         },
     };

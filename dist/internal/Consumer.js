@@ -1,40 +1,36 @@
 import { isPromise } from "../index.js";
 import Tools from "../utils/tools.js";
 import Logs from "./Logs.js";
-var Consumer = (function () {
-    function Consumer(consume, payload) {
+export default class Consumer {
+    constructor(consume, payload) {
         this.id = Tools.random();
         this.createTime = new Date().getTime();
         this.consume = consume;
         this.payload = payload;
     }
-    Consumer.prototype.getId = function () {
+    getId() {
         return this.id;
-    };
-    Consumer.prototype.consumption = function (news, ask) {
-        var _this = this;
-        var then = function (thenParameter) {
+    }
+    consumption(news, ask) {
+        const then = (thenParameter) => {
             try {
                 if (!ask) {
-                    _this.consume(news.content, null, _this.payload);
+                    this.consume(news.content, null, this.payload);
                     return thenParameter(true);
                 }
-                var confirm_1 = function (value) {
-                    if (value === void 0) { value = true; }
-                    return thenParameter(value);
-                };
-                var res = _this.consume(news.content, confirm_1, _this.payload);
+                let confirm = (value = true) => thenParameter(value);
+                const res = this.consume(news.content, confirm, this.payload);
                 if (isPromise(res)) {
                     res
-                        .then(function (onfulfilled) {
+                        .then((onfulfilled) => {
                         thenParameter(Boolean(onfulfilled));
                     })
-                        .catch(function () {
+                        .catch(() => {
                         thenParameter(false);
                     });
                 }
                 else if (typeof res === "boolean") {
-                    confirm_1 = function () { };
+                    confirm = () => { };
                     thenParameter(res);
                 }
             }
@@ -44,9 +40,7 @@ var Consumer = (function () {
             }
         };
         return {
-            then: then,
+            then,
         };
-    };
-    return Consumer;
-}());
-export default Consumer;
+    }
+}
