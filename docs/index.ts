@@ -15,7 +15,7 @@ const unmq = new UNodeMQ(
   }
 );
 
-unmq.emit("GET_OPENID", "");
-unmq.on("ADD_DEMO_PSEUDO_DATA", (res) => {});
+unmq.emit("", "");
+unmq.on("ADD_DEMO_PSEUDO_DATA1", (res) => {});
 unmq.on("HOME_ALL_QUESTION", (res) => {});
 unmq.getExchange("GET_OPENID");

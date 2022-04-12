@@ -18,9 +18,9 @@ export function createUnmq<
 >(exchangeCollection: ExchangeCollection, queueCollection: QueueCollection) {
   return new UNodeMQ(exchangeCollection, queueCollection);
 }
+//TODO:增加可以使用数组的方式创建Exchange和Queue
 /**
- * unmq：
- * 仅有emit和on方法会触发队列推送消息给消费者
+ * UNodeMQ 发布订阅模型
  */
 export default class UNodeMQ<
   ExchangeCollection extends Record<string, Exchange<any>>,
@@ -31,17 +31,15 @@ export default class UNodeMQ<
   }
   private readonly installedPlugins: Set<Plugin> = new Set();
   use(plugin: Plugin, ...options: any[]) {
-    //thanks， Evan You
     if (this.installedPlugins.has(plugin)) {
       console.log(`Plugin has already been applied to target unmq.`);
     } else if (plugin && isFunction(plugin.install)) {
       this.installedPlugins.add(plugin);
-      plugin.install(this, ...options);
+      return plugin.install(this, ...options);
     } else if (isFunction(plugin)) {
       this.installedPlugins.add(plugin);
-      plugin(this, ...options);
+      return plugin(this, ...options);
     }
-    return this;
   }
   /**
    * 发射数据到交换机

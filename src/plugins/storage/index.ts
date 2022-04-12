@@ -1,8 +1,10 @@
 import StorageAdapterAbstract from "./StorageAdapterAbstract";
-import { isString, isObject } from "../../index";
+import UNodeMQ, { isString, isObject, Exchange, Queue } from "../../index";
 import { getStorageSync, setStorageSync } from "./storageHandle";
+import StorageSignAbstract from "./StorageSignAbstract";
 
 //TODO:实现storage存储超出警告
+//TODO:抽象sing函数，删除key
 
 export enum StorageType {
   SESSION = "session",
@@ -16,8 +18,9 @@ type StorageOption =
       key?: string;
     };
 type StorageConfig = {
+  storageType: StorageType;
   storageMemory?: StorageAdapterAbstract;
-  key?: string;
+  storageSign?: StorageSignAbstract;
 };
 type B<T> = {
   [k in keyof T]: any;
@@ -37,7 +40,43 @@ function getStorageKey(storageOption: StorageOption): string {
   }
 }
 
-export function createStoragePlugin<StorageData extends Record<string, StorageOption>>(
+class StorageMemory implements StorageAdapterAbstract {
+  private memoryData: Record<string, string>;
+  init(o: Record<string, null>): void {
+    this.memoryData = o;
+  }
+  getData(key: string): string {
+    return this.memoryData[key];
+  }
+  setData(key: string, value: string): void {
+    this.memoryData[key] = value;
+  }
+}
+
+export default class StoragePlugin {
+  private storageMemory: StorageAdapterAbstract; //代理访问内存
+  private storageSign: StorageSignAbstract; //加密方法
+  private storageType: StorageType; //storage 存储发啊是
+  constructor(private readonly storageKey: string[], storageConfig: StorageConfig) {
+    this.storageMemory = storageConfig?.storageMemory || new StorageMemory();
+    this.storageSign = storageConfig?.storageSign;
+    this.storageType = storageConfig.storageType;
+  }
+  install(unmq: UNodeMQ<Record<string, Exchange<any>>, Record<string, Queue<any>>>, ...options: any[]) {
+    for (const key of this.storageKey) {
+      unmq.addQueue(new Queue({ name: key }));=
+    }
+    const list=["a"]
+    const __storage = {}
+    for (const key of list) {
+      __storage[key]=null
+    }
+    return __storage;
+  }
+  init() {}
+}
+
+export function createStoragePlugin<StorageData extends Record<string, StorageType>>(
   storageData: StorageData,
   storageConfig?: StorageConfig
 ) {

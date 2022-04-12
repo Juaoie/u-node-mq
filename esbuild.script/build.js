@@ -35,6 +35,7 @@ buildMian();
 const pluginsList = [
   {
     entryPoint: "./src/plugins/iframe/index.ts",
+    bundle: true,
     outfiles: {
       node: "./plugins/iframe/index.node.js",
       browser: "./plugins/iframe/index.browser.js",
@@ -43,10 +44,18 @@ const pluginsList = [
   },
   {
     entryPoint: "./src/plugins/storage/index.ts",
+    bundle: true,
     outfiles: {
       node: "./plugins/storage/index.node.js",
       browser: "./plugins/storage/index.browser.js",
-      // neutral: "./plugins/storage/index.js",//暂时无法打包
+      // neutral: "./plugins/storage/index.js", //暂时无法打包
+    },
+  },
+  {
+    entryPoint: "./src/adapter/PiniaStorageAdapter.ts",
+    bundle: false,
+    outfiles: {
+      neutral: "./adapter/PiniaStorageAdapter.js",
     },
   },
 ];
@@ -58,7 +67,7 @@ async function pluginsBuild() {
       list.push(
         esbuild.build({
           entryPoints: [item.entryPoint],
-          bundle: true,
+          bundle: item.bundle,
           outfile: item.outfiles[key],
           minify: true,
           platform: key,

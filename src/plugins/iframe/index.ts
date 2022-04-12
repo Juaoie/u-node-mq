@@ -11,11 +11,11 @@ export enum MessageType {
 }
 
 //直发消息队列，即主动发送
-export const getInternalIframeMessageQueueName = (queueName: string) => queueName + "_Message";
+export const getInternalIframeMessageQueueName = (queueName: string) => queueName + "_Iframe_Message";
 //用来广播获取地址的消息
-export const getInternalIframeBroadcasMessageQueueName = (queueName: string) => queueName + "_Wait_Message";
+export const getInternalIframeBroadcasMessageQueueName = (queueName: string) => queueName + "_Iframe_Wait_Message";
 
-export default class IframeMessage {
+export default class IframePlugin {
   private name: string;
   private unmq: UNodeMQ<Record<string, Exchange<any>>, Record<string, Queue<any>>>;
   constructor(name: string) {
