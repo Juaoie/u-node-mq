@@ -1,5 +1,3 @@
-// const UNodeMQ = require("../index.node.min.js");
-// const Exchange = require("../index.node.min.js");
 import UNodeMQ, { Exchange, Queue, ConsumMode } from "../src/index";
 
 test("先挂载消费者，再发送消息", function (done) {
@@ -57,26 +55,28 @@ test("全部消费", function (done) {
       qu1: new Queue({ mode: ConsumMode.All }),
     }
   );
-  unmq.emit("ex1", "test");
   let num = 0;
-  unmq.on("qu1", () => {
+  unmq.emit("ex1", "test");
+  unmq.on("qu1", (res) => {
     num++;
   });
   unmq.on("qu1", () => {
     num++;
   });
-  if (num === 2) done();
+  setTimeout(() => {
+    expect(num).toEqual(2);
+    done();
+  });
 });
-
 
 test("routes分发到多个队列", function (done) {
   const unmq = new UNodeMQ(
     {
-      ex1: new Exchange({ routes:["qu1","qu2"] }),
+      ex1: new Exchange({ routes: ["qu1", "qu2"] }),
     },
     {
       qu1: new Queue({ mode: ConsumMode.All }),
-      // qu1: new Queue({ mode: ConsumMode.All }),
+      qu2: new Queue({ mode: ConsumMode.All }),
     }
   );
   unmq.emit("ex1", "test");
@@ -84,8 +84,129 @@ test("routes分发到多个队列", function (done) {
   unmq.on("qu1", () => {
     num++;
   });
+  unmq.on("qu2", () => {
+    num++;
+  });
+  setTimeout(() => {
+    expect(num).toEqual(2);
+    done();
+  });
+});
+
+test("检查名称是否自动填充", function (done) {
+  const unmq = new UNodeMQ(
+    {
+      ex1: new Exchange(),
+    },
+    {
+      qu1: new Queue(),
+    }
+  );
+  expect(unmq.getExchange("ex1").name).toEqual("ex1");
+  expect(unmq.getQueue("qu1").name).toEqual("qu1");
+  done();
+});
+
+test("消费一次事件循环内的所有消息", function (done) {
+  const unmq = new UNodeMQ(
+    {
+      ex1: new Exchange({ routes: ["qu1"] }),
+    },
+    {
+      qu1: new Queue(),
+    }
+  );
+  let num = 0;
+  unmq.emit("ex1", 1, 2, 3);
+
+  setTimeout(() => {
+    unmq.on("qu1", () => {
+      num++;
+    })();
+    expect(num).toEqual(3);
+    done();
+  });
+});
+
+test("有且仅消费一条消息", function (done) {
+  const unmq = new UNodeMQ(
+    {
+      ex1: new Exchange({ routes: ["qu1"] }),
+    },
+    {
+      qu1: new Queue(),
+    }
+  );
+  let num = 0;
+  unmq.once("qu1", () => {
+    num++;
+  });
+  unmq.emit("ex1", 1, 2, 3);
+  setTimeout(() => {
+    expect(num).toEqual(1);
+    expect(unmq.getQueue("qu1").getNews().length).toEqual(2);
+    done();
+  });
+});
+
+test("移除方法", function (done) {
+  const unmq = new UNodeMQ(
+    {
+      ex1: new Exchange({ routes: ["qu1"] }),
+    },
+    {
+      qu1: new Queue(),
+    }
+  );
+  let num = 0;
+  unmq.emit("ex1", 1, 2, 3);
+  function fun() {
+    num++;
+  }
+  unmq.on("qu1", fun);
+  unmq.off("qu1", fun);
+  setTimeout(() => {
+    expect(num).toEqual(0);
+    done();
+  });
+});
+
+test("直接发送消息给队列的方法", function (done) {
+  const unmq = new UNodeMQ(
+    {},
+    {
+      qu1: new Queue(),
+    }
+  );
+  let num = 0;
+  unmq.emitToQueue("qu1", 1, 2, 3);
   unmq.on("qu1", () => {
     num++;
   });
-  if (num === 2) done();
+  expect(num).toEqual(3);
+  done();
+});
+
+test("观察者模式", function (done) {
+  const unmq = new UNodeMQ(
+    {
+      ex1: new Exchange({ routes: ["qu1"] }),
+    },
+    {
+      qu1: new Queue({ ask: true, mode: ConsumMode.All }),
+    }
+  );
+  let num = 0;
+  unmq.on("qu1", () => true);
+  unmq.emit("ex1", 1, 2, 3);
+  unmq.on("qu1", () => {
+    num++;
+  });
+  setTimeout(() => {
+    unmq.on("qu1", () => {
+      num++;
+    });
+    expect(num).toEqual(3);
+    done();
+  });
 });

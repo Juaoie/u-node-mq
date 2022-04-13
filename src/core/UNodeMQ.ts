@@ -1,6 +1,11 @@
 import { Exchange, Queue, isFunction } from "../index";
 import { Consume, Next } from "../internal/Consumer";
 
+/**
+ * 获取队列名称返回的promise导致消费事件加入微任务队列延迟消费（ios属于加入普通任务队列）
+ * 这样同时保证了在观察者模式中数据能准确分发
+ */
+
 import Collection from "./Collection";
 
 export type ReturnPanShapeExchange<T> = T extends Exchange<infer U> ? U : never;
