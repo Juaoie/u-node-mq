@@ -63,10 +63,7 @@ export default class StoragePlugin {
     this.storageType = storageConfig.storageType;
   }
   install(unmq: UNodeMQ<Record<string, Exchange<any>>, Record<string, Queue<any>>>, ...options: any[]) {
-    for (const key of this.storageKey) {
-      unmq.addQueue(new Queue({ name: key }));=
-    }
-    const list=["a"]
+
     const __storage = {}
     for (const key of list) {
       __storage[key]=null

@@ -1,5 +1,5 @@
-import UNodeMQ, { Exchange, isObject, isString, Queue } from "../../index.js";
-import { getOtherAllIframeDoc } from "./loader.js";
+import UNodeMQ, { Exchange, isObject, isString, Queue } from "../../index";
+import { getOtherAllIframeDoc } from "./loader";
 //TODO:解决插件引用路径长度问题
 //TODO:跨iframe共享storage
 //TODO:单元测试框架集成

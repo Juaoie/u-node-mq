@@ -1,7 +1,7 @@
-import { isPromise } from "../index.js";
-import Tools from "../utils/tools.js";
-import Logs from "./Logs.js";
-import News from "./News.js";
+import { isPromise } from "../index";
+import Tools from "../utils/tools";
+import Logs from "./Logs";
+import News from "./News";
 export type Next = (value?: boolean) => void;
 
 export type Consume<D> = (content?: D, next?: Next, payload?: any) => Promise<boolean | void> | boolean | void;

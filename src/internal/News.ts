@@ -1,4 +1,4 @@
-import Tools from "../utils/tools.js";
+import Tools from "../utils/tools";
 
 export default class News<D> {
   /**

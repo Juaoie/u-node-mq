@@ -1,7 +1,7 @@
-import { Exchange, Queue, isFunction } from "../index.js";
-import { Consume, Next } from "../internal/Consumer.js";
+import { Exchange, Queue, isFunction } from "../index";
+import { Consume, Next } from "../internal/Consumer";
 
-import Collection from "./Collection.js";
+import Collection from "./Collection";
 
 export type ReturnPanShapeExchange<T> = T extends Exchange<infer U> ? U : never;
 export type ReturnPanShapeQueue<T> = T extends Queue<infer U> ? U : never;

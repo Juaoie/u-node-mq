@@ -1,5 +1,5 @@
-import { Logs, Queue, News } from "../index.js";
-import { Consume } from "../internal/Consumer.js";
+import { Logs, Queue, News } from "../index";
+import { Consume } from "../internal/Consumer";
 
 /**
  * 队列集合

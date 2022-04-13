@@ -23,7 +23,7 @@ async function buildMian() {
         bundle: true,
         outfile: "./index." + type + ".min.js",
         minify: true,
-        platform: "browser",
+        platform: type,
       })
     );
   }
@@ -42,15 +42,15 @@ const pluginsList = [
       neutral: "./plugins/iframe/index.js",
     },
   },
-  {
-    entryPoint: "./src/plugins/storage/index.ts",
-    bundle: true,
-    outfiles: {
-      node: "./plugins/storage/index.node.js",
-      browser: "./plugins/storage/index.browser.js",
-      // neutral: "./plugins/storage/index.js", //暂时无法打包
-    },
-  },
+  // {
+  //   entryPoint: "./src/plugins/storage/index.ts",
+  //   bundle: true,
+  //   outfiles: {
+  //     node: "./plugins/storage/index.node.js",
+  //     browser: "./plugins/storage/index.browser.js",
+  //     // neutral: "./plugins/storage/index.js", //暂时无法打包
+  //   },
+  // },
   {
     entryPoint: "./src/adapter/PiniaStorageAdapter.ts",
     bundle: false,

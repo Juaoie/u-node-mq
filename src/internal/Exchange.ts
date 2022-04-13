@@ -1,5 +1,5 @@
-import Tools from "../utils/tools.js";
-import Logs from "./Logs.js";
+import Tools from "../utils/tools";
+import Logs from "./Logs";
 /**
  * 中继器类型
  */

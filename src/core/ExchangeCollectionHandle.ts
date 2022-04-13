@@ -1,5 +1,5 @@
-import { Exchange } from "../index.js";
-import Logs from "../internal/Logs.js";
+import { Exchange } from "../index";
+import Logs from "../internal/Logs";
 
 export default class ExchangeCollectionHandle {
   private exchangeCollection: Map<string, Exchange<any>>;

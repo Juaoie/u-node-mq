@@ -1,15 +1,17 @@
-import Exchange from "./internal/Exchange.js";
-import Queue from "./internal/Queue.js";
-import Consumer from "./internal/Consumer.js";
-import News from "./internal/News.js";
-import Logs from "./internal/Logs.js";
+import Exchange from "./internal/Exchange";
+import Queue, { ConsumMode } from "./internal/Queue";
+import Consumer from "./internal/Consumer";
+import News from "./internal/News";
+import Logs from "./internal/Logs";
 
-import UNodeMQ, { createUnmq } from "./core/UNodeMQ.js";
+import UNodeMQ, { createUnmq } from "./core/UNodeMQ";
 export default UNodeMQ;
 
 export { createUnmq };
 
 export { Exchange, Queue, Consumer, News, Logs };
+
+export { ConsumMode };
 
 export const extend = Object.assign;
 export const objectToString = Object.prototype.toString;
