@@ -12,6 +12,7 @@
     "esModuleInterop": true,
     "baseUrl": ".",
     "paths": {},
+    "strict": true,
     "downlevelIteration": true
   }
 }

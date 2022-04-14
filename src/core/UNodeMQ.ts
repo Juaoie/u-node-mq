@@ -40,11 +40,12 @@ export default class UNodeMQ<
       console.log(`Plugin has already been applied to target unmq.`);
     } else if (plugin && isFunction(plugin.install)) {
       this.installedPlugins.add(plugin);
-      return plugin.install(this, ...options);
+      plugin.install(this, ...options);
     } else if (isFunction(plugin)) {
       this.installedPlugins.add(plugin);
-      return plugin(this, ...options);
+      plugin(this, ...options);
     }
+    return this;
   }
   /**
    * 发射数据到交换机

@@ -92,13 +92,13 @@ export default class Collection<
    * @param consume
    * @param payload
    */
-  subscribeQueue<Q extends keyof QueueCollection & string>(queueName: Q, consume: Consume<unknown>, payload?: any) {
+  subscribeQueue<Q extends keyof QueueCollection & string>(queueName: Q, consume: Consume<any>, payload?: any) {
     this.queueCollectionHandle.subscribeQueue(queueName, consume, payload);
   }
   /**
    * 取消订阅队列
    */
-  unsubscribeQueue<Q extends keyof QueueCollection & string>(queueName: Q, consume?: Consume<unknown>) {
+  unsubscribeQueue<Q extends keyof QueueCollection & string>(queueName: Q, consume?: Consume<any>) {
     this.queueCollectionHandle.unsubscribeQueue(queueName, consume);
   }
 }

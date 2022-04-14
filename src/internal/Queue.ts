@@ -172,7 +172,8 @@ export default class Queue<D> {
       }
     }
   }
-
+//TODO:增加最长消费时间
+//增加同步消费和异步消费属性
   consumption(news: News<D>, consumer: Consumer<D>) {
     consumer.consumption(news, this.ask).then((isOk: boolean) => {
       if (isOk) {
