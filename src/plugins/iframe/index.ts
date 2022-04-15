@@ -16,9 +16,8 @@ export const getInternalIframeMessageQueueName = (queueName: string) => queueNam
 export const getInternalIframeBroadcasMessageQueueName = (queueName: string) => queueName + "_Iframe_Wait_Message";
 
 export default class IframePlugin {
-  private name: string;
-  private unmq: UNodeMQ<Record<string, Exchange<any>>, Record<string, Queue<any>>>;
-  constructor(name: string) {
+  private unmq: UNodeMQ<Record<string, Exchange<any>>, Record<string, Queue<any>>> | null = null;
+  constructor(private readonly name: string) {
     this.name = name;
   }
   install(unmq: UNodeMQ<Record<string, Exchange<any>>, Record<string, Queue<any>>>, ...options: any[]) {
@@ -31,10 +30,10 @@ export default class IframePlugin {
     const otherIframe = list.filter((item) => item.name !== this.name);
 
     for (const iframe of otherIframe) {
-      iframe.setRepeater(null);
-      iframe.setRoutes([
-        getInternalIframeMessageQueueName(iframe.name),
-        getInternalIframeBroadcasMessageQueueName(iframe.name),
+      if (iframe.name === undefined) throw `系统错误`;
+      iframe.setRepeater(() => [
+        getInternalIframeMessageQueueName(iframe.name as string),
+        getInternalIframeBroadcasMessageQueueName(iframe.name as string),
       ]);
       //用于存储消息的队列
       unmq.addQueue(new Queue({ name: getInternalIframeMessageQueueName(iframe.name) }));
@@ -55,14 +54,18 @@ export default class IframePlugin {
     this.broadcastMessage(MessageType.OnlineNotificationMessage, null);
 
     //监听unmq的消息
-    window.addEventListener("message", this.receiveMessage.bind(this), false);
+    window.addEventListener("message", this.test.bind(this), false);
+  }
+  test(this: Window, ev: MessageEvent<any>) {
+    return true;
   }
   /**
    *
    * @param param0
    * @returns
    */
-  private receiveMessage({ source, data, origin }) {
+  private receiveMessage({ source, data, origin }: Window, ev: MessageEvent<any>) {
+    if (this.unmq === null) throw `${this.name} iframe 未安装`;
     if (!isObject(data)) return;
     const { mask, type, message, fromName } = data;
     if (mask !== "u-node-mq-plugin") return;
@@ -77,7 +80,7 @@ export default class IframePlugin {
       this.unmq.on(getInternalIframeMessageQueueName(fromName), (data) => {
         this.postMessage(source, MessageType.GeneralMessage, data, origin);
       })();
-      return;
+      return true;
     }
 
     ///////////不需要判断来源的消息

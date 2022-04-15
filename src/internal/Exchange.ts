@@ -39,7 +39,7 @@ export default class Exchange<D> {
   /**
    * 动态路由（中继器）
    */
-  private repeater: Repeater<D> = () => [];
+  private repeater: Repeater<D> = () => this.getRoutes();
   getRepeater() {
     return this.repeater;
   }
@@ -70,12 +70,7 @@ export default class Exchange<D> {
   async getQueueNameList(content: D): Promise<string[]> {
     try {
       //中继器模式
-      if (this.repeater) {
-        return await this.repeater(content);
-      } else if (this.routes) {
-        return this.routes;
-      }
-      return [];
+      return await this.repeater(content);
     } catch (error) {
       Logs.error(`exchange function getstringList exception`);
       return [];
