@@ -14,8 +14,9 @@ export default class ExchangeCollectionHandle {
     this.exchangeCollection = new Map(Object.entries(exchangeCollection));
   }
   getExchange(exchangeName: string) {
-    if (!this.has(exchangeName)) return;
-    return this.exchangeCollection.get(exchangeName);
+    const exchange =this.exchangeCollection.get(exchangeName)
+    if(exchange === undefined)throw `${exchangeName} not find`
+    return exchange;
   }
   getExchangeList() {
     return [...this.exchangeCollection.values()];
@@ -27,7 +28,6 @@ export default class ExchangeCollectionHandle {
    * @returns
    */
   getQueueNameList(exchangeName: string, content: unknown) {
-    if (!this.has(exchangeName)) return;
     return this.getExchange(exchangeName).getQueueNameList(content);
   }
 }
