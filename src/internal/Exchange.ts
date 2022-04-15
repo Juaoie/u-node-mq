@@ -39,7 +39,7 @@ export default class Exchange<D> {
   /**
    * 动态路由（中继器）
    */
-  private repeater: Repeater<D>;
+  private repeater: Repeater<D> = () => [];
   getRepeater() {
     return this.repeater;
   }
@@ -75,6 +75,7 @@ export default class Exchange<D> {
       } else if (this.routes) {
         return this.routes;
       }
+      return [];
     } catch (error) {
       Logs.error(`exchange function getstringList exception`);
       return [];

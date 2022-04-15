@@ -149,7 +149,7 @@ export default class Queue<D> {
    */
   eject(): News<D> | null {
     if (this.news.length > 0) return this.news.splice(0, 1)[0];
-    else null;
+    else return null;
   }
   /**
    * 消费方法
@@ -172,8 +172,8 @@ export default class Queue<D> {
       }
     }
   }
-//TODO:增加最长消费时间
-//增加同步消费和异步消费属性
+  //TODO:增加最长消费时间
+  //增加同步消费和异步消费属性
   consumption(news: News<D>, consumer: Consumer<D>) {
     consumer.consumption(news, this.ask).then((isOk: boolean) => {
       if (isOk) {

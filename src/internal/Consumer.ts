@@ -4,7 +4,10 @@ import Logs from "./Logs";
 import News from "./News";
 export type Next = (value?: boolean) => void;
 
-export type Consume<D> = (content?: D, next?: Next, payload?: any) => Promise<any> | any;
+export interface Consume<D> {
+  (content?: D, next?: Next, payload?: any): Promise<any> | any;
+  (content?: D, payload?: any): any;
+}
 type ThenParameter<D> = (isOk: boolean) => void;
 interface Payload<D> {
   then: (res: ThenParameter<D>) => void;
@@ -43,10 +46,11 @@ export default class Consumer<D> {
   consumption(news: News<D>, ask: boolean): Payload<D> {
     const then = (thenParameter: ThenParameter<D>) => {
       //不加入任务队列，会导致消费失败的数据重写到队列失败
+      //TODO:不需要确认消费的时候不需要管消费方法是否报错
       try {
         if (!ask) {
           //不需要确认的消费方法
-          this.consume(news.content, null, this.payload);
+          this.consume(news.content, this.payload);
           return thenParameter(true);
         }
         //构建消息确认的方法

@@ -1,6 +1,6 @@
 const esbuild = require("esbuild");
 const { dtsPlugin } = require("esbuild-plugin-d.ts");
-//TODO:自己些声明文件
+//TODO:自己写声明文件
 // esbuild
 //   .build({
 //     entryPoints: ["./src/index.ts"],
