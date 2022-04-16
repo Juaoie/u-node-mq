@@ -1,7 +1,7 @@
-import News from "./News.js";
-import Consumer from "./Consumer.js";
-import Logs from "./Logs.js";
-import Tools from "../utils/tools.js";
+import News from "./News";
+import Consumer from "./Consumer";
+import Logs from "./Logs";
+import Tools from "../utils/tools";
 export var ConsumMode;
 (function (ConsumMode) {
     ConsumMode["Random"] = "Random";
@@ -87,7 +87,7 @@ export default class Queue {
         if (this.news.length > 0)
             return this.news.splice(0, 1)[0];
         else
-            null;
+            return null;
     }
     consumeNews() {
         if (this.news.length === 0)

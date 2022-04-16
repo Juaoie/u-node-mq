@@ -1,5 +1,5 @@
-import { isFunction } from "../index.js";
-import Collection from "./Collection.js";
+import { isFunction } from "../index";
+import Collection from "./Collection";
 export function createUnmq(exchangeCollection, queueCollection) {
     return new UNodeMQ(exchangeCollection, queueCollection);
 }
@@ -36,6 +36,57 @@ export default class UNodeMQ extends Collection {
     }
     off(x, y) {
         super.unsubscribeQueue(x, y);
+        return this;
+    }
+    once(queueName, consume, payload) {
+        let consumeNum = 0;
+        const consumeProxy = (content, next, payload) => {
+            if (consumeNum === 1)
+                return;
+            consumeNum++;
+            this.off(queueName, consumeProxy);
+            return consume(content, next, payload);
+        };
+        this.on(queueName, consumeProxy, payload);
+        return this;
+    }
+}
+export function createQuickUnmq(exchange, queueCollection) {
+    return new QuickUNodeMQ(exchange, queueCollection);
+}
+export class QuickUNodeMQ {
+    constructor(exchange, queueCollection) {
+        this.exchange = exchange;
+        this.queueCollection = queueCollection;
+    }
+    emit(...contentList) {
+        for (const content of contentList) {
+            this.exchange.getQueueNameList(content).then((queueNameList) => {
+                for (const queueName of queueNameList) {
+                    if (this.queueCollection[queueName] === undefined)
+                        continue;
+                    this.queueCollection[queueName].pushContent(content);
+                }
+            });
+        }
+        return this;
+    }
+    emitToQueue(queueName, ...contentList) {
+        for (const content of contentList) {
+            this.queueCollection[queueName].pushContent(content);
+        }
+        return this;
+    }
+    on(queueName, consume, payload) {
+        this.queueCollection[queueName].pushConsume(consume, payload);
+        return () => this.off(queueName, consume);
+    }
+    off(x, y) {
+        if (y === undefined) {
+            this.queueCollection[x].removeAllConsumer();
+        }
+        else
+            this.queueCollection[x].removeConsumer(y);
         return this;
     }
     once(queueName, consume, payload) {

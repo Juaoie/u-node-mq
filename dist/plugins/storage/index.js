@@ -23,6 +23,33 @@ function getStorageKey(storageOption) {
         console.log(`类型错误`);
     }
 }
+class StorageMemory {
+    init(o) {
+        this.memoryData = o;
+    }
+    getData(key) {
+        return this.memoryData[key];
+    }
+    setData(key, value) {
+        this.memoryData[key] = value;
+    }
+}
+export default class StoragePlugin {
+    constructor(storageKey, storageConfig) {
+        this.storageKey = storageKey;
+        this.storageMemory = (storageConfig === null || storageConfig === void 0 ? void 0 : storageConfig.storageMemory) || new StorageMemory();
+        this.storageSign = storageConfig === null || storageConfig === void 0 ? void 0 : storageConfig.storageSign;
+        this.storageType = storageConfig.storageType;
+    }
+    install(unmq, ...options) {
+        const __storage = {};
+        for (const key of list) {
+            __storage[key] = null;
+        }
+        return __storage;
+    }
+    init() { }
+}
 export function createStoragePlugin(storageData, storageConfig) {
     storageConfig = storageConfig || {};
     const __storage = {};

@@ -1,4 +1,4 @@
-import UNodeMQ, { Exchange, Queue } from "../../index.js";
+import UNodeMQ, { Exchange, Queue } from "../../index";
 export declare enum MessageType {
     GeneralMessage = 0,
     FindExchangeMessage = 1,
@@ -7,8 +7,8 @@ export declare enum MessageType {
 }
 export declare const getInternalIframeMessageQueueName: (queueName: string) => string;
 export declare const getInternalIframeBroadcasMessageQueueName: (queueName: string) => string;
-export default class IframeMessage {
-    private name;
+export default class IframePlugin {
+    private readonly name;
     private unmq;
     constructor(name: string);
     install(unmq: UNodeMQ<Record<string, Exchange<any>>, Record<string, Queue<any>>>, ...options: any[]): void;

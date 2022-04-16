@@ -7,12 +7,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import Tools from "../utils/tools.js";
-import Logs from "./Logs.js";
+import Tools from "../utils/tools";
+import Logs from "./Logs";
 export default class Exchange {
     constructor(option) {
         this.id = Tools.random();
         this.routes = [];
+        this.repeater = () => this.getRoutes();
         if ((option === null || option === void 0 ? void 0 : option.routes) !== undefined)
             this.routes = option.routes;
         if ((option === null || option === void 0 ? void 0 : option.repeater) !== undefined)
@@ -47,12 +48,7 @@ export default class Exchange {
     getQueueNameList(content) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                if (this.repeater) {
-                    return yield this.repeater(content);
-                }
-                else if (this.routes) {
-                    return this.routes;
-                }
+                return yield this.repeater(content);
             }
             catch (error) {
                 Logs.error(`exchange function getstringList exception`);

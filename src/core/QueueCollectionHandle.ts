@@ -17,11 +17,11 @@ export default class QueueCollectionHandle {
   setQueueCollection(queueCollection: Record<string, Queue<unknown>>) {
     this.queueCollection = new Map(Object.entries(queueCollection));
   }
-  getQueue(queueName: string) {
+  getQueue(queueName: string): Queue<unknown> | null {
     const queue = this.queueCollection.get(queueName);
     if (queue === undefined) {
       Logs.error(`${queueName} not find`);
-      throw `${queueName} not find`;
+      return null;
     }
     return queue;
   }
@@ -33,7 +33,7 @@ export default class QueueCollectionHandle {
     this.queueCollection.set(queue.name, queue);
   }
   pushNewsToQueue(queueName: string, news: News<unknown>) {
-    this.getQueue(queueName).pushNews(news);
+    this.getQueue(queueName)?.pushNews(news);
   }
   /**
    * 添加一个消息内容到队列
@@ -42,7 +42,7 @@ export default class QueueCollectionHandle {
    * @returns
    */
   pushContentToQueue(queueName: string, content: unknown) {
-    this.getQueue(queueName).pushContent(content);
+    this.getQueue(queueName)?.pushContent(content);
   }
   /**
    * 订阅队列
@@ -52,19 +52,19 @@ export default class QueueCollectionHandle {
    * @returns
    */
   subscribeQueue(queueName: string, consume: Consume<unknown>, payload?: any) {
-    this.getQueue(queueName).pushConsume(consume, payload);
+    this.getQueue(queueName)?.pushConsume(consume, payload);
   }
   /**
    * 取消订阅队列
    * @param queueName
    * @param consume
    */
-  unsubscribeQueue(queueName: string, consume?: Consume<unknown>) {
-    if (!this.has(queueName)) return;
+  unsubscribeQueue(queueName: string, consume?: Consume<unknown>): boolean {
+    if (!this.has(queueName)) return false;
     if (consume === undefined) {
-      return this.getQueue(queueName).removeAllConsumer();
+      return !!this.getQueue(queueName)?.removeAllConsumer();
     } else {
-      return this.getQueue(queueName).removeConsumer(consume);
+      return !!this.getQueue(queueName)?.removeConsumer(consume);
     }
   }
 }

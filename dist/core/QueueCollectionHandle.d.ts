@@ -1,10 +1,10 @@
-import { Queue, News } from "../index.js";
-import { Consume } from "../internal/Consumer.js";
+import { Queue, News } from "../index";
+import { Consume } from "../internal/Consumer";
 export default class QueueCollectionHandle {
     private queueCollection;
     has(queueName: string): boolean;
     setQueueCollection(queueCollection: Record<string, Queue<unknown>>): void;
-    getQueue(queueName: string): Queue<any>;
+    getQueue(queueName: string): Queue<any> | null;
     getQueueList(): Queue<any>[];
     addQueue(queue: Queue<unknown>): void;
     pushNewsToQueue(queueName: string, news: News<unknown>): void;

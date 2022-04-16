@@ -1,4 +1,4 @@
-import UNodeMQ, { Exchange, Queue, ConsumMode } from "../src/index";
+import UNodeMQ, { Exchange, Queue, ConsumMode, QuickUNodeMQ } from "../src/index";
 
 test("先挂载消费者，再发送消息", function (done) {
   const unmq = new UNodeMQ(
@@ -26,9 +26,11 @@ test("先发送消息，再挂载消费者", function (done) {
     }
   );
   unmq.emit("ex1", "test");
-  unmq.on("qu1", (res) => {
-    expect(res).toBe("test");
-    done();
+  setTimeout(() => {
+    unmq.on("qu1", (res) => {
+      expect(res).toBe("test");
+      done();
+    });
   });
 });
 
@@ -102,8 +104,8 @@ test("检查名称是否自动填充", function (done) {
       qu1: new Queue(),
     }
   );
-  expect(unmq.getExchange("ex1").name).toEqual("ex1");
-  expect(unmq.getQueue("qu1").name).toEqual("qu1");
+  expect(unmq.getExchange("ex1")?.name).toEqual("ex1");
+  expect(unmq.getQueue("qu1")?.name).toBe("qu1");
   done();
 });
 
@@ -144,7 +146,7 @@ test("有且仅消费一条消息", function (done) {
   unmq.emit("ex1", 1, 2, 3);
   setTimeout(() => {
     expect(num).toEqual(1);
-    expect(unmq.getQueue("qu1").getNews().length).toEqual(2);
+    expect(unmq.getQueue("qu1")?.getNews().length).toEqual(2);
     done();
   });
 });
@@ -209,4 +211,38 @@ test("观察者模式", function (done) {
     expect(num).toEqual(3);
     done();
   });
+});
+
+test("测试中继器返回不存在的队列名称", function (done) {
+  const unmq = new UNodeMQ(
+    {
+      ex1: new Exchange({ routes: ["qu2", "qu1"] }),
+    },
+    {
+      qu1: new Queue({ ask: true, mode: ConsumMode.All }),
+    }
+  );
+  let num = 0;
+  unmq.emit("ex1", 1, 2, 3);
+  unmq.on("qu1", () => {
+    num++;
+  });
+  setTimeout(() => {
+    expect(num).toEqual(3);
+    done();
+  });
+});
+
+test("快速unmq", function (done) {
+  interface T {
+    test: number;
+  }
+  const quickUnmq = new QuickUNodeMQ(new Exchange<T>({ routes: ["qu1"] }), {
+    qu1: new Queue(),
+  });
+  quickUnmq.on("qu1", (res: T) => {
+    expect(res).toEqual({ test: 1 });
+    done();
+  });
+  quickUnmq.emit({ test: 1 });
 });

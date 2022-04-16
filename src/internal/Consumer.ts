@@ -5,8 +5,8 @@ import News from "./News";
 export type Next = (value?: boolean) => void;
 
 export interface Consume<D> {
-  (content?: D, next?: Next, payload?: any): Promise<any> | any;
-  (content?: D, payload?: any): any;
+  (content: D, next?: Next, payload?: any): Promise<any> | any;
+  (content: D, payload?: any): any;
 }
 type ThenParameter<D> = (isOk: boolean) => void;
 interface Payload<D> {

@@ -1,5 +1,5 @@
-import ExchangeCollectionHandle from "./ExchangeCollectionHandle.js";
-import QueueCollectionHandle from "./QueueCollectionHandle.js";
+import ExchangeCollectionHandle from "./ExchangeCollectionHandle";
+import QueueCollectionHandle from "./QueueCollectionHandle";
 export default class Collection {
     constructor(exchangeCollection, queueCollection) {
         this.exchangeCollectionHandle = new ExchangeCollectionHandle();

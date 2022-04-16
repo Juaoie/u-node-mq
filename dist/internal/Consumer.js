@@ -1,6 +1,6 @@
-import { isPromise } from "../index.js";
-import Tools from "../utils/tools.js";
-import Logs from "./Logs.js";
+import { isPromise } from "../index";
+import Tools from "../utils/tools";
+import Logs from "./Logs";
 export default class Consumer {
     constructor(consume, payload) {
         this.id = Tools.random();
@@ -15,7 +15,7 @@ export default class Consumer {
         const then = (thenParameter) => {
             try {
                 if (!ask) {
-                    this.consume(news.content, null, this.payload);
+                    this.consume(news.content, this.payload);
                     return thenParameter(true);
                 }
                 let confirm = (value = true) => thenParameter(value);

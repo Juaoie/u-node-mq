@@ -1,5 +1,8 @@
-import { Logs } from "../index.js";
+import { Logs } from "../index";
 export default class QueueCollectionHandle {
+    constructor() {
+        this.queueCollection = new Map();
+    }
     has(queueName) {
         if (this.queueCollection.has(queueName))
             return true;
@@ -12,39 +15,42 @@ export default class QueueCollectionHandle {
         this.queueCollection = new Map(Object.entries(queueCollection));
     }
     getQueue(queueName) {
-        if (!this.has(queueName))
-            return;
-        return this.queueCollection.get(queueName);
+        const queue = this.queueCollection.get(queueName);
+        if (queue === undefined) {
+            Logs.error(`${queueName} not find`);
+            return null;
+        }
+        return queue;
     }
     getQueueList() {
         return [...this.queueCollection.values()];
     }
     addQueue(queue) {
+        if (queue.name === undefined)
+            throw "queue.name is undefined";
         this.queueCollection.set(queue.name, queue);
     }
     pushNewsToQueue(queueName, news) {
-        if (!this.has(queueName))
-            return;
-        this.queueCollection.get(queueName).pushNews(news);
+        var _a;
+        (_a = this.getQueue(queueName)) === null || _a === void 0 ? void 0 : _a.pushNews(news);
     }
     pushContentToQueue(queueName, content) {
-        if (!this.has(queueName))
-            return;
-        this.queueCollection.get(queueName).pushContent(content);
+        var _a;
+        (_a = this.getQueue(queueName)) === null || _a === void 0 ? void 0 : _a.pushContent(content);
     }
     subscribeQueue(queueName, consume, payload) {
-        if (!this.has(queueName))
-            return;
-        this.queueCollection.get(queueName).pushConsume(consume, payload);
+        var _a;
+        (_a = this.getQueue(queueName)) === null || _a === void 0 ? void 0 : _a.pushConsume(consume, payload);
     }
     unsubscribeQueue(queueName, consume) {
+        var _a, _b;
         if (!this.has(queueName))
-            return;
+            return false;
         if (consume === undefined) {
-            return this.queueCollection.get(queueName).removeAllConsumer();
+            return !!((_a = this.getQueue(queueName)) === null || _a === void 0 ? void 0 : _a.removeAllConsumer());
         }
         else {
-            return this.queueCollection.get(queueName).removeConsumer(consume);
+            return !!((_b = this.getQueue(queueName)) === null || _b === void 0 ? void 0 : _b.removeConsumer(consume));
         }
     }
 }

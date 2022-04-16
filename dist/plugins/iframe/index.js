@@ -1,5 +1,5 @@
-import { isObject, isString, Queue } from "../../index.js";
-import { getOtherAllIframeDoc } from "./loader.js";
+import { isObject, isString, Queue } from "../../index";
+import { getOtherAllIframeDoc } from "./loader";
 export var MessageType;
 (function (MessageType) {
     MessageType[MessageType["GeneralMessage"] = 0] = "GeneralMessage";
@@ -7,10 +7,12 @@ export var MessageType;
     MessageType[MessageType["SendCoordinateMessage"] = 2] = "SendCoordinateMessage";
     MessageType[MessageType["OnlineNotificationMessage"] = 3] = "OnlineNotificationMessage";
 })(MessageType || (MessageType = {}));
-export const getInternalIframeMessageQueueName = (queueName) => queueName + "_Message";
-export const getInternalIframeBroadcasMessageQueueName = (queueName) => queueName + "_Wait_Message";
-export default class IframeMessage {
+export const getInternalIframeMessageQueueName = (queueName) => queueName + "_Iframe_Message";
+export const getInternalIframeBroadcasMessageQueueName = (queueName) => queueName + "_Iframe_Wait_Message";
+export default class IframePlugin {
     constructor(name) {
+        this.name = name;
+        this.unmq = null;
         this.name = name;
     }
     install(unmq, ...options) {
@@ -22,8 +24,9 @@ export default class IframeMessage {
         const list = unmq.getExchangeList();
         const otherIframe = list.filter((item) => item.name !== this.name);
         for (const iframe of otherIframe) {
-            iframe.setRepeater(null);
-            iframe.setRoutes([
+            if (iframe.name === undefined)
+                throw `系统错误`;
+            iframe.setRepeater(() => [
                 getInternalIframeMessageQueueName(iframe.name),
                 getInternalIframeBroadcasMessageQueueName(iframe.name),
             ]);
@@ -40,10 +43,16 @@ export default class IframeMessage {
         window.addEventListener("message", this.receiveMessage.bind(this), false);
     }
     receiveMessage({ source, data, origin }) {
+        if (this.unmq === null)
+            throw `${this.name} iframe 未安装`;
         if (!isObject(data))
             return;
         const { mask, type, message, fromName } = data;
         if (mask !== "u-node-mq-plugin")
+            return;
+        if (source === null || source === undefined)
+            return;
+        if (!(source instanceof Window))
             return;
         if ([MessageType.OnlineNotificationMessage, MessageType.SendCoordinateMessage].indexOf(type) !== -1) {
             const fromIframe = this.unmq.getExchange(fromName);
@@ -54,7 +63,7 @@ export default class IframeMessage {
             this.unmq.on(getInternalIframeMessageQueueName(fromName), (data) => {
                 this.postMessage(source, MessageType.GeneralMessage, data, origin);
             })();
-            return;
+            return true;
         }
         if (type === MessageType.GeneralMessage)
             return this.unmq.emit(this.name, message);
@@ -62,7 +71,7 @@ export default class IframeMessage {
             this.postMessage(source, MessageType.SendCoordinateMessage, { msg: `my name is ${this.name}` }, origin);
         }
     }
-    postMessage(currentWindow, type, message, origin, transfer) {
+    postMessage(currentWindow, type, message, origin = "*", transfer) {
         currentWindow.postMessage({
             mask: "u-node-mq-plugin",
             type,

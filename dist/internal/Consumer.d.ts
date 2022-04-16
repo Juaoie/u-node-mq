@@ -1,6 +1,9 @@
-import News from "./News.js";
+import News from "./News";
 export declare type Next = (value?: boolean) => void;
-export declare type Consume<D> = (content?: D, next?: Next, payload?: any) => Promise<boolean | void> | boolean | void;
+export interface Consume<D> {
+    (content?: D, next?: Next, payload?: any): Promise<any> | any;
+    (content?: D, payload?: any): any;
+}
 declare type ThenParameter<D> = (isOk: boolean) => void;
 interface Payload<D> {
     then: (res: ThenParameter<D>) => void;

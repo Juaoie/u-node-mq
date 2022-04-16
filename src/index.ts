@@ -4,10 +4,10 @@ import Consumer from "./internal/Consumer";
 import News from "./internal/News";
 import Logs from "./internal/Logs";
 
-import UNodeMQ, { createUnmq } from "./core/UNodeMQ";
+import UNodeMQ, { createUnmq, createQuickUnmq, QuickUNodeMQ } from "./core/UNodeMQ";
 export default UNodeMQ;
 
-export { createUnmq };
+export { createUnmq, createQuickUnmq, QuickUNodeMQ };
 
 export { Exchange, Queue, Consumer, News, Logs };
 

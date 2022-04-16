@@ -13,9 +13,12 @@ export default class ExchangeCollectionHandle {
   setExchangeCollection(exchangeCollection: Record<string, Exchange<unknown>>) {
     this.exchangeCollection = new Map(Object.entries(exchangeCollection));
   }
-  getExchange(exchangeName: string) {
-    const exchange =this.exchangeCollection.get(exchangeName)
-    if(exchange === undefined)throw `${exchangeName} not find`
+  getExchange(exchangeName: string): Exchange<unknown> | null {
+    const exchange = this.exchangeCollection.get(exchangeName);
+    if (exchange === undefined) {
+      Logs.error(`${exchangeName} not find`);
+      return null;
+    }
     return exchange;
   }
   getExchangeList() {
@@ -27,7 +30,9 @@ export default class ExchangeCollectionHandle {
    * @param content
    * @returns
    */
-  getQueueNameList(exchangeName: string, content: unknown) {
-    return this.getExchange(exchangeName).getQueueNameList(content);
+  async getQueueNameList(exchangeName: string, content: unknown) {
+    const exchagne = this.getExchange(exchangeName);
+    if (exchagne === null) return [];
+    return exchagne.getQueueNameList(content);
   }
 }

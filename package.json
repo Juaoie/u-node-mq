@@ -17,7 +17,7 @@
     "微前端"
   ],
   "main": "./index.neutral.min.js",
-  "types": "./types/index.d.ts",
+  "types": "./dist/index.d.ts",
   "repository": "https://github.com/Juaoie/u-node-mq.git",
   "homepage": "https://github.com/Juaoie/u-node-mq/",
   "license": "MIT",
@@ -31,7 +31,6 @@
     "@types/jest": "^27.4.1",
     "@types/js-md5": "^0.4.3",
     "esbuild": "^0.14.34",
-    "esbuild-plugin-d.ts": "^1.1.0",
     "jest": "^27.5.1",
     "js-base64": "^3.7.2",
     "js-md5": "^0.7.3",

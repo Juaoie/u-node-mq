@@ -1,5 +1,5 @@
-import News from "./News.js";
-import Consumer, { Consume } from "./Consumer.js";
+import News from "./News";
+import Consumer, { Consume } from "./Consumer";
 interface Option<D> {
     ask?: boolean;
     rcn?: number;

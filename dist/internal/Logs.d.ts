@@ -1,5 +1,5 @@
 export default class Logs {
-    static unmq: any;
+    static unmq: null;
     static error(message: any): void;
     static log(message: any): void;
 }

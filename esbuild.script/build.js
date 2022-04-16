@@ -1,5 +1,4 @@
 const esbuild = require("esbuild");
-const { dtsPlugin } = require("esbuild-plugin-d.ts");
 //TODO:自己写声明文件
 // esbuild
 //   .build({
@@ -51,13 +50,13 @@ const pluginsList = [
   //     // neutral: "./plugins/storage/index.js", //暂时无法打包
   //   },
   // },
-  {
-    entryPoint: "./src/adapter/PiniaStorageAdapter.ts",
-    bundle: false,
-    outfiles: {
-      neutral: "./adapter/PiniaStorageAdapter.js",
-    },
-  },
+  // {
+  //   entryPoint: "./src/adapter/PiniaStorageAdapter.ts",
+  //   bundle: false,
+  //   outfiles: {
+  //     neutral: "./adapter/PiniaStorageAdapter.js",
+  //   },
+  // },
 ];
 
 async function pluginsBuild() {

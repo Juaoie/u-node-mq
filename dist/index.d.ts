@@ -1,12 +1,13 @@
-import Exchange from "./internal/Exchange.js";
-import Queue from "./internal/Queue.js";
-import Consumer from "./internal/Consumer.js";
-import News from "./internal/News.js";
-import Logs from "./internal/Logs.js";
-import UNodeMQ, { createUnmq } from "./core/UNodeMQ.js";
+import Exchange from "./internal/Exchange";
+import Queue, { ConsumMode } from "./internal/Queue";
+import Consumer from "./internal/Consumer";
+import News from "./internal/News";
+import Logs from "./internal/Logs";
+import UNodeMQ, { createUnmq, createQuickUnmq, QuickUNodeMQ } from "./core/UNodeMQ";
 export default UNodeMQ;
-export { createUnmq };
+export { createUnmq, createQuickUnmq, QuickUNodeMQ };
 export { Exchange, Queue, Consumer, News, Logs };
+export { ConsumMode };
 export declare const extend: {
     <T, U>(target: T, source: U): T & U;
     <T_1, U_1, V>(target: T_1, source1: U_1, source2: V): T_1 & U_1 & V;
