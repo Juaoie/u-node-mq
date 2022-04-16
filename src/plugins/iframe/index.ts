@@ -9,7 +9,6 @@ export enum MessageType {
   SendCoordinateMessage, //发送exchange坐标消息
   OnlineNotificationMessage, //上线通知消息
 }
-
 //直发消息队列，即主动发送
 export const getInternalIframeMessageQueueName = (queueName: string) => queueName + "_Iframe_Message";
 //用来广播获取地址的消息
@@ -54,23 +53,22 @@ export default class IframePlugin {
     this.broadcastMessage(MessageType.OnlineNotificationMessage, null);
 
     //监听unmq的消息
-    window.addEventListener("message", this.test.bind(this), false);
-  }
-  test(this: Window, ev: MessageEvent<any>) {
-    return true;
+    window.addEventListener("message", this.receiveMessage.bind(this), false);
   }
   /**
    *
    * @param param0
    * @returns
    */
-  private receiveMessage({ source, data, origin }: Window, ev: MessageEvent<any>) {
+  private receiveMessage({ source, data, origin }: MessageEventInit) {
     if (this.unmq === null) throw `${this.name} iframe 未安装`;
     if (!isObject(data)) return;
     const { mask, type, message, fromName } = data;
     if (mask !== "u-node-mq-plugin") return;
-    ///////////需要判断来源的消息
+    if (source === null || source === undefined) return;
+    if (!(source instanceof Window)) return;
     if ([MessageType.OnlineNotificationMessage, MessageType.SendCoordinateMessage].indexOf(type) !== -1) {
+      ///////////需要判断来源的消息
       //发送者是否存在
       const fromIframe = this.unmq.getExchange(fromName);
       if (!fromIframe) return;
@@ -106,7 +104,7 @@ export default class IframePlugin {
     currentWindow: Window,
     type: MessageType,
     message: any,
-    origin?: string,
+    origin: string = "*",
     transfer?: Transferable[]
   ) {
     currentWindow.postMessage(

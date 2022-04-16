@@ -18,6 +18,7 @@
  * @returns
  */
 export function getOtherAllIframeDoc(): T[] {
+  if (window.top === null) throw "window.top is null";
   const list = getAllIframeDoc(window.top, 0, 0);
   return list.filter((item) => item.window !== window.self);
 }
@@ -26,6 +27,7 @@ export function getOtherAllIframeDoc(): T[] {
  * @returns
  */
 export function getSelfIframeDoc() {
+  if (window.top === null) throw "window.top is null";
   const list = getAllIframeDoc(window.top, 0, 0);
   return list.find((item) => item.window === window.self);
 }
@@ -41,7 +43,7 @@ type T = {
  * @param y
  * @returns
  */
-export function getAllIframeDoc(w: Window, x, y): T[] {
+export function getAllIframeDoc(w: Window, x: number, y: number): T[] {
   const arr = [];
   arr.push({
     window: w,
