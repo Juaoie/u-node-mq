@@ -58,6 +58,9 @@ export class QuickUNodeMQ {
     constructor(exchange, queueCollection) {
         this.exchange = exchange;
         this.queueCollection = queueCollection;
+        for (const name in queueCollection) {
+            queueCollection[name].name = name;
+        }
     }
     emit(...contentList) {
         for (const content of contentList) {

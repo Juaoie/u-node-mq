@@ -4,7 +4,7 @@ export default class QueueCollectionHandle {
     private queueCollection;
     has(queueName: string): boolean;
     setQueueCollection(queueCollection: Record<string, Queue<unknown>>): void;
-    getQueue(queueName: string): Queue<any> | null;
+    getQueue(queueName: string): Queue<unknown> | null;
     getQueueList(): Queue<any>[];
     addQueue(queue: Queue<unknown>): void;
     pushNewsToQueue(queueName: string, news: News<unknown>): void;

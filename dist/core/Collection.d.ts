@@ -4,9 +4,9 @@ export default class Collection<ExchangeCollection extends Record<string, Exchan
     private readonly exchangeCollectionHandle;
     private readonly queueCollectionHandle;
     constructor(exchangeCollection: ExchangeCollection, queueCollection: QueueCollection);
-    getExchange<E extends keyof ExchangeCollection & string>(exchangeName: E): Exchange<any> | null;
+    getExchange<E extends keyof ExchangeCollection & string>(exchangeName: E): Exchange<unknown> | null;
     getExchangeList(): Exchange<any>[];
-    getQueue<Q extends keyof QueueCollection & string>(queueName: Q): Queue<any> | null;
+    getQueue<Q extends keyof QueueCollection & string>(queueName: Q): Queue<unknown> | null;
     getQueueList(): Queue<any>[];
     addQueue(queue: Queue<unknown>): void;
     pushNewsListToExchange<E extends keyof ExchangeCollection & string>(exchangeName: E, ...news: News<unknown>[]): void;

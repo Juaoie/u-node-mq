@@ -46,7 +46,6 @@ export default class Consumer<D> {
   consumption(news: News<D>, ask: boolean): Payload<D> {
     const then = (thenParameter: ThenParameter<D>) => {
       //不加入任务队列，会导致消费失败的数据重写到队列失败
-      //TODO:不需要确认消费的时候不需要管消费方法是否报错
       try {
         if (!ask) {
           //不需要确认的消费方法
@@ -72,7 +71,7 @@ export default class Consumer<D> {
         }
       } catch (error) {
         Logs.error("Consumer consumption error");
-        thenParameter(false);
+        thenParameter(!ask);
       }
     };
     return {
