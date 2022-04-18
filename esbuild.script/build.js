@@ -35,28 +35,31 @@ const pluginsList = [
   {
     entryPoint: "./src/plugins/iframe/index.ts",
     bundle: true,
+    minify: true,
     outfiles: {
       node: "./plugins/iframe/index.node.js",
       browser: "./plugins/iframe/index.browser.js",
       neutral: "./plugins/iframe/index.js",
     },
   },
-  // {
-  //   entryPoint: "./src/plugins/storage/index.ts",
-  //   bundle: true,
-  //   outfiles: {
-  //     node: "./plugins/storage/index.node.js",
-  //     browser: "./plugins/storage/index.browser.js",
-  //     // neutral: "./plugins/storage/index.js", //暂时无法打包
-  //   },
-  // },
-  // {
-  //   entryPoint: "./src/adapter/PiniaStorageAdapter.ts",
-  //   bundle: false,
-  //   outfiles: {
-  //     neutral: "./adapter/PiniaStorageAdapter.js",
-  //   },
-  // },
+  {
+    entryPoint: "./src/plugins/storage/index.ts",
+    bundle: true,
+    minify: true,
+    outfiles: {
+      node: "./plugins/storage/index.node.js",
+      browser: "./plugins/storage/index.browser.js",
+      neutral: "./plugins/storage/index.js", //暂时无法打包
+    },
+  },
+  {
+    entryPoint: "./src/adapter/PiniaStorageAdapter.ts",
+    bundle: false,
+    minify: true,
+    outfiles: {
+      neutral: "./adapter/PiniaStorageAdapter.js",
+    },
+  },
 ];
 
 async function pluginsBuild() {
@@ -68,7 +71,7 @@ async function pluginsBuild() {
           entryPoints: [item.entryPoint],
           bundle: item.bundle,
           outfile: item.outfiles[key],
-          minify: true,
+          minify: item.minify,
           platform: key,
         })
       );

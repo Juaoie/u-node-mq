@@ -36,7 +36,7 @@ export default class Consumer {
             }
             catch (error) {
                 Logs.error("Consumer consumption error");
-                thenParameter(false);
+                thenParameter(!ask);
             }
         };
         return {

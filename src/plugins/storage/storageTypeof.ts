@@ -1,4 +1,4 @@
-import { isString, isObject, isArray, isNumber, isBoolean } from "../../index";
+import { isString } from "../../index";
 const stringType = "s###";
 const nostringType = "n###";
 

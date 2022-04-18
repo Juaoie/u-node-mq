@@ -1,5 +1,6 @@
 import UNodeMQ, { Exchange, Queue } from "../src/index";
 
+
 const unmq = new UNodeMQ(
   {
     //创建获取到openid的交换机
