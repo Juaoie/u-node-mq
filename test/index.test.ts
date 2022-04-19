@@ -1,4 +1,5 @@
 import UNodeMQ, { Exchange, Queue, ConsumMode, QuickUNodeMQ } from "../src/index";
+import { describe, expect, test } from "@jest/globals";
 
 test("先挂载消费者，再发送消息", function (done) {
   const unmq = new UNodeMQ(

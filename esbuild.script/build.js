@@ -1,15 +1,4 @@
 const esbuild = require("esbuild");
-//TODO:自己写声明文件
-// esbuild
-//   .build({
-//     entryPoints: ["./src/index.ts"],
-//     bundle: true,
-//     outfile: "index.min.js",
-//     target: ["chrome58", "firefox57", "safari11", "edge16"],
-//     minify: true,
-//     plugins: [dtsPlugin({ outDir: "./types" })], //生成d.ts文件，拖慢了打包速度
-//   })
-//   .catch(() => process.exit(1));
 
 const buildType = ["browser", "node", "neutral"];
 
@@ -20,7 +9,7 @@ async function buildMian() {
       esbuild.build({
         entryPoints: ["./src/index.ts"],
         bundle: true,
-        outfile: "./index." + type + ".min.js",
+        outfile: "./dist/index." + type + ".min.js",
         minify: true,
         platform: type,
       })
@@ -37,9 +26,9 @@ const pluginsList = [
     bundle: true,
     minify: true,
     outfiles: {
-      node: "./plugins/iframe/index.node.js",
-      browser: "./plugins/iframe/index.browser.js",
-      neutral: "./plugins/iframe/index.js",
+      node: "./dist/plugins/iframe/index.node.js",
+      browser: "./dist/plugins/iframe/index.browser.js",
+      neutral: "./dist/plugins/iframe/index.neutral.js",
     },
   },
   {
@@ -47,9 +36,9 @@ const pluginsList = [
     bundle: true,
     minify: true,
     outfiles: {
-      node: "./plugins/storage/index.node.js",
-      browser: "./plugins/storage/index.browser.js",
-      neutral: "./plugins/storage/index.js", //暂时无法打包
+      node: "./dist/plugins/storage/index.node.js",
+      browser: "./dist/plugins/storage/index.browser.js",
+      neutral: "./dist/plugins/storage/index.neutral.js", //暂时无法打包
     },
   },
   {
@@ -57,7 +46,9 @@ const pluginsList = [
     bundle: false,
     minify: true,
     outfiles: {
-      neutral: "./adapter/PiniaStorageAdapter.js",
+      node: "./dist/adapter/PiniaStorageAdapter.node.js",
+      browser: "./dist/adapter/PiniaStorageAdapter.browser.js",
+      neutral: "./dist/adapter/PiniaStorageAdapter.neutral.js",
     },
   },
 ];

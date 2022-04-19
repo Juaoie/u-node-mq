@@ -1,4 +1,5 @@
 import UNodeMQ, { Exchange, Queue } from "../src/index";
+import { describe, expect, test } from "@jest/globals";
 // import IframePlugin from "../src/plugins/iframe/index";
 
 test("普通挂载", function (done) {

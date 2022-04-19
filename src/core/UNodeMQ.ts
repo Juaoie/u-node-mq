@@ -11,11 +11,17 @@ import Collection from "./Collection";
 export type ReturnPanShapeExchange<T> = T extends Exchange<infer U> ? U : never;
 export type ReturnPanShapeQueue<T> = T extends Queue<infer U> ? U : never;
 
-type PluginInstallFunction<D> = (unmq: UNodeMQ<any, any>, ...options: any[]) => D;
-export type Plugin<D extends any> =
-  | (PluginInstallFunction<D> & { install?: PluginInstallFunction<D> })
+export type PluginInstallFunction = <
+  ExchangeCollection extends Record<string, Exchange<any>>,
+  QueueCollection extends Record<string, Queue<any>>
+>(
+  unmq: UNodeMQ<ExchangeCollection, QueueCollection>,
+  ...options: any[]
+) => void;
+export type Plugin =
+  | (PluginInstallFunction & { install?: PluginInstallFunction })
   | {
-      install: PluginInstallFunction<D>;
+      install: PluginInstallFunction;
     };
 export function createUnmq<
   ExchangeCollection extends Record<string, Exchange<any>>,
@@ -34,18 +40,18 @@ export default class UNodeMQ<
   constructor(exchangeCollection: ExchangeCollection, queueCollection: QueueCollection) {
     super(exchangeCollection, queueCollection);
   }
-  private readonly installedPlugins: Set<Plugin<any>> = new Set();
-  use<D>(plugin: Plugin<D>, ...options: any[]): D | null {
+  private readonly installedPlugins: Set<Plugin> = new Set();
+  use(plugin: Plugin, ...options: any[]) {
     if (this.installedPlugins.has(plugin)) {
       console.log(`Plugin has already been applied to target unmq.`);
     } else if (plugin && isFunction(plugin.install)) {
       this.installedPlugins.add(plugin);
-      return plugin.install(this, ...options);
+      plugin.install<ExchangeCollection, QueueCollection>(this, ...options);
     } else if (isFunction(plugin)) {
       this.installedPlugins.add(plugin);
-      return plugin(this, ...options);
+      plugin<ExchangeCollection, QueueCollection>(this, ...options);
     }
-    return null;
+    return this;
   }
   /**
    * 发射数据到交换机

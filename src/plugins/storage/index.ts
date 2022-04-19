@@ -1,5 +1,5 @@
 import StorageAdapterAbstract from "./StorageAdapterAbstract";
-import UNodeMQ, { isString, isObject, Exchange, Queue } from "../../index";
+import UNodeMQ, { isString, isObject, Exchange, Queue, PluginInstallFunction } from "../../index";
 import StorageSignAbstract from "./StorageSignAbstract";
 import { devalue, envalue } from "./storageTypeof";
 
@@ -11,13 +11,13 @@ export enum StorageType {
 }
 
 type StorageConfig = {
-  storageType: StorageType;
+  storageType?: StorageType;
   storageMemory?: StorageAdapterAbstract;
   storageSign?: StorageSignAbstract;
 };
 
 class StorageMemory implements StorageAdapterAbstract {
-  private memoryData: Record<string, any>;
+  private memoryData: Record<string, any> = {};
   init(o: Record<string, any>): void {
     this.memoryData = o;
   }
@@ -28,26 +28,29 @@ class StorageMemory implements StorageAdapterAbstract {
     this.memoryData[key] = value;
   }
 }
+
+export type Plugin = {
+  install: PluginInstallFunction;
+};
+
+
 /**
  * storage plugin
+ * StorageTypeList
  */
-export default class StoragePlugin<D extends UNodeMQ<Record<string, Exchange<any>>, Record<string, Queue<any>>>> {
+export default class StoragePlugin implements Plugin {
   private storageMemory: StorageAdapterAbstract = new StorageMemory(); //代理访问内存
-  private storageSign: StorageSignAbstract; //加密方法
-  private storageType: StorageType = StorageType.SESSION; //storage 存储类型
-  private unmq: D | null = null;
-  constructor(storageConfig?: StorageConfig) {
+  private storageSign: StorageSignAbstract | null = null; //加密方法
+  private unmq: UNodeMQ<Record<string, Exchange<any>>, Record<string, Queue<any>>> | null = null;
+  storage: Record<string, StorageType> = {};
+  constructor( storageType: Record<string, StorageType>, storageConfig?: StorageConfig) {
     if (storageConfig?.storageMemory) this.storageMemory = storageConfig.storageMemory;
     if (storageConfig?.storageSign) this.storageSign = storageConfig.storageSign;
     if (storageConfig?.storageType) this.storageType = storageConfig.storageType;
-  }
-  install(unmq: D, ...options: any[]) {
-    this.unmq = unmq;
-    const __storage: Record<string, any> = {};
-    const queueNameList = unmq.getQueueList().map((item) => item.name);
-    for (const name of queueNameList) {
-      __storage[name] = null;
-      Object.defineProperty(__storage, name, {
+    this.storage = storageType;
+    //init之前先直接从缓存中取
+    for (const name in storage) {
+      Object.defineProperty(storage, name, {
         get() {
           return this.getStorageSync(name);
         },
@@ -56,22 +59,48 @@ export default class StoragePlugin<D extends UNodeMQ<Record<string, Exchange<any
         },
       });
     }
+  }
+  init() {
     //内存缓存初始化之前从storage里面获取
-    function init() {
-      for (const name of queueNameList) {
-        this.storageMemory.setData(name, this.getStorageSync(name));
-        Object.defineProperty(__storage, name, {
-          get() {
-            return this.storageMemory.getData(name);
-          },
-          set(value: any) {
-            this.setStorageSync(name, value);
-            this.storageMemory.setData(name, value);
-          },
-        });
-      }
+    if (this.unmq === null) throw "storage plugin 未安装";
+    const queueNameList = this.unmq.getQueueList().map((item) => item.name);
+    for (const name of queueNameList) {
+      if (name === undefined) continue;
+      this.storageMemory.setData(name, this.getStorageSync(name));
+      Object.defineProperty(__storage, name, {
+        get() {
+          return this.storageMemory.getData(name);
+        },
+        set(value: any) {
+          this.setStorageSync(name, value);
+          this.storageMemory.setData(name, value);
+        },
+      });
     }
-    return { storage: __storage, init };
+  }
+  install<ExchangeCollection extends Record<string, Exchange<any>>, QueueCollection extends Record<string, Queue<any>>>(
+    // install(
+    unmq: UNodeMQ<ExchangeCollection, QueueCollection>,
+    ...options: any[]
+  ) {
+    this.unmq = unmq;
+    type B<T> = {
+      [K in keyof T]: unknown;
+    };
+    this.storage = {} as B<QueueCollection>;
+    const queueNameList = unmq.getQueueList().map((item) => item.name);
+    for (const name of queueNameList) {
+      if (name === undefined) continue;
+      this.storage[name as keyof B<QueueCollection>] = {};
+      Object.defineProperty(this.storage, name, {
+        get() {
+          return this.getStorageSync(name);
+        },
+        set(value: any) {
+          this.setStorageSync(name, value);
+        },
+      });
+    }
   }
   /**
    *
@@ -113,3 +142,4 @@ export default class StoragePlugin<D extends UNodeMQ<Record<string, Exchange<any
     else list[this.storageType].removeItem(name);
   }
 }
+

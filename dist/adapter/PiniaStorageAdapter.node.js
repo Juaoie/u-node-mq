@@ -1,0 +1,1 @@
+import{defineStore as r}from"pinia";export default class o{init(t){this.storeDefinition=r("__storage",{state:()=>t})}getData(t){return this.storeDefinition()[t]}setData(t,e){const i=this.storeDefinition();i[t]=e}}

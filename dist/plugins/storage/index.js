@@ -1,29 +1,13 @@
-import { isString, isObject } from "../../index";
-import { getStorageSync, setStorageSync } from "./storageHandle";
+import { devalue, envalue } from "./storageTypeof";
 export var StorageType;
 (function (StorageType) {
     StorageType["SESSION"] = "session";
     StorageType["LOCAL"] = "local";
 })(StorageType || (StorageType = {}));
-function getStorageType(storageOption) {
-    if (isString(storageOption))
-        return storageOption;
-    else if (isObject(storageOption))
-        return storageOption.type;
-    else {
-        console.log(`类型错误`);
-    }
-}
-function getStorageKey(storageOption) {
-    if (isString(storageOption))
-        return null;
-    else if (isObject(storageOption))
-        return storageOption.key;
-    else {
-        console.log(`类型错误`);
-    }
-}
 class StorageMemory {
+    constructor() {
+        this.memoryData = {};
+    }
     init(o) {
         this.memoryData = o;
     }
@@ -35,54 +19,81 @@ class StorageMemory {
     }
 }
 export default class StoragePlugin {
-    constructor(storageKey, storageConfig) {
-        this.storageKey = storageKey;
-        this.storageMemory = (storageConfig === null || storageConfig === void 0 ? void 0 : storageConfig.storageMemory) || new StorageMemory();
-        this.storageSign = storageConfig === null || storageConfig === void 0 ? void 0 : storageConfig.storageSign;
-        this.storageType = storageConfig.storageType;
+    constructor(storageConfig) {
+        this.storageMemory = new StorageMemory();
+        this.storageSign = null;
+        this.storageType = StorageType.SESSION;
+        if (storageConfig === null || storageConfig === void 0 ? void 0 : storageConfig.storageMemory)
+            this.storageMemory = storageConfig.storageMemory;
+        if (storageConfig === null || storageConfig === void 0 ? void 0 : storageConfig.storageSign)
+            this.storageSign = storageConfig.storageSign;
+        if (storageConfig === null || storageConfig === void 0 ? void 0 : storageConfig.storageType)
+            this.storageType = storageConfig.storageType;
     }
     install(unmq, ...options) {
         const __storage = {};
-        for (const key of list) {
-            __storage[key] = null;
+        const queueNameList = unmq.getQueueList().map((item) => item.name);
+        for (const name of queueNameList) {
+            if (name === undefined)
+                continue;
+            __storage[name] = null;
+            Object.defineProperty(__storage, name, {
+                get() {
+                    return this.getStorageSync(name);
+                },
+                set(value) {
+                    this.setStorageSync(name, value);
+                },
+            });
         }
-        return __storage;
-    }
-    init() { }
-}
-export function createStoragePlugin(storageData, storageConfig) {
-    storageConfig = storageConfig || {};
-    const __storage = {};
-    for (const key in storageData) {
-        __storage[key] = null;
-    }
-    storageConfig.storageMemory.init(JSON.parse(JSON.stringify(__storage)));
-    return {
-        storage: __storage,
-        init: () => {
-            for (const name in storageData) {
-                const type = getStorageType(storageData[name]);
-                const key = getStorageKey(storageData[name]) || storageConfig.key;
-                if (storageConfig.storageMemory) {
-                    storageConfig.storageMemory.setData(name, getStorageSync(name, type, key));
-                }
+        const init = () => {
+            for (const name of queueNameList) {
+                if (name === undefined)
+                    continue;
+                this.storageMemory.setData(name, this.getStorageSync(name));
                 Object.defineProperty(__storage, name, {
                     get() {
-                        if (storageConfig.storageMemory) {
-                            return storageConfig.storageMemory.getData(name);
-                        }
-                        else {
-                            return getStorageSync(name, type, key);
-                        }
+                        return this.storageMemory.getData(name);
                     },
                     set(value) {
-                        setStorageSync(name, type, value, key);
-                        if (storageConfig.storageMemory) {
-                            storageConfig.storageMemory.setData(name, value);
-                        }
+                        this.setStorageSync(name, value);
+                        this.storageMemory.setData(name, value);
                     },
                 });
             }
-        },
-    };
+        };
+        return { storage: __storage, init };
+    }
+    getStorageSync(name) {
+        let value = null;
+        const list = { [StorageType.SESSION]: sessionStorage, [StorageType.LOCAL]: localStorage };
+        if (this.storageSign) {
+            const storage = list[this.storageType].getItem(this.storageSign.encryptName(name));
+            if (storage)
+                value = this.storageSign.decryptValue(storage);
+        }
+        else
+            value = list[this.storageType].getItem(name);
+        if (value)
+            return devalue(value);
+        else
+            return null;
+    }
+    setStorageSync(name, value) {
+        if (value === null || value === undefined)
+            return this.removeStorageSync(name);
+        const list = { [StorageType.SESSION]: sessionStorage, [StorageType.LOCAL]: localStorage };
+        value = envalue(value);
+        if (this.storageSign)
+            list[this.storageType].setItem(this.storageSign.encryptName(name), this.storageSign.encryptValue(value));
+        else
+            list[this.storageType].setItem(name, value);
+    }
+    removeStorageSync(name) {
+        const list = { [StorageType.SESSION]: sessionStorage, [StorageType.LOCAL]: localStorage };
+        if (this.storageSign)
+            list[this.storageType].removeItem(this.storageSign.encryptName(name));
+        else
+            list[this.storageType].removeItem(name);
+    }
 }
