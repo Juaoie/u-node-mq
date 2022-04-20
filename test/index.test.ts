@@ -297,12 +297,13 @@ test("promise确认消费失败", function (done) {
       }, 500);
     });
   });
+
   setTimeout(() => {
     //检查1是否被消费
     const news = unmq.getQueue("qu1")!.getNews();
     expect(news).toHaveLength(1);
     //3应该被取出正在消费，2应该消费失败一次
-    expect(news[0].consumedTimes).not.toBe(2);
+    expect(news[0].consumedTimes).toBe(2);
     expect(news[0].content).toBe(2);
     done();
   }, 1200);
