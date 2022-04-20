@@ -7,6 +7,7 @@ interface Option<D> {
     consumerList?: Consumer<D>[];
     mode?: ConsumMode;
     name?: string;
+    async?: boolean;
 }
 export declare enum ConsumMode {
     "Random" = "Random",
@@ -37,6 +38,6 @@ export default class Queue<D> {
     pushContent(content: D): void;
     eject(): News<D> | null;
     consumeNews(): void;
-    consumption(news: News<D>, consumer: Consumer<D>): Promise<unknown>;
+    consumption(news: News<D>, consumer: Consumer<D>): Promise<boolean>;
 }
 export {};

@@ -29,6 +29,8 @@ export default class Queue {
             this.mode = option.mode;
         if ((option === null || option === void 0 ? void 0 : option.name) !== undefined)
             this.name = option.name;
+        if ((option === null || option === void 0 ? void 0 : option.async) !== undefined)
+            this.async = option.async;
     }
     getId() {
         return this.id;
@@ -102,36 +104,26 @@ export default class Queue {
         if (news === null)
             return;
         this.state = true;
-        if (this.mode === ConsumMode.Random) {
-            const index = Math.round(Math.random() * (this.consumerList.length - 1));
-            const consumer = this.consumerList[index];
-            this.consumption(news, consumer)
-                .then(() => {
-            })
-                .catch(() => {
-                news.consumedTimes--;
-                this.pushNews(news);
-            })
-                .finally(() => {
-                this.state = false;
-                if (this.news.length > 0)
-                    this.consumeNews();
-            });
-        }
-        else if (this.mode === ConsumMode.All) {
-            Promise.all(this.consumerList.map((consumer) => this.consumption(news, consumer)))
-                .then(() => {
-            })
-                .catch(() => {
-                news.consumedTimes--;
-                this.pushNews(news);
-            })
-                .finally(() => {
-                this.state = false;
-                if (this.news.length > 0)
-                    this.consumeNews();
-            });
-        }
+        const getConsumePromise = () => {
+            if (this.mode === ConsumMode.Random) {
+                const index = Math.round(Math.random() * (this.consumerList.length - 1));
+                const consumer = this.consumerList[index];
+                return Promise.all([this.consumption(news, consumer)]);
+            }
+            return Promise.all(this.consumerList.map((consumer) => this.consumption(news, consumer)));
+        };
+        getConsumePromise()
+            .then(() => {
+        })
+            .catch(() => {
+            news.consumedTimes--;
+            this.pushNews(news);
+        })
+            .finally(() => {
+            this.state = false;
+            if (this.news.length > 0)
+                this.consumeNews();
+        });
     }
     consumption(news, consumer) {
         return new Promise((resolve, reject) => {

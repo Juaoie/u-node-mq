@@ -289,9 +289,11 @@ test("promise确认消费失败", function (done) {
       qu1: new Queue({ ask: true }),
     }
   );
+  let num = 0;
   unmq.on("qu1", (data: number) => {
     return new Promise((res) => {
       setTimeout(() => {
+        num++;
         if (data === 1) res(true);
         else res(false);
       }, 500);
@@ -305,6 +307,37 @@ test("promise确认消费失败", function (done) {
     //3应该被取出正在消费，2应该消费失败一次
     expect(news[0].consumedTimes).toBe(2);
     expect(news[0].content).toBe(2);
+    expect(num).toBe(2);
+    done();
+  }, 1200);
+  unmq.emit("ex1", 1, 2, 3);
+});
+
+test("异步队列消费", function (done) {
+  const unmq = new UNodeMQ(
+    {
+      ex1: new Exchange({ routes: ["qu1"] }),
+    },
+    {
+      qu1: new Queue({ ask: true, async: true }),
+    }
+  );
+  let num = 0;
+  unmq.on("qu1", (data: number) => {
+    return new Promise((res) => {
+      setTimeout(() => {
+        num++;
+        if (data === 1) res(true);
+        else res(false);
+      }, 500);
+    });
+  });
+
+  setTimeout(() => {
+    //检查1是否被消费
+    const news = unmq.getQueue("qu1")!.getNews();
+    expect(news).toHaveLength(0);
+    expect(num).toBe(5);
     done();
   }, 1200);
   unmq.emit("ex1", 1, 2, 3);

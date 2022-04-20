@@ -9,6 +9,7 @@ interface Option<D> {
   consumerList?: Consumer<D>[];
   mode?: ConsumMode;
   name?: string;
+  async?: boolean;
 }
 export enum ConsumMode {
   "Random" = "Random",
@@ -71,6 +72,7 @@ export default class Queue<D> {
     if (option?.rcn !== undefined) this.rcn = option.rcn;
     if (option?.mode !== undefined) this.mode = option.mode;
     if (option?.name !== undefined) this.name = option.name;
+    if (option?.async !== undefined) this.async = option.async;
   }
   /**
    * 通过消费方法移除指定消费者
@@ -175,46 +177,36 @@ export default class Queue<D> {
     if (news === null) return;
 
     this.state = true;
-    
-    if (this.mode === ConsumMode.Random) {
-      //随机消费者的索引
-      const index = Math.round(Math.random() * (this.consumerList.length - 1));
-      const consumer = this.consumerList[index];
-      this.consumption(news, consumer)
-        .then(() => {
-          //消费成功
-        })
-        .catch(() => {
-          //消费失败
-          news.consumedTimes--;
-          this.pushNews(news);
-        })
-        .finally(() => {
-          this.state = false;
-          if (this.news.length > 0) this.consumeNews();
-        });
-    } else if (this.mode === ConsumMode.All) {
+
+    const getConsumePromise = (): Promise<boolean[]> => {
+      if (this.mode === ConsumMode.Random) {
+        //随机消费者的索引
+        const index = Math.round(Math.random() * (this.consumerList.length - 1));
+        const consumer = this.consumerList[index];
+        return Promise.all([this.consumption(news, consumer)]);
+      }
+      //else if (this.mode === ConsumMode.All) {}
       //每个消息消费之间是异步的
-      Promise.all(this.consumerList.map((consumer) => this.consumption(news, consumer)))
-        .then(() => {
-          //消息被成功消费
-        })
-        .catch(() => {
-          //消费失败
-          news.consumedTimes--;
-          this.pushNews(news);
-        })
-        .finally(() => {
-          this.state = false;
-          if (this.news.length > 0) this.consumeNews();
-        });
-    }
+      return Promise.all(this.consumerList.map((consumer) => this.consumption(news, consumer)));
+    };
+    getConsumePromise()
+      .then(() => {
+        //消息被成功消费
+      })
+      .catch(() => {
+        //消费失败
+        news.consumedTimes--;
+        this.pushNews(news);
+      })
+      .finally(() => {
+        this.state = false;
+        if (this.news.length > 0) this.consumeNews();
+      });
   }
-  //TODO:设置队列是否是同步消费，如果是同步消费则只能一个消息一个消息消费
   //TODO:设置消费者是否是同步消费，如果是同步消费，则每次只能消费一条消息
   //TODO:增加最长消费时间
   //增加同步消费和异步消费属性
-  consumption(news: News<D>, consumer: Consumer<D>) {
+  consumption(news: News<D>, consumer: Consumer<D>): Promise<boolean> {
     return new Promise((resolve, reject) => {
       consumer.consumption(news, this.ask).then((isOk: boolean) => {
         if (isOk) {
