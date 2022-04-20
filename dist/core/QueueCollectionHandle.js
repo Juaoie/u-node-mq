@@ -1,4 +1,4 @@
-import { Logs } from "../index";
+import { Logs, isFunction } from "../index";
 export default class QueueCollectionHandle {
     constructor() {
         this.queueCollection = new Map();
@@ -46,11 +46,11 @@ export default class QueueCollectionHandle {
         var _a, _b;
         if (!this.has(queueName))
             return false;
-        if (consume === undefined) {
-            return !!((_a = this.getQueue(queueName)) === null || _a === void 0 ? void 0 : _a.removeAllConsumer());
+        if (isFunction(consume)) {
+            return !!((_a = this.getQueue(queueName)) === null || _a === void 0 ? void 0 : _a.removeConsumer(consume));
         }
         else {
-            return !!((_b = this.getQueue(queueName)) === null || _b === void 0 ? void 0 : _b.removeConsumer(consume));
+            return !!((_b = this.getQueue(queueName)) === null || _b === void 0 ? void 0 : _b.removeAllConsumer());
         }
     }
 }

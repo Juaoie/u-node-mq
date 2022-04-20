@@ -13,6 +13,8 @@ export default class Queue {
         this.ask = false;
         this.rcn = 3;
         this.mode = ConsumMode.Random;
+        this.async = false;
+        this.state = false;
         this.news = [];
         this.consumerList = [];
         if ((option === null || option === void 0 ? void 0 : option.ask) !== undefined)
@@ -94,32 +96,55 @@ export default class Queue {
             return;
         if (this.consumerList.length === 0)
             return;
+        if (!this.async && this.state)
+            return;
         const news = this.eject();
         if (news === null)
             return;
+        this.state = true;
         if (this.mode === ConsumMode.Random) {
             const index = Math.round(Math.random() * (this.consumerList.length - 1));
             const consumer = this.consumerList[index];
-            this.consumption(news, consumer);
+            this.consumption(news, consumer)
+                .then(() => {
+            })
+                .catch(() => {
+                news.consumedTimes--;
+                this.pushNews(news);
+            })
+                .finally(() => {
+                this.state = false;
+                if (this.news.length > 0)
+                    this.consumeNews();
+            });
         }
         else if (this.mode === ConsumMode.All) {
-            for (const consumer of this.consumerList) {
-                this.consumption(news, consumer);
-            }
+            Promise.all(this.consumerList.map((consumer) => this.consumption(news, consumer)))
+                .then(() => {
+            })
+                .catch(() => {
+                news.consumedTimes--;
+                this.pushNews(news);
+            })
+                .finally(() => {
+                this.state = false;
+                if (this.news.length > 0)
+                    this.consumeNews();
+            });
         }
     }
     consumption(news, consumer) {
-        consumer.consumption(news, this.ask).then((isOk) => {
-            if (isOk) {
-                Logs.log(`队列 消费成功`);
-            }
-            else {
-                Logs.log(`队列 消费失败`);
-                news.consumedTimes--;
-                this.pushNews(news);
-            }
-            if (this.news.length > 0)
-                this.consumeNews();
+        return new Promise((resolve, reject) => {
+            consumer.consumption(news, this.ask).then((isOk) => {
+                if (isOk) {
+                    Logs.log(`队列 消费成功`);
+                    resolve(isOk);
+                }
+                else {
+                    Logs.log(`队列 消费失败`);
+                    reject(isOk);
+                }
+            });
         });
     }
 }

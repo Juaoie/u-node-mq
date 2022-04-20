@@ -34,7 +34,7 @@ const pluginsList = [
       browser: "./dist/plugins/iframe/index.browser.js",
       neutral: "./dist/plugins/iframe/index.neutral.js",
     },
-    plugins: [dtsPlugin({ outDir: "./dist" })], //生成d.ts文件，拖慢了打包速度
+    // plugins: [dtsPlugin({ outDir: "./dist" })], //生成d.ts文件，拖慢了打包速度
   },
   // {
   //   entryPoint: "./src/plugins/storage/index.ts",

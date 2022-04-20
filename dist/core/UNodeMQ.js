@@ -39,11 +39,7 @@ export default class UNodeMQ extends Collection {
         return this;
     }
     once(queueName, consume, payload) {
-        let consumeNum = 0;
         const consumeProxy = (content, next, payload) => {
-            if (consumeNum === 1)
-                return;
-            consumeNum++;
             this.off(queueName, consumeProxy);
             return consume(content, next, payload);
         };
@@ -85,19 +81,15 @@ export class QuickUNodeMQ {
         return () => this.off(queueName, consume);
     }
     off(x, y) {
-        if (y === undefined) {
-            this.queueCollection[x].removeAllConsumer();
+        if (isFunction(y)) {
+            this.queueCollection[x].removeConsumer(y);
         }
         else
-            this.queueCollection[x].removeConsumer(y);
+            this.queueCollection[x].removeAllConsumer();
         return this;
     }
     once(queueName, consume, payload) {
-        let consumeNum = 0;
         const consumeProxy = (content, next, payload) => {
-            if (consumeNum === 1)
-                return;
-            consumeNum++;
             this.off(queueName, consumeProxy);
             return consume(content, next, payload);
         };

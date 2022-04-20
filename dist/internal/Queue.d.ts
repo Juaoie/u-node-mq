@@ -20,6 +20,8 @@ export default class Queue<D> {
     ask: boolean;
     rcn: number;
     mode: ConsumMode;
+    async: boolean;
+    private state;
     private news;
     getNews(): News<D>[];
     private consumerList;
@@ -35,6 +37,6 @@ export default class Queue<D> {
     pushContent(content: D): void;
     eject(): News<D> | null;
     consumeNews(): void;
-    consumption(news: News<D>, consumer: Consumer<D>): void;
+    consumption(news: News<D>, consumer: Consumer<D>): Promise<unknown>;
 }
 export {};
