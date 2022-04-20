@@ -6,7 +6,7 @@
     "src/plugins/iframe/**/*.ts",
     "src/plugins/storage/**/*.ts"
   ],
-  "exclude": ["node_modules", "test/**/*.ts"],
+  "exclude": ["node_modules"],
   "compilerOptions": {
     "target": "ES6",
     "module": "ES6",

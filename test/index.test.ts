@@ -247,3 +247,93 @@ test("快速unmq", function (done) {
   });
   quickUnmq.emit({ test: 1 });
 });
+
+test("promise确认消费成功", function (done) {
+  const unmq = new UNodeMQ(
+    {
+      ex1: new Exchange({ routes: ["qu1"] }),
+    },
+    {
+      qu1: new Queue({ ask: true }),
+    }
+  );
+  unmq.on("qu1", (res: string) => {
+    return new Promise((res) => {
+      setTimeout(() => {
+        res(true);
+      }, 500);
+    });
+  });
+  setTimeout(() => {
+    expect(unmq.getQueue("qu1")!.getNews().length).toEqual(0);
+    done();
+  }, 1000);
+  unmq.emit("ex1", 1, 2, 3);
+});
+
+test("promise确认消费失败", function (done) {
+  const unmq = new UNodeMQ(
+    {
+      ex1: new Exchange({ routes: ["qu1"] }),
+    },
+    {
+      qu1: new Queue({ ask: true }),
+    }
+  );
+  unmq.once("qu1", (data) => {
+    return new Promise((res) => {
+      setTimeout(() => {
+        if (data === 1) res(true);
+        else res(false);
+      }, 500);
+    });
+  });
+  unmq.once("qu1", (data: number) => {
+    return new Promise((res) => {
+      setTimeout(() => {
+        if (data === 1) res(true);
+        else res(false);
+      }, 500);
+    });
+  });
+  setTimeout(() => {
+    //检查1是否被消费
+    const news = unmq.getQueue("qu1")!.getNews();
+    expect(news).toHaveLength(2);
+    news.forEach((item) => {
+      //内容必须为2或者3
+      expect([2, 3].indexOf(item.content as number)).not.toBe(-1);
+      //消息2的剩余消费次数因该为2，消息3的剩余消费次数因该为3
+      expect(item.content).toBe(item.consumedTimes);
+    });
+    done();
+  }, 1000);
+  unmq.emit("ex1", 1, 2, 3);
+});
+
+test("消费一条消息是否会影响别的消息", function (done) {
+  const unmq = new UNodeMQ(
+    {
+      ex1: new Exchange({ routes: ["qu1"] }),
+    },
+    {
+      qu1: new Queue({ ask: true }),
+    }
+  );
+  unmq.once("qu1", (res: string) => {
+    return new Promise((res) => {
+      setTimeout(() => {
+        res(true);
+      }, 500);
+    });
+  });
+  setTimeout(() => {
+    const news = unmq.getQueue("qu1")!.getNews();
+    expect(news).toHaveLength(2);
+    news.forEach((item) => {
+      expect(item.consumedTimes).toBe(3);
+    });
+    done();
+  }, 1000);
+  unmq.emit("ex1", 1, 2, 3);
+});

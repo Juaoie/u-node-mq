@@ -172,6 +172,8 @@ export default class Queue<D> {
       }
     }
   }
+  //TODO:设置队列是否是同步消费，如果是同步消费则只能一个消息一个消息消费
+  //TODO:设置消费者是否是同步消费，如果是同步消费，则每次只能消费一条消息
   //TODO:增加最长消费时间
   //增加同步消费和异步消费属性
   consumption(news: News<D>, consumer: Consumer<D>) {

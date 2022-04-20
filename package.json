@@ -1,7 +1,7 @@
 {
   "name": "u-node-mq",
   "version": "3.4.3",
-  "author": "hugaojie",
+  "author": "hugaojie <uaoie@qq.com>",
   "description": "基于发布订阅模型的消息通信插件",
   "keywords": [
     "发布订阅",
@@ -18,7 +18,6 @@
   ],
   "main": "./dist/index.js",
   "files": [
-    "./dist/index.js",
     "dist/"
   ],
   "types": "./dist/index.d.ts",
