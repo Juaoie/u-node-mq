@@ -1,4 +1,4 @@
-import { Logs, Queue, News } from "../index";
+import { Logs, Queue, News, isFunction } from "../index";
 import { Consume } from "../internal/Consumer";
 
 /**
@@ -61,10 +61,10 @@ export default class QueueCollectionHandle {
    */
   unsubscribeQueue(queueName: string, consume?: Consume<unknown>): boolean {
     if (!this.has(queueName)) return false;
-    if (consume === undefined) {
-      return !!this.getQueue(queueName)?.removeAllConsumer();
-    } else {
+    if (isFunction(consume)) {
       return !!this.getQueue(queueName)?.removeConsumer(consume);
+    } else {
+      return !!this.getQueue(queueName)?.removeAllConsumer();
     }
   }
 }

@@ -110,7 +110,7 @@ test("检查名称是否自动填充", function (done) {
   done();
 });
 
-test("消费一次事件循环内的所有消息", function (done) {
+test("有且仅消费一条消息，emit异步，off同步", function (done) {
   const unmq = new UNodeMQ(
     {
       ex1: new Exchange({ routes: ["qu1"] }),
@@ -120,13 +120,18 @@ test("消费一次事件循环内的所有消息", function (done) {
     }
   );
   let num = 0;
+  unmq.on("qu1", () => {
+    num++;
+  })();
   unmq.emit("ex1", 1, 2, 3);
-
+  unmq.on("qu1", () => {
+    num++;
+  })();
   setTimeout(() => {
     unmq.on("qu1", () => {
       num++;
     })();
-    expect(num).toEqual(3);
+    expect(num).toEqual(1);
     done();
   });
 });
@@ -186,8 +191,10 @@ test("直接发送消息给队列的方法", function (done) {
   unmq.on("qu1", () => {
     num++;
   });
-  expect(num).toEqual(3);
-  done();
+  setTimeout(() => {
+    expect(num).toEqual(3);
+    done();
+  }, 1000);
 });
 
 test("观察者模式", function (done) {
@@ -204,6 +211,7 @@ test("观察者模式", function (done) {
   unmq.emit("ex1", 1, 2, 3);
   unmq.on("qu1", () => {
     num++;
+    return true;
   });
   setTimeout(() => {
     unmq.on("qu1", () => {
@@ -227,6 +235,7 @@ test("测试中继器返回不存在的队列名称", function (done) {
   unmq.emit("ex1", 1, 2, 3);
   unmq.on("qu1", () => {
     num++;
+    return true;
   });
   setTimeout(() => {
     expect(num).toEqual(3);
@@ -265,9 +274,9 @@ test("promise确认消费成功", function (done) {
     });
   });
   setTimeout(() => {
-    expect(unmq.getQueue("qu1")!.getNews().length).toEqual(0);
+    expect(unmq.getQueue("qu1")!.getNews()).toHaveLength(1);
     done();
-  }, 1000);
+  }, 700);
   unmq.emit("ex1", 1, 2, 3);
 });
 
@@ -280,15 +289,7 @@ test("promise确认消费失败", function (done) {
       qu1: new Queue({ ask: true }),
     }
   );
-  unmq.once("qu1", (data) => {
-    return new Promise((res) => {
-      setTimeout(() => {
-        if (data === 1) res(true);
-        else res(false);
-      }, 500);
-    });
-  });
-  unmq.once("qu1", (data: number) => {
+  unmq.on("qu1", (data: number) => {
     return new Promise((res) => {
       setTimeout(() => {
         if (data === 1) res(true);
@@ -299,15 +300,12 @@ test("promise确认消费失败", function (done) {
   setTimeout(() => {
     //检查1是否被消费
     const news = unmq.getQueue("qu1")!.getNews();
-    expect(news).toHaveLength(2);
-    news.forEach((item) => {
-      //内容必须为2或者3
-      expect([2, 3].indexOf(item.content as number)).not.toBe(-1);
-      //消息2的剩余消费次数因该为2，消息3的剩余消费次数因该为3
-      expect(item.content).toBe(item.consumedTimes);
-    });
+    expect(news).toHaveLength(1);
+    //3应该被取出正在消费，2应该消费失败一次
+    expect(news[0].consumedTimes).not.toBe(2);
+    expect(news[0].content).toBe(2);
     done();
-  }, 1000);
+  }, 1200);
   unmq.emit("ex1", 1, 2, 3);
 });
 
@@ -336,4 +334,31 @@ test("消费一条消息是否会影响别的消息", function (done) {
     done();
   }, 1000);
   unmq.emit("ex1", 1, 2, 3);
+});
+
+test("检测是否出现增量循环消费的问题", function (done) {
+  const unmq = new UNodeMQ(
+    {
+      ex1: new Exchange({ routes: ["qu1"] }),
+    },
+    {
+      qu1: new Queue({ ask: true, rcn: 4, mode: ConsumMode.All }),
+    }
+  );
+  let num = 0;
+  unmq.on("qu1", (res: string) => {
+    num++;
+    return false;
+  });
+  unmq.on("qu1", (res: string) => {
+    num++;
+    return false;
+  });
+  setTimeout(() => {
+    const news = unmq.getQueue("qu1")!.getNews();
+    expect(num).toBe(8);
+    expect(news).toHaveLength(0);
+    done();
+  }, 1000);
+  unmq.emit("ex1", "test");
 });

@@ -16,6 +16,7 @@ export enum ConsumMode {
 }
 /**
  * 队列，理论上一个队列的数据格式应该具有一致性
+ *
  */
 export default class Queue<D> {
   [k: string]: any;
@@ -37,8 +38,18 @@ export default class Queue<D> {
   rcn: number = 3;
   /**
    * 消费模式
+   * - Random 随机抽取消费者消费
+   * - All 一条消息所有消费者都消费
    */
   mode: ConsumMode = ConsumMode.Random;
+  /**
+   * 默认是同步消费
+   * 是否是异步消费，如果是同步消费，则一条消息消费完成或者消费失败才会消费下一条消息
+   * 为异步消费时，仅在ask为true且消费方法为异步方法时生效
+   * 为同步消费时，mode为ALL则需要所有消费者都消费完或者消费失败才能消费下一条消息
+   */
+  async: boolean = false;
+  private state: boolean = false; //消费状态，true为正在消费，false为未消费
   /**
    * 消息 list
    */
@@ -159,17 +170,44 @@ export default class Queue<D> {
   consumeNews() {
     if (this.news.length === 0) return;
     if (this.consumerList.length === 0) return;
+    if (!this.async && this.state) return;
     const news = this.eject();
     if (news === null) return;
+
+    this.state = true;
+    
     if (this.mode === ConsumMode.Random) {
       //随机消费者的索引
       const index = Math.round(Math.random() * (this.consumerList.length - 1));
       const consumer = this.consumerList[index];
-      this.consumption(news, consumer);
+      this.consumption(news, consumer)
+        .then(() => {
+          //消费成功
+        })
+        .catch(() => {
+          //消费失败
+          news.consumedTimes--;
+          this.pushNews(news);
+        })
+        .finally(() => {
+          this.state = false;
+          if (this.news.length > 0) this.consumeNews();
+        });
     } else if (this.mode === ConsumMode.All) {
-      for (const consumer of this.consumerList) {
-        this.consumption(news, consumer);
-      }
+      //每个消息消费之间是异步的
+      Promise.all(this.consumerList.map((consumer) => this.consumption(news, consumer)))
+        .then(() => {
+          //消息被成功消费
+        })
+        .catch(() => {
+          //消费失败
+          news.consumedTimes--;
+          this.pushNews(news);
+        })
+        .finally(() => {
+          this.state = false;
+          if (this.news.length > 0) this.consumeNews();
+        });
     }
   }
   //TODO:设置队列是否是同步消费，如果是同步消费则只能一个消息一个消息消费
@@ -177,15 +215,16 @@ export default class Queue<D> {
   //TODO:增加最长消费时间
   //增加同步消费和异步消费属性
   consumption(news: News<D>, consumer: Consumer<D>) {
-    consumer.consumption(news, this.ask).then((isOk: boolean) => {
-      if (isOk) {
-        Logs.log(`队列 消费成功`);
-      } else {
-        Logs.log(`队列 消费失败`);
-        news.consumedTimes--;
-        this.pushNews(news);
-      }
-      if (this.news.length > 0) this.consumeNews();
+    return new Promise((resolve, reject) => {
+      consumer.consumption(news, this.ask).then((isOk: boolean) => {
+        if (isOk) {
+          Logs.log(`队列 消费成功`);
+          resolve(isOk);
+        } else {
+          Logs.log(`队列 消费失败`);
+          reject(isOk);
+        }
+      });
     });
   }
 }

@@ -1,4 +1,5 @@
 const esbuild = require("esbuild");
+// const { dtsPlugin } = require("esbuild-plugin-d.ts");
 
 const buildType = ["browser", "node", "neutral"];
 
@@ -12,6 +13,8 @@ async function buildMian() {
         outfile: "./dist/index." + type + ".min.js",
         minify: true,
         platform: type,
+        sourcemap: true,
+        // plugins: [dtsPlugin({ outDir: "./dist" })], //生成d.ts文件，拖慢了打包速度
       })
     );
   }
@@ -25,32 +28,36 @@ const pluginsList = [
     entryPoint: "./src/plugins/iframe/index.ts",
     bundle: true,
     minify: true,
+    sourcemap: true,
     outfiles: {
       node: "./dist/plugins/iframe/index.node.js",
       browser: "./dist/plugins/iframe/index.browser.js",
       neutral: "./dist/plugins/iframe/index.neutral.js",
     },
+    plugins: [dtsPlugin({ outDir: "./dist" })], //生成d.ts文件，拖慢了打包速度
   },
-  {
-    entryPoint: "./src/plugins/storage/index.ts",
-    bundle: true,
-    minify: true,
-    outfiles: {
-      node: "./dist/plugins/storage/index.node.js",
-      browser: "./dist/plugins/storage/index.browser.js",
-      neutral: "./dist/plugins/storage/index.neutral.js", //暂时无法打包
-    },
-  },
-  {
-    entryPoint: "./src/adapter/PiniaStorageAdapter.ts",
-    bundle: false,
-    minify: true,
-    outfiles: {
-      node: "./dist/adapter/PiniaStorageAdapter.node.js",
-      browser: "./dist/adapter/PiniaStorageAdapter.browser.js",
-      neutral: "./dist/adapter/PiniaStorageAdapter.neutral.js",
-    },
-  },
+  // {
+  //   entryPoint: "./src/plugins/storage/index.ts",
+  //   bundle: true,
+  //   minify: true,
+  //   sourcemap: true,
+  //   outfiles: {
+  //     node: "./dist/plugins/storage/index.node.js",
+  //     browser: "./dist/plugins/storage/index.browser.js",
+  //     neutral: "./dist/plugins/storage/index.neutral.js", //暂时无法打包
+  //   },
+  // },
+  // {
+  //   entryPoint: "./src/adapter/PiniaStorageAdapter.ts",
+  //   bundle: false,
+  //   minify: true,
+  //   sourcemap: true,
+  //   outfiles: {
+  //     node: "./dist/adapter/PiniaStorageAdapter.node.js",
+  //     browser: "./dist/adapter/PiniaStorageAdapter.browser.js",
+  //     neutral: "./dist/adapter/PiniaStorageAdapter.neutral.js",
+  //   },
+  // },
 ];
 
 async function pluginsBuild() {
@@ -60,10 +67,11 @@ async function pluginsBuild() {
       list.push(
         esbuild.build({
           entryPoints: [item.entryPoint],
+          platform: key,
           bundle: item.bundle,
           outfile: item.outfiles[key],
           minify: item.minify,
-          platform: key,
+          sourcemap: item.sourcemap,
         })
       );
     }

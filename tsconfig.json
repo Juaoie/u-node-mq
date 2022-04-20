@@ -1,11 +1,5 @@
 {
-  "include": [
-    "src/index.ts",
-    "src/core/**/*.ts",
-    "src/internal/**/*.ts",
-    "src/plugins/iframe/**/*.ts",
-    "src/plugins/storage/**/*.ts"
-  ],
+  "include": ["src/index.ts", "src/plugins/iframe/**/*.ts"],
   "exclude": ["node_modules"],
   "compilerOptions": {
     "target": "ES6",

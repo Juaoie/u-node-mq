@@ -14,13 +14,13 @@ export default class UNodeMQ extends Collection {
         }
         else if (plugin && isFunction(plugin.install)) {
             this.installedPlugins.add(plugin);
-            return plugin.install(this, ...options);
+            plugin.install(this, ...options);
         }
         else if (isFunction(plugin)) {
             this.installedPlugins.add(plugin);
-            return plugin(this, ...options);
+            plugin(this, ...options);
         }
-        return null;
+        return this;
     }
     emit(exchangeName, ...contentList) {
         super.pushContentListToExchange(exchangeName, ...contentList);

@@ -3,9 +3,9 @@ import Queue, { ConsumMode } from "./internal/Queue";
 import Consumer from "./internal/Consumer";
 import News from "./internal/News";
 import Logs from "./internal/Logs";
-import UNodeMQ, { createUnmq, createQuickUnmq, QuickUNodeMQ } from "./core/UNodeMQ";
+import UNodeMQ, { createUnmq, createQuickUnmq, QuickUNodeMQ, PluginInstallFunction } from "./core/UNodeMQ";
 export default UNodeMQ;
-export { createUnmq, createQuickUnmq, QuickUNodeMQ };
+export { createUnmq, createQuickUnmq, QuickUNodeMQ, PluginInstallFunction };
 export { Exchange, Queue, Consumer, News, Logs };
 export { ConsumMode };
 export declare const extend: {

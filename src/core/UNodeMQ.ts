@@ -121,10 +121,7 @@ export default class UNodeMQ<
     consume: Consume<ReturnPanShapeQueue<QueueCollection[Q]>>,
     payload?: any
   ) {
-    let consumeNum = 0;
     const consumeProxy = (content: any, next?: Next, payload?: any) => {
-      if (consumeNum === 1) return; //一个消费者可能需要消耗多条消息,, error 队列里面的消息被消费了，但是这里返回为未被消费
-      consumeNum++;
       this.off(queueName, consumeProxy);
       return consume(content, next, payload);
     };
@@ -198,9 +195,9 @@ export class QuickUNodeMQ<D, QueueCollection extends Record<string, Queue<D>>> {
   off<Q extends keyof QueueCollection>(queueName: Q, consume: Consume<D>): this;
   off<Q extends keyof QueueCollection>(queueName: Q): this;
   off<Q extends keyof QueueCollection & string>(x: Q, y?: Consume<D>): this {
-    if (y === undefined) {
-      this.queueCollection[x].removeAllConsumer();
-    } else this.queueCollection[x].removeConsumer(y);
+    if (isFunction(y)) {
+      this.queueCollection[x].removeConsumer(y);
+    } else this.queueCollection[x].removeAllConsumer();
     return this;
   }
 
@@ -212,10 +209,7 @@ export class QuickUNodeMQ<D, QueueCollection extends Record<string, Queue<D>>> {
    * @returns
    */
   once<Q extends keyof QueueCollection & string>(queueName: Q, consume: Consume<D>, payload?: any) {
-    let consumeNum = 0;
     const consumeProxy = (content: any, next?: Next, payload?: any) => {
-      if (consumeNum === 1) return; //一个消费者可能需要消耗多条消息,, error 队列里面的消息被消费了，但是这里返回为未被消费
-      consumeNum++;
       this.off(queueName, consumeProxy);
       return consume(content, next, payload);
     };
