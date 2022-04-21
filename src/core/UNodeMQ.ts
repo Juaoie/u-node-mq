@@ -120,13 +120,30 @@ export default class UNodeMQ<
     queueName: Q,
     consume: Consume<ReturnPanShapeQueue<QueueCollection[Q]>>,
     payload?: any
+  ): this;
+  once<Q extends keyof QueueCollection & string>(queueName: Q): Promise<ReturnPanShapeQueue<QueueCollection[Q]>>;
+  once<Q extends keyof QueueCollection & string>(
+    queueName: Q,
+    consume?: Consume<ReturnPanShapeQueue<QueueCollection[Q]>>,
+    payload?: any
   ) {
-    const consumeProxy = (content: any, next?: Next, payload?: any) => {
-      this.off(queueName, consumeProxy);
-      return consume(content, next, payload);
-    };
-    this.on(queueName, consumeProxy, payload);
-    return this;
+    if (consume === undefined) {
+      return new Promise((reslove) => {
+        const consumeProxy = (content: any) => {
+          this.off(queueName, consumeProxy);
+          reslove(content);
+          return true;
+        };
+        this.on(queueName, consumeProxy, payload);
+      });
+    } else {
+      const consumeProxy = (content: any, next?: Next, payload?: any) => {
+        this.off(queueName, consumeProxy);
+        return consume(content, next, payload);
+      };
+      this.on(queueName, consumeProxy, payload);
+      return this;
+    }
   }
 }
 export function createQuickUnmq<D, QueueCollection extends Record<string, Queue<D>>>(
@@ -208,12 +225,25 @@ export class QuickUNodeMQ<D, QueueCollection extends Record<string, Queue<D>>> {
    * @param payload
    * @returns
    */
-  once<Q extends keyof QueueCollection & string>(queueName: Q, consume: Consume<D>, payload?: any) {
-    const consumeProxy = (content: any, next?: Next, payload?: any) => {
-      this.off(queueName, consumeProxy);
-      return consume(content, next, payload);
-    };
-    this.on(queueName, consumeProxy, payload);
-    return this;
+  once<Q extends keyof QueueCollection & string>(queueName: Q, consume?: Consume<D>, payload?: any): this;
+  once<Q extends keyof QueueCollection & string>(queueName: Q): Promise<D>;
+  once<Q extends keyof QueueCollection & string>(queueName: Q, consume?: Consume<D>, payload?: any) {
+    if (consume === undefined) {
+      return new Promise((reslove) => {
+        const consumeProxy = (content: any) => {
+          this.off(queueName, consumeProxy);
+          reslove(content);
+          return true;
+        };
+        this.on(queueName, consumeProxy, payload);
+      });
+    } else {
+      const consumeProxy = (content: any, next?: Next, payload?: any) => {
+        this.off(queueName, consumeProxy);
+        return consume(content, next, payload);
+      };
+      this.on(queueName, consumeProxy, payload);
+      return this;
+    }
   }
 }

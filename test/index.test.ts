@@ -396,3 +396,21 @@ test("检测是否出现增量循环消费的问题", function (done) {
   }, 1000);
   unmq.emit("ex1", "test");
 });
+
+test("测试once promise返回的方法", function (done) {
+  const unmq = new UNodeMQ(
+    {
+      ex1: new Exchange({ routes: ["qu1"] }),
+    },
+    {
+      qu1: new Queue({ ask: true, rcn: 4, mode: ConsumMode.All }),
+    }
+  );
+  unmq.once("qu1").then((res: string) => {
+    expect(res).toBe("test");
+    done();
+  });
+  setTimeout(() => {
+    unmq.emit("ex1", "test");
+  }, 500);
+});

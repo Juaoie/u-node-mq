@@ -39,12 +39,24 @@ export default class UNodeMQ extends Collection {
         return this;
     }
     once(queueName, consume, payload) {
-        const consumeProxy = (content, next, payload) => {
-            this.off(queueName, consumeProxy);
-            return consume(content, next, payload);
-        };
-        this.on(queueName, consumeProxy, payload);
-        return this;
+        if (consume === undefined) {
+            return new Promise((reslove) => {
+                const consumeProxy = (content) => {
+                    this.off(queueName, consumeProxy);
+                    reslove(content);
+                    return true;
+                };
+                this.on(queueName, consumeProxy, payload);
+            });
+        }
+        else {
+            const consumeProxy = (content, next, payload) => {
+                this.off(queueName, consumeProxy);
+                return consume(content, next, payload);
+            };
+            this.on(queueName, consumeProxy, payload);
+            return this;
+        }
     }
 }
 export function createQuickUnmq(exchange, queueCollection) {
@@ -89,11 +101,23 @@ export class QuickUNodeMQ {
         return this;
     }
     once(queueName, consume, payload) {
-        const consumeProxy = (content, next, payload) => {
-            this.off(queueName, consumeProxy);
-            return consume(content, next, payload);
-        };
-        this.on(queueName, consumeProxy, payload);
-        return this;
+        if (consume === undefined) {
+            return new Promise((reslove) => {
+                const consumeProxy = (content) => {
+                    this.off(queueName, consumeProxy);
+                    reslove(content);
+                    return true;
+                };
+                this.on(queueName, consumeProxy, payload);
+            });
+        }
+        else {
+            const consumeProxy = (content, next, payload) => {
+                this.off(queueName, consumeProxy);
+                return consume(content, next, payload);
+            };
+            this.on(queueName, consumeProxy, payload);
+            return this;
+        }
     }
 }

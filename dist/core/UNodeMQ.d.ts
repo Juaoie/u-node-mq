@@ -20,6 +20,7 @@ export default class UNodeMQ<ExchangeCollection extends Record<string, Exchange<
     off<Q extends keyof QueueCollection>(queueName: Q, consume: Consume<ReturnPanShapeQueue<QueueCollection[Q]>>): this;
     off<Q extends keyof QueueCollection>(queueName: Q): this;
     once<Q extends keyof QueueCollection & string>(queueName: Q, consume: Consume<ReturnPanShapeQueue<QueueCollection[Q]>>, payload?: any): this;
+    once<Q extends keyof QueueCollection & string>(queueName: Q): Promise<ReturnPanShapeQueue<QueueCollection[Q]>>;
 }
 export declare function createQuickUnmq<D, QueueCollection extends Record<string, Queue<D>>>(exchange: Exchange<D>, queueCollection: QueueCollection): QuickUNodeMQ<D, QueueCollection>;
 export declare class QuickUNodeMQ<D, QueueCollection extends Record<string, Queue<D>>> {
@@ -31,5 +32,6 @@ export declare class QuickUNodeMQ<D, QueueCollection extends Record<string, Queu
     on<Q extends keyof QueueCollection & string>(queueName: Q, consume: Consume<D>, payload?: any): () => this;
     off<Q extends keyof QueueCollection>(queueName: Q, consume: Consume<D>): this;
     off<Q extends keyof QueueCollection>(queueName: Q): this;
-    once<Q extends keyof QueueCollection & string>(queueName: Q, consume: Consume<D>, payload?: any): this;
+    once<Q extends keyof QueueCollection & string>(queueName: Q, consume?: Consume<D>, payload?: any): this;
+    once<Q extends keyof QueueCollection & string>(queueName: Q): Promise<D>;
 }
