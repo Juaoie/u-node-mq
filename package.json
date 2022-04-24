@@ -25,7 +25,9 @@
     "dev": "node ./esbuild.script/dev.js",
     "test": "jest"
   },
-  "dependencies": {},
+  "dependencies": {
+    "mitt": "^3.0.0"
+  },
   "devDependencies": {
     "@types/jest": "^27.4.1",
     "esbuild": "^0.14.34",

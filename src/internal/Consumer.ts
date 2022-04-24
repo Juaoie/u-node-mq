@@ -13,6 +13,7 @@ interface Payload<D> {
   then: (res: ThenParameter<D>) => void;
 }
 export default class Consumer<D> {
+  [k: string]: any;
   /**
    * id
    */

@@ -414,3 +414,21 @@ test("测试once promise返回的方法", function (done) {
     unmq.emit("ex1", "test");
   }, 500);
 });
+
+test("测试once this 返回数据", function (done) {
+  const unmq = new UNodeMQ(
+    {
+      ex1: new Exchange({ routes: ["qu1"] }),
+    },
+    {
+      qu1: new Queue(),
+    }
+  );
+
+  async function fun() {
+    const data = await unmq.emit("ex1", "test").once("qu1");
+    expect(data).toBe("test");
+    done();
+  }
+  fun();
+});

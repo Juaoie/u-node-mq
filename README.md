@@ -17,14 +17,6 @@
   - 实现了 storage 存储复杂数据类型的功能
   - 使用 pinia 或其他状态管理插件共享 storage 数据
 
-## 即将实现功能
-
-- 基于 rxjs pipeline
-
-- 重写 process 流程执行器，2.x 部分有完整版
-
-- 更加方便的 websocket 封装方法
-
 ## 简单示例地址
 
 [UNodeMQ](https://unpkg.com/u-node-mq/docs/unmq/index.html)
@@ -172,7 +164,8 @@ const queue = new Option(Option);
 | news      | News[]            | 否   | []       | 消息列表                                                                    |
 | consumers | Consumer[]        | 否   | []       | 消费者列表                                                                  |
 | ask       | Boolean           | 否   | false    | 是否需要消息确认，为 true，则需要手动确认消息                               |
-| rcn       | number            | 否   | 3        | 消费失败后可重复消费次数                                                    |
+| rcn       | Number            | 否   | 3        | 消费失败后可重复消费次数                                                    |
+| async     | Boolean           | 否   | false    | 是否是异步队列，为 false 则会一条消息消费完成或者失败才会消费下一条消息     |
 
 ---
 
@@ -281,11 +274,3 @@ const im = new IframeMessage(name);
 | 名称 | 类型   | 必填 | 说明                   |
 | ---- | ------ | ---- | ---------------------- |
 | name | string | 是   | 当前 iframe 容器的名称 |
-
-## 2、OtherIframe | OtherExchange
-
-- 建议只创建需要发送消息的应用实例，不需要发送消息的应用则不创建
-
-| 名称   | 类型   | 必填 | 说明                                             |
-| ------ | ------ | ---- | ------------------------------------------------ |
-| origin | string | 否   | 为了通信安全，建议为每个 OtherIframe 加上 origin |

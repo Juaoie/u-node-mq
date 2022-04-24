@@ -1,6 +1,7 @@
 import Tools from "../utils/tools";
 
 export default class News<D> {
+  [k: string]: any;
   /**
    * id
    */

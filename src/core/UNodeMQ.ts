@@ -110,7 +110,7 @@ export default class UNodeMQ<
   }
 
   /**
-   * 一次性订阅消息
+   * 订阅一条消息
    * @param queueName
    * @param consume
    * @param payload
@@ -219,13 +219,13 @@ export class QuickUNodeMQ<D, QueueCollection extends Record<string, Queue<D>>> {
   }
 
   /**
-   * 一次性订阅消息
+   * 订阅一条消息
    * @param queueName
    * @param consume
    * @param payload
    * @returns
    */
-  once<Q extends keyof QueueCollection & string>(queueName: Q, consume?: Consume<D>, payload?: any): this;
+  once<Q extends keyof QueueCollection & string>(queueName: Q, consume: Consume<D>, payload?: any): this;
   once<Q extends keyof QueueCollection & string>(queueName: Q): Promise<D>;
   once<Q extends keyof QueueCollection & string>(queueName: Q, consume?: Consume<D>, payload?: any) {
     if (consume === undefined) {
