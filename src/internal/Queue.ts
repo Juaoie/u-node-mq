@@ -10,6 +10,7 @@ interface Option<D> {
   mode?: ConsumMode;
   name?: string;
   async?: boolean;
+  maxTime?: number;
 }
 export enum ConsumMode {
   "Random" = "Random",
@@ -50,7 +51,17 @@ export default class Queue<D> {
    * 为同步消费时，mode为ALL则需要所有消费者都消费完或者消费失败才能消费下一条消息
    */
   async: boolean = false;
-  private state: boolean = false; //消费状态，true为正在消费，false为未消费
+  /**
+   * 消费状态，true为正在消费，false为未消费
+   */
+  private state: boolean = false;
+  /**
+   * 每个消费者最长消费时长
+   * 同步阻塞型代码计算所花时长不计算入内，仅仅控制异步消费者消费代码所花时长
+   * 设置为-1表示无时长限制
+   * 在ask为true和async为false的情况下设置maxTime为-1可能会导致队列将被阻塞
+   */
+  maxTime: number = 1000;
   /**
    * 消息 list
    */
@@ -73,6 +84,7 @@ export default class Queue<D> {
     if (option?.mode !== undefined) this.mode = option.mode;
     if (option?.name !== undefined) this.name = option.name;
     if (option?.async !== undefined) this.async = option.async;
+    if (option?.maxTime !== undefined) this.maxTime = option.maxTime;
   }
   /**
    * 通过消费方法移除指定消费者
@@ -202,12 +214,17 @@ export default class Queue<D> {
         this.state = false;
         if (this.news.length > 0) this.consumeNews();
       });
+    if (this.async && this.news.length > 0) this.consumeNews();
   }
-  //TODO:设置消费者是否是同步消费，如果是同步消费，则每次只能消费一条消息
-  //TODO:增加最长消费时间
-  //增加同步消费和异步消费属性
   consumption(news: News<D>, consumer: Consumer<D>): Promise<boolean> {
-    return new Promise((resolve, reject) => {
+    return new Promise<boolean>((resolve, reject) => {
+      let id: NodeJS.Timeout;
+      if (this.maxTime > 0)
+        id = setTimeout(() => {
+          Logs.log(`队列 消费超时`);
+          reject(false);
+        }, this.maxTime);
+
       consumer.consumption(news, this.ask).then((isOk: boolean) => {
         if (isOk) {
           Logs.log(`队列 消费成功`);
@@ -216,6 +233,7 @@ export default class Queue<D> {
           Logs.log(`队列 消费失败`);
           reject(isOk);
         }
+        if (this.maxTime > 0) clearTimeout(id);
       });
     });
   }

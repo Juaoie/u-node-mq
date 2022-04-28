@@ -10,7 +10,7 @@ test("先挂载消费者，再发送消息", function (done) {
       qu1: new Queue(),
     }
   );
-  unmq.on("qu1", (res) => {
+  unmq.on("qu1", (res: any) => {
     expect(res).toBe("test");
     done();
   });
@@ -28,7 +28,7 @@ test("先发送消息，再挂载消费者", function (done) {
   );
   unmq.emit("ex1", "test");
   setTimeout(() => {
-    unmq.on("qu1", (res) => {
+    unmq.on("qu1", (res: any) => {
       expect(res).toBe("test");
       done();
     });
@@ -60,7 +60,7 @@ test("全部消费", function (done) {
   );
   let num = 0;
   unmq.emit("ex1", "test");
-  unmq.on("qu1", (res) => {
+  unmq.on("qu1", (res: any) => {
     num++;
   });
   unmq.on("qu1", () => {
@@ -323,15 +323,19 @@ test("异步队列消费", function (done) {
     }
   );
   let num = 0;
-  unmq.on("qu1", (data: number) => {
-    return new Promise((res) => {
-      setTimeout(() => {
-        num++;
-        if (data === 1) res(true);
-        else res(false);
-      }, 500);
+  unmq.emit("ex1", 1, 2, 3);
+  //消息是一条一条加入队列，则可以轻易实现异步消费功能，但如果队列里面本来就有消息，就需要单独处理异步消费功能
+  setTimeout(() => {
+    unmq.on("qu1", (data: number) => {
+      return new Promise((res) => {
+        setTimeout(() => {
+          num++;
+          if (data === 1) res(true);
+          else res(false);
+        }, 500);
+      });
     });
-  });
+  }, 100);
 
   setTimeout(() => {
     //检查1是否被消费
@@ -340,7 +344,6 @@ test("异步队列消费", function (done) {
     expect(num).toBe(5);
     done();
   }, 1200);
-  unmq.emit("ex1", 1, 2, 3);
 });
 
 test("消费一条消息是否会影响别的消息", function (done) {
@@ -431,4 +434,39 @@ test("测试once this 返回数据", function (done) {
     done();
   }
   fun();
+});
+
+test("测试最长消费时长", function (done) {
+  const unmq = new UNodeMQ(
+    {
+      ex1: new Exchange({ routes: ["qu1", "qu2", "qu3"] }),
+    },
+    {
+      qu1: new Queue({ ask: true, maxTime: 100 }),
+      qu2: new Queue({ ask: true, maxTime: -1 }),
+    }
+  );
+  let num = 0;
+  unmq.emit("ex1", 1);
+  unmq.on("qu1", (data: number, next?: (arg0: boolean) => void) => {
+    num++;
+    setTimeout(() => {
+      if (next) next(true);
+    }, 200);
+  });
+  unmq.on("qu2", (data: number, next?: (arg0: boolean) => void) => {
+    setTimeout(() => {
+      num++;
+      if (next) next(false);
+    }, 500);
+  });
+
+  setTimeout(() => {
+    const news1 = unmq.getQueue("qu1")!.getNews();
+    const news2 = unmq.getQueue("qu2")!.getNews();
+    expect(news1).toHaveLength(0);
+    expect(news2).toHaveLength(0);
+    expect(num).toBe(5);
+    done();
+  }, 1200);
 });
