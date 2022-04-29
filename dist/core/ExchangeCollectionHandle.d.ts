@@ -1,4 +1,4 @@
-import { Exchange } from "../index";
+import { Exchange } from "../index.js";
 export default class ExchangeCollectionHandle {
     private exchangeCollection;
     has(exchangeName: string): boolean;

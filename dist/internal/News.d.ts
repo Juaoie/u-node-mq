@@ -1,4 +1,5 @@
 export default class News<D> {
+    [k: string]: any;
     private readonly id;
     getId(): string;
     readonly createTime: number;

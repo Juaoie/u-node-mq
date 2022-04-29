@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import Logs from "../internal/Logs";
+import Logs from "../internal/Logs.js";
 export default class ExchangeCollectionHandle {
     constructor() {
         this.exchangeCollection = new Map();

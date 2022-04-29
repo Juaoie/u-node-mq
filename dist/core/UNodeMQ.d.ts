@@ -1,6 +1,6 @@
-import { Exchange, Queue } from "../index";
-import { Consume } from "../internal/Consumer";
-import Collection from "./Collection";
+import { Exchange, Queue } from "../index.js";
+import { Consume } from "../internal/Consumer.js";
+import Collection from "./Collection.js";
 export declare type ReturnPanShapeExchange<T> = T extends Exchange<infer U> ? U : never;
 export declare type ReturnPanShapeQueue<T> = T extends Queue<infer U> ? U : never;
 export declare type PluginInstallFunction = <ExchangeCollection extends Record<string, Exchange<any>>, QueueCollection extends Record<string, Queue<any>>>(unmq: UNodeMQ<ExchangeCollection, QueueCollection>, ...options: any[]) => void;
@@ -32,6 +32,6 @@ export declare class QuickUNodeMQ<D, QueueCollection extends Record<string, Queu
     on<Q extends keyof QueueCollection & string>(queueName: Q, consume: Consume<D>, payload?: any): () => this;
     off<Q extends keyof QueueCollection>(queueName: Q, consume: Consume<D>): this;
     off<Q extends keyof QueueCollection>(queueName: Q): this;
-    once<Q extends keyof QueueCollection & string>(queueName: Q, consume?: Consume<D>, payload?: any): this;
+    once<Q extends keyof QueueCollection & string>(queueName: Q, consume: Consume<D>, payload?: any): this;
     once<Q extends keyof QueueCollection & string>(queueName: Q): Promise<D>;
 }

@@ -1,5 +1,5 @@
-import { Queue, News } from "../index";
-import { Consume } from "../internal/Consumer";
+import { Queue, News } from "../index.js";
+import { Consume } from "../internal/Consumer.js";
 export default class QueueCollectionHandle {
     private queueCollection;
     has(queueName: string): boolean;

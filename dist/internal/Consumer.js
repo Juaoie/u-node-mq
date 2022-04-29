@@ -1,6 +1,6 @@
-import { isPromise } from "../index";
-import Tools from "../utils/tools";
-import Logs from "./Logs";
+import { isPromise } from "../index.js";
+import Tools from "../utils/tools.js";
+import Logs from "./Logs.js";
 export default class Consumer {
     constructor(consume, payload) {
         this.id = Tools.random();

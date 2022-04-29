@@ -35,22 +35,22 @@ export default class IframePlugin {
         getInternalIframeBroadcasMessageQueueName(iframe.name as string),
       ]);
       //用于存储消息的队列
-      unmq.addQueue(new Queue({ name: getInternalIframeMessageQueueName(iframe.name) }));
+      unmq.addQueue(new Queue({ name: getInternalIframeMessageQueueName(iframe.name), async: true }));
       //用来广播获取地址的消息
-      unmq.addQueue(new Queue({ name: getInternalIframeBroadcasMessageQueueName(iframe.name) }));
+      unmq.addQueue(new Queue({ name: getInternalIframeBroadcasMessageQueueName(iframe.name), async: true }));
 
       //为广播消息挂载消费方法
       unmq.on(getInternalIframeBroadcasMessageQueueName(iframe.name), () => {
         //广播查找交换机地址消息
         this.broadcastMessage(MessageType.FindExchangeMessage, {
           exchangeName: iframe.name,
-          msg: `who is ${this.name}`,
+          msg: `who is ${iframe.name} ?`,
         });
       });
     }
 
     //广播发送上线通知
-    this.broadcastMessage(MessageType.OnlineNotificationMessage, null);
+    this.broadcastMessage(MessageType.OnlineNotificationMessage, { msg: `${this.name} is online` });
 
     //监听unmq的消息
     window.addEventListener("message", this.receiveMessage.bind(this), false);
@@ -66,29 +66,32 @@ export default class IframePlugin {
     const { mask, type, message, fromName } = data;
     if (mask !== "u-node-mq-plugin") return;
     if (source === null || source === undefined) return;
-    if (!(source instanceof Window)) return;
+    //发送者是否存在
+    const fromIframe = this.unmq.getExchange(fromName);
+    if (!fromIframe) return;
+    //判断真实的origin 是否是我想要的 origin
+    if (isString(fromIframe.origin) && fromIframe.origin !== origin) return;
+
     if ([MessageType.OnlineNotificationMessage, MessageType.SendCoordinateMessage].indexOf(type) !== -1) {
-      ///////////需要判断来源的消息
-      //发送者是否存在
-      const fromIframe = this.unmq.getExchange(fromName);
-      if (!fromIframe) return;
-      //判断真实的origin 是否是我想要的 origin
-      if (isString(fromIframe.origin) && fromIframe.origin !== origin) return;
       // 拿到对方坐标，准备发送消息
-      this.unmq.on(getInternalIframeMessageQueueName(fromName), (data) => {
-        this.postMessage(source, MessageType.GeneralMessage, data, origin);
-      })();
+      const off = this.unmq.on(getInternalIframeMessageQueueName(fromName), (data) => {
+        this.postMessage(source as Window, MessageType.GeneralMessage, data, origin);
+      });
+      setTimeout(off);
       return true;
     }
 
-    ///////////不需要判断来源的消息
-
     //普通消息
-    if (type === MessageType.GeneralMessage) return this.unmq.emit(this.name, message);
+    if (type === MessageType.GeneralMessage) {
+      //发送确认收到消息
+      this.unmq.emit(this.name, message);
+      return true;
+    }
 
     //查找交换机消息
     if (type === MessageType.FindExchangeMessage && message.exchangeName === this.name) {
-      this.postMessage(source, MessageType.SendCoordinateMessage, { msg: `my name is ${this.name}` }, origin);
+      this.postMessage(source as Window, MessageType.SendCoordinateMessage, { msg: `my name is ${this.name}` }, origin);
+      return true;
     }
   }
 

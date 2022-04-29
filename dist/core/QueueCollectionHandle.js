@@ -1,4 +1,4 @@
-import { Logs, isFunction } from "../index";
+import { Logs, isFunction } from "../index.js";
 export default class QueueCollectionHandle {
     constructor() {
         this.queueCollection = new Map();

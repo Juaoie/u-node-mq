@@ -136,7 +136,7 @@ test("有且仅消费一条消息，emit异步，off同步", function (done) {
   });
 });
 
-test("有且仅消费一条消息", function (done) {
+test("有且仅消费一条消息，once()方法", function (done) {
   const unmq = new UNodeMQ(
     {
       ex1: new Exchange({ routes: ["qu1"] }),
@@ -173,6 +173,7 @@ test("移除方法", function (done) {
   }
   unmq.on("qu1", fun);
   unmq.off("qu1", fun);
+  unmq.on("qu1", fun)();
   setTimeout(() => {
     expect(num).toEqual(0);
     done();

@@ -1,7 +1,7 @@
-import News from "./News";
-import Consumer from "./Consumer";
-import Logs from "./Logs";
-import Tools from "../utils/tools";
+import News from "./News.js";
+import Consumer from "./Consumer.js";
+import Logs from "./Logs.js";
+import Tools from "../utils/tools.js";
 export var ConsumMode;
 (function (ConsumMode) {
     ConsumMode["Random"] = "Random";
@@ -15,6 +15,7 @@ export default class Queue {
         this.mode = ConsumMode.Random;
         this.async = false;
         this.state = false;
+        this.maxTime = 1000;
         this.news = [];
         this.consumerList = [];
         if ((option === null || option === void 0 ? void 0 : option.ask) !== undefined)
@@ -31,6 +32,8 @@ export default class Queue {
             this.name = option.name;
         if ((option === null || option === void 0 ? void 0 : option.async) !== undefined)
             this.async = option.async;
+        if ((option === null || option === void 0 ? void 0 : option.maxTime) !== undefined)
+            this.maxTime = option.maxTime;
     }
     getId() {
         return this.id;
@@ -124,9 +127,17 @@ export default class Queue {
             if (this.news.length > 0)
                 this.consumeNews();
         });
+        if (this.async && this.news.length > 0)
+            this.consumeNews();
     }
     consumption(news, consumer) {
         return new Promise((resolve, reject) => {
+            let id;
+            if (this.maxTime > 0)
+                id = setTimeout(() => {
+                    Logs.log(`队列 消费超时`);
+                    reject(false);
+                }, this.maxTime);
             consumer.consumption(news, this.ask).then((isOk) => {
                 if (isOk) {
                     Logs.log(`队列 消费成功`);
@@ -136,6 +147,8 @@ export default class Queue {
                     Logs.log(`队列 消费失败`);
                     reject(isOk);
                 }
+                if (this.maxTime > 0)
+                    clearTimeout(id);
             });
         });
     }

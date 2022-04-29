@@ -1,5 +1,5 @@
-import { isFunction } from "../index";
-import Collection from "./Collection";
+import { isFunction } from "../index.js";
+import Collection from "./Collection.js";
 export function createUnmq(exchangeCollection, queueCollection) {
     return new UNodeMQ(exchangeCollection, queueCollection);
 }

@@ -1,4 +1,4 @@
-import News from "./News";
+import News from "./News.js";
 export declare type Next = (value?: boolean) => void;
 export interface Consume<D> {
     (content: D, next?: Next, payload?: any): Promise<any> | any;
@@ -9,6 +9,7 @@ interface Payload<D> {
     then: (res: ThenParameter<D>) => void;
 }
 export default class Consumer<D> {
+    [k: string]: any;
     private readonly id;
     getId(): string;
     createTime: number;

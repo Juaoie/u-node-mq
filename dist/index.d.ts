@@ -1,9 +1,9 @@
-import Exchange from "./internal/Exchange";
-import Queue, { ConsumMode } from "./internal/Queue";
-import Consumer from "./internal/Consumer";
-import News from "./internal/News";
-import Logs from "./internal/Logs";
-import UNodeMQ, { createUnmq, createQuickUnmq, QuickUNodeMQ, PluginInstallFunction } from "./core/UNodeMQ";
+import Exchange from "./internal/Exchange.js";
+import Queue, { ConsumMode } from "./internal/Queue.js";
+import Consumer from "./internal/Consumer.js";
+import News from "./internal/News.js";
+import Logs from "./internal/Logs.js";
+import UNodeMQ, { createUnmq, createQuickUnmq, QuickUNodeMQ, PluginInstallFunction } from "./core/UNodeMQ.js";
 export default UNodeMQ;
 export { createUnmq, createQuickUnmq, QuickUNodeMQ, PluginInstallFunction };
 export { Exchange, Queue, Consumer, News, Logs };

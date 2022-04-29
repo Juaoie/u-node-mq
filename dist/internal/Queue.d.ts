@@ -1,5 +1,5 @@
-import News from "./News";
-import Consumer, { Consume } from "./Consumer";
+import News from "./News.js";
+import Consumer, { Consume } from "./Consumer.js";
 interface Option<D> {
     ask?: boolean;
     rcn?: number;
@@ -8,6 +8,7 @@ interface Option<D> {
     mode?: ConsumMode;
     name?: string;
     async?: boolean;
+    maxTime?: number;
 }
 export declare enum ConsumMode {
     "Random" = "Random",
@@ -23,6 +24,7 @@ export default class Queue<D> {
     mode: ConsumMode;
     async: boolean;
     private state;
+    maxTime: number;
     private news;
     getNews(): News<D>[];
     private consumerList;

@@ -1,4 +1,4 @@
-import UNodeMQ, { Exchange, Queue } from "../../index";
+import UNodeMQ, { Exchange, Queue } from "../../index.js";
 export declare enum MessageType {
     GeneralMessage = 0,
     FindExchangeMessage = 1,

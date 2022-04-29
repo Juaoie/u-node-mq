@@ -7,8 +7,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import Tools from "../utils/tools";
-import Logs from "./Logs";
+import Tools from "../utils/tools.js";
+import Logs from "./Logs.js";
 export default class Exchange {
     constructor(option) {
         this.id = Tools.random();

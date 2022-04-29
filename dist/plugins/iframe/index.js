@@ -1,5 +1,5 @@
-import { isObject, isString, Queue } from "../../index";
-import { getOtherAllIframeDoc } from "./loader";
+import { isObject, isString, Queue } from "../../index.js";
+import { getOtherAllIframeDoc } from "./loader.js";
 export var MessageType;
 (function (MessageType) {
     MessageType[MessageType["GeneralMessage"] = 0] = "GeneralMessage";
@@ -30,16 +30,16 @@ export default class IframePlugin {
                 getInternalIframeMessageQueueName(iframe.name),
                 getInternalIframeBroadcasMessageQueueName(iframe.name),
             ]);
-            unmq.addQueue(new Queue({ name: getInternalIframeMessageQueueName(iframe.name) }));
-            unmq.addQueue(new Queue({ name: getInternalIframeBroadcasMessageQueueName(iframe.name) }));
+            unmq.addQueue(new Queue({ name: getInternalIframeMessageQueueName(iframe.name), async: true }));
+            unmq.addQueue(new Queue({ name: getInternalIframeBroadcasMessageQueueName(iframe.name), async: true }));
             unmq.on(getInternalIframeBroadcasMessageQueueName(iframe.name), () => {
                 this.broadcastMessage(MessageType.FindExchangeMessage, {
                     exchangeName: iframe.name,
-                    msg: `who is ${this.name}`,
+                    msg: `who is ${iframe.name} ?`,
                 });
             });
         }
-        this.broadcastMessage(MessageType.OnlineNotificationMessage, null);
+        this.broadcastMessage(MessageType.OnlineNotificationMessage, { msg: `${this.name} is online` });
         window.addEventListener("message", this.receiveMessage.bind(this), false);
     }
     receiveMessage({ source, data, origin }) {
@@ -52,23 +52,25 @@ export default class IframePlugin {
             return;
         if (source === null || source === undefined)
             return;
-        if (!(source instanceof Window))
+        const fromIframe = this.unmq.getExchange(fromName);
+        if (!fromIframe)
+            return;
+        if (isString(fromIframe.origin) && fromIframe.origin !== origin)
             return;
         if ([MessageType.OnlineNotificationMessage, MessageType.SendCoordinateMessage].indexOf(type) !== -1) {
-            const fromIframe = this.unmq.getExchange(fromName);
-            if (!fromIframe)
-                return;
-            if (isString(fromIframe.origin) && fromIframe.origin !== origin)
-                return;
-            this.unmq.on(getInternalIframeMessageQueueName(fromName), (data) => {
+            const off = this.unmq.on(getInternalIframeMessageQueueName(fromName), (data) => {
                 this.postMessage(source, MessageType.GeneralMessage, data, origin);
-            })();
+            });
+            setTimeout(off);
             return true;
         }
-        if (type === MessageType.GeneralMessage)
-            return this.unmq.emit(this.name, message);
+        if (type === MessageType.GeneralMessage) {
+            this.unmq.emit(this.name, message);
+            return true;
+        }
         if (type === MessageType.FindExchangeMessage && message.exchangeName === this.name) {
             this.postMessage(source, MessageType.SendCoordinateMessage, { msg: `my name is ${this.name}` }, origin);
+            return true;
         }
     }
     postMessage(currentWindow, type, message, origin = "*", transfer) {

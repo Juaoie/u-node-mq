@@ -1,4 +1,4 @@
-import Tools from "../utils/tools";
+import Tools from "../utils/tools.js";
 export default class News {
     constructor(content) {
         this.id = Tools.random();
