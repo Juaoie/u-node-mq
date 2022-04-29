@@ -1,5 +1,8 @@
 import UNodeMQ, { Exchange, isObject, isString, Queue } from "../../index";
 import { getOtherAllIframeDoc } from "./loader";
+/**
+ * 使用postMessage进行iframe跨域通信
+ */
 //TODO:解决插件引用路径长度问题
 //TODO:跨iframe共享storage
 //TODO:单元测试框架集成

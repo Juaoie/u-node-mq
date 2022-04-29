@@ -35,6 +35,11 @@
     unmq.on("qu3", (res) => {
       alert("ex3收到：" + res);
     });
+    const bc = new BroadcastChannel("test")
+    bc.onmessage=function(event){
+    console.log("🚀 ~ file: index3.html ~ line 40 ~ event", event)
+      
+    }
 
     const body = document.getElementById("ex3");
 

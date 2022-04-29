@@ -49,10 +49,12 @@
     };
     body.appendChild(button2);
 
+    const bc = new BroadcastChannel("test")
     //发送给ex3
     const button3 = document.createElement("button");
     button3.innerText = "发送消息给ex3";
     button3.onclick = function () {
+      bc.postMessage("test test test")
       console.log("ex1 发送了一条消息给 ex3");
       unmq.emit("ex3", "发给ex3");
     };
