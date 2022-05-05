@@ -18,22 +18,7 @@ export default class Queue {
         this.maxTime = 1000;
         this.news = [];
         this.consumerList = [];
-        if ((option === null || option === void 0 ? void 0 : option.ask) !== undefined)
-            this.ask = option.ask;
-        if ((option === null || option === void 0 ? void 0 : option.news) !== undefined)
-            this.news = option.news;
-        if ((option === null || option === void 0 ? void 0 : option.consumerList) !== undefined)
-            this.consumerList = option.consumerList;
-        if ((option === null || option === void 0 ? void 0 : option.rcn) !== undefined)
-            this.rcn = option.rcn;
-        if ((option === null || option === void 0 ? void 0 : option.mode) !== undefined)
-            this.mode = option.mode;
-        if ((option === null || option === void 0 ? void 0 : option.name) !== undefined)
-            this.name = option.name;
-        if ((option === null || option === void 0 ? void 0 : option.async) !== undefined)
-            this.async = option.async;
-        if ((option === null || option === void 0 ? void 0 : option.maxTime) !== undefined)
-            this.maxTime = option.maxTime;
+        Object.assign(this, option);
     }
     getId() {
         return this.id;
@@ -132,12 +117,13 @@ export default class Queue {
     }
     consumption(news, consumer) {
         return new Promise((resolve, reject) => {
-            let id;
-            if (this.maxTime > 0)
-                id = setTimeout(() => {
+            const maxTime = this.maxTime;
+            const id = maxTime > 0
+                ? setTimeout(() => {
                     Logs.log(`队列 消费超时`);
                     reject(false);
-                }, this.maxTime);
+                }, maxTime)
+                : null;
             consumer.consumption(news, this.ask).then((isOk) => {
                 if (isOk) {
                     Logs.log(`队列 消费成功`);
@@ -147,7 +133,7 @@ export default class Queue {
                     Logs.log(`队列 消费失败`);
                     reject(isOk);
                 }
-                if (this.maxTime > 0)
+                if (maxTime > 0)
                     clearTimeout(id);
             });
         });

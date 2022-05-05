@@ -14,12 +14,7 @@ export default class Exchange {
         this.id = Tools.random();
         this.routes = [];
         this.repeater = () => this.getRoutes();
-        if ((option === null || option === void 0 ? void 0 : option.routes) !== undefined)
-            this.routes = option.routes;
-        if ((option === null || option === void 0 ? void 0 : option.repeater) !== undefined)
-            this.repeater = option.repeater;
-        if ((option === null || option === void 0 ? void 0 : option.name) !== undefined)
-            this.name = option.name;
+        Object.assign(this, option);
     }
     getId() {
         return this.id;

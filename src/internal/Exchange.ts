@@ -9,6 +9,7 @@ export type Option<D> = {
   routes?: string[];
   repeater?: Repeater<D>;
   name?: string;
+  [k: string]: any;
 };
 /**
  * 交换机
@@ -48,9 +49,7 @@ export default class Exchange<D> {
   }
 
   constructor(option?: Option<D>) {
-    if (option?.routes !== undefined) this.routes = option.routes;
-    if (option?.repeater !== undefined) this.repeater = option.repeater;
-    if (option?.name !== undefined) this.name = option.name;
+    Object.assign(this, option);
   }
 
   /**

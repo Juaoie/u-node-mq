@@ -3,6 +3,7 @@ export declare type Option<D> = {
     routes?: string[];
     repeater?: Repeater<D>;
     name?: string;
+    [k: string]: any;
 };
 export default class Exchange<D> {
     [k: string]: any;

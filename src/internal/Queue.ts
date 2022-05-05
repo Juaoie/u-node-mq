@@ -11,6 +11,7 @@ interface Option<D> {
   name?: string;
   async?: boolean;
   maxTime?: number;
+  [k: string]: any;
 }
 export enum ConsumMode {
   "Random" = "Random",
@@ -77,14 +78,7 @@ export default class Queue<D> {
     return this.consumerList;
   }
   constructor(option?: Option<D>) {
-    if (option?.ask !== undefined) this.ask = option.ask;
-    if (option?.news !== undefined) this.news = option.news;
-    if (option?.consumerList !== undefined) this.consumerList = option.consumerList;
-    if (option?.rcn !== undefined) this.rcn = option.rcn;
-    if (option?.mode !== undefined) this.mode = option.mode;
-    if (option?.name !== undefined) this.name = option.name;
-    if (option?.async !== undefined) this.async = option.async;
-    if (option?.maxTime !== undefined) this.maxTime = option.maxTime;
+    Object.assign(this, option);
   }
   /**
    * 通过消费方法移除指定消费者
@@ -218,12 +212,14 @@ export default class Queue<D> {
   }
   consumption(news: News<D>, consumer: Consumer<D>): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
-      let id: NodeJS.Timeout;
-      if (this.maxTime > 0)
-        id = setTimeout(() => {
-          Logs.log(`队列 消费超时`);
-          reject(false);
-        }, this.maxTime);
+      const maxTime = this.maxTime;
+      const id: NodeJS.Timeout | null =
+        maxTime > 0
+          ? setTimeout(() => {
+              Logs.log(`队列 消费超时`);
+              reject(false);
+            }, maxTime)
+          : null;
 
       consumer.consumption(news, this.ask).then((isOk: boolean) => {
         if (isOk) {
@@ -233,7 +229,7 @@ export default class Queue<D> {
           Logs.log(`队列 消费失败`);
           reject(isOk);
         }
-        if (this.maxTime > 0) clearTimeout(id);
+        if (maxTime > 0) clearTimeout(id as NodeJS.Timeout);
       });
     });
   }

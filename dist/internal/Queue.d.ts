@@ -9,6 +9,7 @@ interface Option<D> {
     name?: string;
     async?: boolean;
     maxTime?: number;
+    [k: string]: any;
 }
 export declare enum ConsumMode {
     "Random" = "Random",
