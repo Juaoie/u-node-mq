@@ -62,7 +62,7 @@ export default class Queue<D> {
    * 设置为-1表示无时长限制
    * 在ask为true和async为false的情况下设置maxTime为-1可能会导致队列将被阻塞
    */
-  maxTime: number = 1000;
+  maxTime: number = 3000;
   /**
    * 消息 list
    */
@@ -214,7 +214,7 @@ export default class Queue<D> {
     return new Promise<boolean>((resolve, reject) => {
       const maxTime = this.maxTime;
       const id: NodeJS.Timeout | null =
-        maxTime > 0
+        maxTime >= 0
           ? setTimeout(() => {
               Logs.log(`队列 消费超时`);
               reject(false);
@@ -229,7 +229,7 @@ export default class Queue<D> {
           Logs.log(`队列 消费失败`);
           reject(isOk);
         }
-        if (maxTime > 0) clearTimeout(id as NodeJS.Timeout);
+        if (maxTime >= 0) clearTimeout(id as NodeJS.Timeout);
       });
     });
   }

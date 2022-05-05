@@ -166,6 +166,7 @@ const queue = new Option(Option);
 | ask       | Boolean           | 否   | false    | 是否需要消息确认，为 true，则需要手动确认消息                               |
 | rcn       | Number            | 否   | 3        | 消费失败后可重复消费次数                                                    |
 | async     | Boolean           | 否   | false    | 是否是异步队列，为 false 则会一条消息消费完成或者失败才会消费下一条消息     |
+| maxTime   | Number            | 否   | 3000     | 最长消费时长，单位毫秒，小于 0 代表不限时长                                 |
 
 ---
 

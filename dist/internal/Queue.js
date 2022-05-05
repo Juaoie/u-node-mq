@@ -15,7 +15,7 @@ export default class Queue {
         this.mode = ConsumMode.Random;
         this.async = false;
         this.state = false;
-        this.maxTime = 1000;
+        this.maxTime = 3000;
         this.news = [];
         this.consumerList = [];
         Object.assign(this, option);
@@ -118,7 +118,7 @@ export default class Queue {
     consumption(news, consumer) {
         return new Promise((resolve, reject) => {
             const maxTime = this.maxTime;
-            const id = maxTime > 0
+            const id = maxTime >= 0
                 ? setTimeout(() => {
                     Logs.log(`队列 消费超时`);
                     reject(false);
@@ -133,7 +133,7 @@ export default class Queue {
                     Logs.log(`队列 消费失败`);
                     reject(isOk);
                 }
-                if (maxTime > 0)
+                if (maxTime >= 0)
                     clearTimeout(id);
             });
         });

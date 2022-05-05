@@ -440,34 +440,44 @@ test("测试once this 返回数据", function (done) {
 test("测试最长消费时长", function (done) {
   const unmq = new UNodeMQ(
     {
-      ex1: new Exchange({ routes: ["qu1", "qu2", "qu3"] }),
+      ex1: new Exchange({ routes: ["qu1", "qu2", "qu3", "qu4"] }),
     },
     {
       qu1: new Queue({ ask: true, maxTime: 100 }),
       qu2: new Queue({ ask: true, maxTime: -1 }),
+      qu3: new Queue({ ask: true, maxTime: 0 }),
     }
   );
   let num = 0;
   unmq.emit("ex1", 1);
+  //时间超出了，所以 num 加3
   unmq.on("qu1", (data: number, next?: (arg0: boolean) => void) => {
     num++;
     setTimeout(() => {
       if (next) next(true);
     }, 200);
   });
+  //消费失败，循环消费，同步消费，所以 num 加2
   unmq.on("qu2", (data: number, next?: (arg0: boolean) => void) => {
     setTimeout(() => {
       num++;
       if (next) next(false);
     }, 500);
   });
+  // num 加1
+  unmq.on("qu3", () => {
+    num++;
+    return true;
+  });
 
   setTimeout(() => {
     const news1 = unmq.getQueue("qu1")!.getNews();
     const news2 = unmq.getQueue("qu2")!.getNews();
+    const news3 = unmq.getQueue("qu3")!.getNews();
     expect(news1).toHaveLength(0);
     expect(news2).toHaveLength(0);
-    expect(num).toBe(5);
+    expect(news3).toHaveLength(0);
+    expect(num).toBe(6);
     done();
   }, 1200);
 });
