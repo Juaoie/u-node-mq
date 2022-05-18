@@ -1,5 +1,5 @@
 import Exchange from "./internal/Exchange";
-import Queue, { ConsumMode } from "./internal/Queue";
+import Queue, { ConsumMode, Operator } from "./internal/Queue";
 import Consumer from "./internal/Consumer";
 import News from "./internal/News";
 import Logs from "./internal/Logs";
@@ -11,7 +11,7 @@ export { createUnmq, createQuickUnmq, QuickUNodeMQ, PluginInstallFunction };
 
 export { Exchange, Queue, Consumer, News, Logs };
 
-export { ConsumMode };
+export { ConsumMode, Operator };
 
 export const extend = Object.assign;
 export const objectToString = Object.prototype.toString;

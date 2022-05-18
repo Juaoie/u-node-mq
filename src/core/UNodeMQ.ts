@@ -153,7 +153,7 @@ export function createQuickUnmq<D, QueueCollection extends Record<string, Queue<
   return new QuickUNodeMQ(exchange, queueCollection);
 }
 /**
- * quick unmq
+ * quick start unmq
  * single type unmq
  */
 export class QuickUNodeMQ<D, QueueCollection extends Record<string, Queue<D>>> {

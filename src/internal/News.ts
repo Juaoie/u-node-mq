@@ -16,7 +16,7 @@ export default class News<D> {
   /**
    * 消息内容
    */
-  readonly content: D;
+  content: D;
   /**
    * 剩余可重复消费次数
    */

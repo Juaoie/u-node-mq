@@ -136,6 +136,30 @@ test("有且仅消费一条消息，emit异步，off同步", function (done) {
   });
 });
 
+test("执行一次任务队列里面所有数据", function (done) {
+  const unmq = new UNodeMQ(
+    {
+      ex1: new Exchange({ routes: ["qu1"] }),
+    },
+    {
+      qu1: new Queue({ async: true }),
+    }
+  );
+  let num = 0;
+  unmq.emit("ex1", 1, 2, 3);
+  unmq.on("qu1", () => {
+    //还未执行就卸载了
+    num++;
+  })();
+  setTimeout(() => {
+    unmq.on("qu1", () => {
+      num++;
+    })();
+    expect(num).toEqual(3);
+    done();
+  });
+});
+
 test("有且仅消费一条消息，once()方法", function (done) {
   const unmq = new UNodeMQ(
     {
