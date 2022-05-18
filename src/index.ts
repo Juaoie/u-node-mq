@@ -13,6 +13,9 @@ export { Exchange, Queue, Consumer, News, Logs };
 
 export { ConsumMode, Operator };
 
+export { map } from "./operators/map";
+export { debounceTime } from "./operators/debounceTime";
+
 export const extend = Object.assign;
 export const objectToString = Object.prototype.toString;
 export const toTypeString = (value: unknown): string => objectToString.call(value);

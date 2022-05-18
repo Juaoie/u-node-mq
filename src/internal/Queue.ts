@@ -41,7 +41,6 @@ export interface Operator<D> {
    * 消费者成功加入到队列以后
    */
   addedConsumer?: (consumer: Consumer<D>) => unknown;
-  [k: string]: any;
 }
 /**
  * 队列，理论上一个队列的数据格式应该具有一致性
@@ -122,8 +121,10 @@ export default class Queue<D> {
             //
             .map((operator) => operator.beforeAddNews?.(news))
         ).then((data) => {
-          if (data.length && data.every((item) => item)) this.news.push(news);
-          else this.news.push(news);
+          if (data.length) {
+            if (data.every((item) => item)) this.news.push(news);
+            // else    operator 控制不加入队列
+          } else this.news.push(news);
           if (this.news.length > 0 && this.consumerList.length > 0) this.consumeNews();
         });
       }

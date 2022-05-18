@@ -6,11 +6,11 @@ import { Operator } from "..";
  */
 
 export function map<D>(project: (value: D, index: number) => D): Operator<D> {
+  let index = 0;
   return {
-    index: 0,
     beforeAddNews(num) {
-      num.content = project(num.content, this.index);
-      this.index++;
+      num.content = project(num.content, index);
+      index++;
       return true;
     },
   };
