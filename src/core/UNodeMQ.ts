@@ -128,10 +128,10 @@ export default class UNodeMQ<
     payload?: any
   ) {
     if (consume === undefined) {
-      return new Promise((reslove) => {
+      return new Promise((resolve) => {
         const consumeProxy = (content: any) => {
           this.off(queueName, consumeProxy);
-          reslove(content);
+          resolve(content);
           return true;
         };
         this.on(queueName, consumeProxy, payload);
@@ -229,10 +229,10 @@ export class QuickUNodeMQ<D, QueueCollection extends Record<string, Queue<D>>> {
   once<Q extends keyof QueueCollection & string>(queueName: Q): Promise<D>;
   once<Q extends keyof QueueCollection & string>(queueName: Q, consume?: Consume<D>, payload?: any) {
     if (consume === undefined) {
-      return new Promise((reslove) => {
+      return new Promise((resolve) => {
         const consumeProxy = (content: any) => {
           this.off(queueName, consumeProxy);
-          reslove(content);
+          resolve(content);
           return true;
         };
         this.on(queueName, consumeProxy, payload);
