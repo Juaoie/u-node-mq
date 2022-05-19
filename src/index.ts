@@ -15,6 +15,7 @@ export { ConsumMode, Operator };
 
 export { map } from "./operators/map";
 export { debounceTime } from "./operators/debounceTime";
+export { throttleTime } from "./operators/throttleTime";
 
 export const extend = Object.assign;
 export const objectToString = Object.prototype.toString;

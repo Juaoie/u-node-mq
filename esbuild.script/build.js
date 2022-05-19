@@ -36,6 +36,18 @@ const pluginsList = [
     },
     // plugins: [dtsPlugin({ outDir: "./dist" })], //生成d.ts文件，拖慢了打包速度
   },
+  {
+    entryPoint: "./src/operators/debounceTime.ts",
+    bundle: true,
+    minify: true,
+    sourcemap: true,
+    outfiles: {
+      node: "./dist/operators/debounceTime.node.js",
+      browser: "./dist/operators/debounceTime.browser.js",
+      neutral: "./dist/operators/debounceTime.neutral.js",
+    },
+    // plugins: [dtsPlugin({ outDir: "./dist" })], //生成d.ts文件，拖慢了打包速度
+  },
   // {
   //   entryPoint: "./src/plugins/storage/index.ts",
   //   bundle: true,
