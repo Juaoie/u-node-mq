@@ -111,6 +111,7 @@ export default class UNodeMQ<
 
   /**
    * 订阅一条消息
+   * 不传入消费方法，则返回Promise<D>
    * @param queueName
    * @param consume
    * @param payload

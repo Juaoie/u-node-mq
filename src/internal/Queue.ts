@@ -36,7 +36,7 @@ export interface Operator<D> {
    * 加入消费者之前
    * 返回的boolean控制消费者是否能加入队列
    */
-  beforeAddConsumer?: (consumer: Consumer<D>) => boolean | Promise<boolean>;
+  // beforeAddConsumer?: (consumer: Consumer<D>) => boolean | Promise<boolean>;
   /**
    * 消费者成功加入到队列以后
    */
@@ -116,10 +116,10 @@ export default class Queue<D> {
       //过滤重复的消息id
       if (this.news.findIndex((item) => item.getId() === news.getId()) === -1) {
         this.operate("beforeAddNews", news).then((isOk) => {
-          if (isOk) {
-            this.news.push(news);
-            if (this.news.length > 0 && this.consumerList.length > 0) this.consumeNews();
-          }
+          if (!isOk) return;
+          this.news.push(news);
+          this.operate("addedNews", news);
+          if (this.news.length > 0 && this.consumerList.length > 0) this.consumeNews();
         });
       }
     }
@@ -187,10 +187,18 @@ export default class Queue<D> {
    */
   pushConsumer(consumer: Consumer<D>) {
     //过滤重复的消费者id
-    if (this.consumerList.findIndex((item) => item.getId() === consumer.getId()) === -1)
+    if (this.consumerList.findIndex((item) => item.getId() === consumer.getId()) === -1) {
+      //暂不能限制开发者绑定消费者
+      // this.operate("beforeAddConsumer", consumer).then((isOk) => {
+      //   if (!isOk) return;
+      //   this.consumerList.push(consumer);
+      //   if (this.news.length > 0 && this.consumerList.length > 0) this.consumeNews();
+      //   this.operate("addedConsumer", consumer);
+      // });
       this.consumerList.push(consumer);
-
-    if (this.news.length > 0 && this.consumerList.length > 0) this.consumeNews();
+      this.operate("addedConsumer", consumer);
+      if (this.news.length > 0 && this.consumerList.length > 0) this.consumeNews();
+    }
   }
   /**
    * 加入消费者消费主体
@@ -239,7 +247,7 @@ export default class Queue<D> {
    * @param data
    * @returns
    */
-  private async operate(mounte: keyof Operator<D>, data: any) {
+  private async operate(mounte: keyof Operator<D>, data?: any) {
     const list = await Promise.all(
       this.operators
         .filter((operator) => operator[mounte])
