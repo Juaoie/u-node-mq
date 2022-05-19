@@ -115,17 +115,11 @@ export default class Queue<D> {
     if (news.consumedTimes > 0) {
       //过滤重复的消息id
       if (this.news.findIndex((item) => item.getId() === news.getId()) === -1) {
-        Promise.all(
-          this.operators
-            .filter((operator) => operator.beforeAddNews)
-            //
-            .map((operator) => operator.beforeAddNews?.(news))
-        ).then((data) => {
-          if (data.length) {
-            if (data.every((item) => item)) this.news.push(news);
-            // else    operator 控制不加入队列
-          } else this.news.push(news);
-          if (this.news.length > 0 && this.consumerList.length > 0) this.consumeNews();
+        this.operate("beforeAddNews", news).then((isOk) => {
+          if (isOk) {
+            this.news.push(news);
+            if (this.news.length > 0 && this.consumerList.length > 0) this.consumeNews();
+          }
         });
       }
     }
@@ -238,6 +232,22 @@ export default class Queue<D> {
     this.operators.push(operator);
     if (operator?.mounted) operator!.mounted(this);
     return this;
+  }
+  /**
+   *
+   * @param mounte
+   * @param data
+   * @returns
+   */
+  private async operate(mounte: keyof Operator<D>, data: any) {
+    const list = await Promise.all(
+      this.operators
+        .filter((operator) => operator[mounte])
+        //
+        .map((operator) => operator[mounte]?.(data))
+    );
+
+    return list.length === 0 || list.every((item) => item);
   }
   constructor(option?: Option<D>) {
     Object.assign(this, option);
