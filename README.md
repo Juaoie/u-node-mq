@@ -2,7 +2,7 @@
 
 基于发布订阅模型的消息通信工具，解决模块异步通信功能，有完整的 ts 类型提示；
 
-## u-node-mq 内置插件集合
+## u-node-mq plugins
 
 - iframe 的跨域通信插件
 
@@ -11,17 +11,21 @@
   - 实现定位算法实现消息准确发送
   - 通过 origin 确保数据安全
 
-- storage 处理插件
+- storage 存储插件 优化代码中！！！！！！！
 
-  - 内置可配置 md5 加密 storage
-  - 实现了 storage 存储复杂数据类型的功能
-  - 使用 pinia 或其他状态管理插件共享 storage 数据
+  - 可配置自定义 storage 加密方法
+  - 实现了 storage 复杂数据类型存储读取功能
+  - 默认使用内存代理 storage 值，可配置 pinia 或其他状态管理插件共享 storage 数据
 
-## 简单示例地址
+## u-node-mq operators
 
-[UNodeMQ](https://unpkg.com/u-node-mq/docs/unmq/index.html)
+- map 对队列消息进行映射
 
-[IframeMessage](https://unpkg.com/u-node-mq/docs/iframe/index.html)
+- task 设置队列能加入消息的数量
+
+- debounceTime 防抖功能
+
+- throttleTime 节流功能
 
 ## npm 安装
 
@@ -157,16 +161,14 @@ const queue = new Option(Option);
 
 **Option 参数说明**
 
-| 名称      | 类型              | 必填 | 默认     | 说明                                                                        |
-| --------- | ----------------- | ---- | -------- | --------------------------------------------------------------------------- |
-| name      | String            | 否   |          | 队列名称                                                                    |
-| mode      | "Random" \| "All" | 否   | "Random" | 消费模式，Random 代表随机抽取一个消费者消费，ALL 代表所有消费者都会消费消息 |
-| news      | News[]            | 否   | []       | 消息列表                                                                    |
-| consumers | Consumer[]        | 否   | []       | 消费者列表                                                                  |
-| ask       | Boolean           | 否   | false    | 是否需要消息确认，为 true，则需要手动确认消息                               |
-| rcn       | Number            | 否   | 3        | 消费失败后可重复消费次数                                                    |
-| async     | Boolean           | 否   | false    | 是否是异步队列，为 false 则会一条消息消费完成或者失败才会消费下一条消息     |
-| maxTime   | Number            | 否   | 3000     | 最长消费时长，单位毫秒，小于 0 代表不限时长                                 |
+| 名称    | 类型              | 必填 | 默认     | 说明                                                                        |
+| ------- | ----------------- | ---- | -------- | --------------------------------------------------------------------------- |
+| name    | String            | 否   |          | 队列名称                                                                    |
+| mode    | "Random" \| "All" | 否   | "Random" | 消费模式，Random 代表随机抽取一个消费者消费，ALL 代表所有消费者都会消费消息 |
+| ask     | Boolean           | 否   | false    | 是否需要消息确认，为 true，则需要手动确认消息                               |
+| rcn     | Number            | 否   | 3        | 消费失败后可重复消费次数                                                    |
+| async   | Boolean           | 否   | false    | 是否是异步队列，为 false 则会一条消息消费完成或者失败才会消费下一条消息     |
+| maxTime | Number            | 否   | 3000     | 最长消费时长，单位毫秒，小于 0 代表不限时长                                 |
 
 ---
 

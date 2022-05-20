@@ -5,8 +5,6 @@ import Tools from "../utils/tools";
 interface Option<D> {
   ask?: boolean;
   rcn?: number;
-  news?: News<D>[];
-  consumerList?: Consumer<D>[];
   mode?: ConsumMode;
   name?: string;
   async?: boolean;
