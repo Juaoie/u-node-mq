@@ -128,7 +128,7 @@ export default class UNodeMQ<
     consume?: Consume<ReturnPanShapeQueue<QueueCollection[Q]>>,
     payload?: any
   ) {
-    if (consume === undefined) {
+    if (!isFunction(consume)) {
       return new Promise((resolve) => {
         const consumeProxy = (content: any) => {
           this.off(queueName, consumeProxy);
@@ -229,7 +229,7 @@ export class QuickUNodeMQ<D, QueueCollection extends Record<string, Queue<D>>> {
   once<Q extends keyof QueueCollection & string>(queueName: Q, consume: Consume<D>, payload?: any): this;
   once<Q extends keyof QueueCollection & string>(queueName: Q): Promise<D>;
   once<Q extends keyof QueueCollection & string>(queueName: Q, consume?: Consume<D>, payload?: any) {
-    if (consume === undefined) {
+    if (!isFunction(consume)) {
       return new Promise((resolve) => {
         const consumeProxy = (content: any) => {
           this.off(queueName, consumeProxy);
