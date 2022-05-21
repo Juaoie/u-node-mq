@@ -1,8 +1,19 @@
 # u-node-mq
 
+<p align="center">
+  <a href="https://github.com/Juaoie/u-node-mq" style="margin-right:20px"><img src="https://img.shields.io/github/stars/Juaoie/u-node-mq?labelColor=11245E&color=DC4379&logo=github" alt="Stars"></a>
+  <a href="https://github.com/Juaoie/u-node-mq" style="margin-right:20px"><img src="https://img.shields.io/github/forks/Juaoie/u-node-mq?labelColor=290900&color=FFEFB3&logo=github" alt="Forks"></a>
+   <a href="https://github.com/Juaoie/u-node-mq" style="margin-right:20px"><img src="https://img.shields.io/github/languages/code-size/Juaoie/u-node-mq?labelColor=682218&color=F8BE3D&logo=github" alt="Size"></a>
+  <a href="https://github.com/Juaoie/u-node-mq" style="margin-right:20px"><img src="https://img.shields.io/npm/v/u-node-mq?labelColor=00007E&color=6AFF7F&logo=npm" alt="Version"></a>
+  <a href="https://github.com/Juaoie/u-node-mq" style="margin-right:20px"><img src="https://img.shields.io/github/languages/top/Juaoie/u-node-mq?labelColor=01AB6D&color=FBF019&logo=TypeScript&logoColor=FDD9E2" alt="Languages"></a>
+  <a href="https://github.com/Juaoie/u-node-mq" style="margin-right:20px"><img src="https://img.shields.io/github/contributors/Juaoie/u-node-mq?label=贡献人数&labelColor=FF5D77&color=FBCD20" alt="Contributors"></a>
+  <a href="https://github.com/Juaoie/u-node-mq" style="margin-right:20px"><img src="https://img.shields.io/github/license/Juaoie/u-node-mq?labelColor=7F01D3&color=01DBFE" alt="Count"></a>
+   
+</p>
+
 基于发布订阅模型的消息通信工具，解决模块异步通信功能，有完整的 ts 类型提示；
 
-## u-node-mq plugins
+## plugins
 
 - iframe 的跨域通信插件
 
@@ -17,7 +28,7 @@
   - 实现了 storage 复杂数据类型存储读取功能
   - 默认使用内存代理 storage 值，可配置 pinia 或其他状态管理插件共享 storage 数据
 
-## u-node-mq operators
+## operators
 
 - map 对队列消息进行映射
 
