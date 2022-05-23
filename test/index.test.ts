@@ -1,5 +1,6 @@
-import UNodeMQ, { Exchange, Queue, ConsumMode, QuickUNodeMQ } from "../src/index";
+import UNodeMQ, { Exchange, Queue, ConsumMode, QuickUNodeMQ, News } from "../src/index";
 import { describe, expect, test } from "@jest/globals";
+import Tools from "../src/utils/tools";
 
 test("先挂载消费者，再发送消息", function (done) {
   const unmq = new UNodeMQ(
@@ -504,4 +505,35 @@ test("测试最长消费时长", function (done) {
     expect(num).toBe(6);
     done();
   }, 1200);
+});
+
+test("测试operators 钩子函数为同步消费", function (done) {
+  let num = 0;
+  const unmq = new UNodeMQ(
+    {
+      ex1: new Exchange({ routes: ["qu1"] }),
+    },
+    {
+      qu1: new Queue()
+        .add({
+          beforeAddNews: async () => {
+            await Tools.promiseSetTimeout(2000);
+            num++;
+            return true;
+          },
+        })
+        .add({
+          beforeAddNews: async () => {
+            await Tools.promiseSetTimeout(2000);
+            num++;
+            return true;
+          },
+        }),
+    }
+  );
+  unmq.emit("ex1", "test");
+  setTimeout(() => {
+    expect(num).toBe(1);
+  }, 3000);
+  done();
 });

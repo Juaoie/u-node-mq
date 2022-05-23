@@ -246,14 +246,14 @@ export default class Queue<D> {
    * @returns
    */
   private async operate(mounte: keyof Operator<D>, data?: any) {
-    const list = await Promise.all(
-      this.operators
-        .filter((operator) => operator[mounte])
-        //
-        .map((operator) => operator[mounte]?.(data))
-    );
-
-    return list.length === 0 || list.every((item) => item);
+    const list = this.operators
+      .filter((operator) => operator[mounte])
+      //
+      .map((operator) => operator[mounte]);
+    for (const iterator of list) {
+      if (!(await iterator?.(data))) return false;
+    }
+    return true;
   }
   constructor(option?: Option<D>) {
     Object.assign(this, option);
