@@ -17,6 +17,7 @@ export { map } from "./operators/map";
 export { debounceTime } from "./operators/debounceTime";
 export { throttleTime } from "./operators/throttleTime";
 export { task } from "./operators/task";
+export { newsTime } from "./operators/newsTime";
 
 export const extend = Object.assign;
 export const objectToString = Object.prototype.toString;

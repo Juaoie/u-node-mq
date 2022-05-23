@@ -1,7 +1,7 @@
 import { Operator } from "..";
 
 /**
- * task
+ * task 控制队列能存入几条消息
  * @param count
  * @returns
  */
@@ -9,8 +9,7 @@ export function task<D>(count: number): Operator<D> {
   let seen = 0;
   return {
     beforeAddNews() {
-      if (++seen <= count) return true;
-      return false;
+      return ++seen <= count;
     },
   };
 }
