@@ -42,7 +42,7 @@ export interface Operator<D> {
   /**
    * 消息被弹出来
    */
-  ejectedNews?: (news: News<D>) => unknown;
+  ejectedNews?: (news: News<D>) => boolean | Promise<boolean>;
 }
 /**
  * 队列，理论上一个队列的数据格式应该具有一致性

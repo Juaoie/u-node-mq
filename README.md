@@ -7,6 +7,7 @@
   - [🏆 task](#task)
   - [🚴 debounceTime](#🚴debounceTime-防抖功能)
   - [🎾 throttleTime](#throttleTime)
+  - [🚲 newsTime](#newsTime)
 
 <!-- https://duotones.co/ -->
 <p align="center">
@@ -248,40 +249,54 @@ unmq.on("qu2", (res) => {
 
     Queue类提供的钩子函数可以集成operators对数据和消费者进行操作
 
+**operators 钩子函数说明**
+
+| 名称          | 参数     | 返回                        | 说明                                             |
+| ------------- | -------- | --------------------------- | ------------------------------------------------ |
+| mounted       | Queue    | unknown                     | operate 安装成功以后执行                         |
+| beforeAddNews | News     | boolean \| Promise<boolean> | 消息加入队列之前执行，通过返回值控制是否加入队列 |
+| addedNews     | News     | unknown                     | 消息加入队列以后执行                             |
+| addedConsumer | Consumer | unknown                     | 消费者订阅队列以后执行                           |
+| ejectedNews   | News     | boolean \| Promise<boolean> | 消息弹出来以后执行，返回值用于控制消息是否被丢弃 |
+
 <h2 id="map">🌞 map 对队列消息进行映射 </h2>
 
 ```javascript
 import UNodeMQ, { Exchange, Queue, ConsumMode, createQuickUnmq, map } from "u-node-mq";
 
-const quickUnmq = createQuickUnmq(new Exchange<number>({ routes: ["qu1"] }), {
-  qu1: new Queue<number>()
-    .add(map((value, index) => value * 10)),
+const quickUnmq = createQuickUnmq(new Exchange({ routes: ["qu1"] }), {
+  qu1: new Queue().add(map((value, index) => value * 10)),
 });
 ```
 
 <h2 id="task">🏆 task 设置队列能加入消息的数量 </h2>
 
 ```javascript
-const quickUnmq = createQuickUnmq(new Exchange<number>({ routes: ["qu1"] }), {
-  qu1: new Queue<number>()
-    .add(task(2)),
+const quickUnmq = createQuickUnmq(new Exchange({ routes: ["qu1"] }), {
+  qu1: new Queue().add(task(2)),
 });
 ```
 
 <h2 id="debounceTime">🚴 debounceTime 防抖功能 </h2>
 
 ```javascript
-const quickUnmq = createQuickUnmq(new Exchange<number>({ routes: ["qu1"] }), {
-  qu1: new Queue<number>()
-    .add(debounceTime(1000, true)),
+const quickUnmq = createQuickUnmq(new Exchange({ routes: ["qu1"] }), {
+  qu1: new Queue().add(debounceTime(1000, true)),
 });
 ```
 
 <h2 id="throttleTime">🎾 throttleTime 节流功能 </h2>
 
 ```javascript
-const quickUnmq = createQuickUnmq(new Exchange<number>({ routes: ["qu1"] }), {
-  qu1: new Queue<number>()
-    .add(throttleTime(1000, true)),
+const quickUnmq = createQuickUnmq(new Exchange({ routes: ["qu1"] }), {
+  qu1: new Queue().add(throttleTime(1000, true)),
+});
+```
+
+<h2 id="newsTime">🚲 newsTime 设置消息最长存活时长 </h2>
+
+```javascript
+const quickUnmq = createQuickUnmq(new Exchange({ routes: ["qu1"] }), {
+  qu1: new Queue().add(newsTime(3000)),
 });
 ```
