@@ -131,10 +131,13 @@ test("有且仅消费一条消息，emit异步，off同步", function (done) {
   setTimeout(() => {
     unmq.on("qu1", () => {
       num++;
+      done();
     })();
+  }, 500);
+  setTimeout(() => {
     expect(num).toEqual(1);
     done();
-  });
+  }, 1000);
 });
 
 test("执行一次任务队列里面所有数据", function (done) {
@@ -147,18 +150,25 @@ test("执行一次任务队列里面所有数据", function (done) {
     }
   );
   let num = 0;
+  /**
+   * 为什么加入消息必须是异步的呢？？？
+   * 因为加入消息前的钩子函数必须是异步的，钩子beforeAddNews 需要做节流防抖这些异步操作
+   */
   unmq.emit("ex1", 1, 2, 3);
+  //发送消息是异步的，所以下面的代码会立即挂载，然后立即卸载
   unmq.on("qu1", () => {
-    //还未执行就卸载了
-    num++;
+    //还未执行就卸载了,
+    num += 2;
   })();
   setTimeout(() => {
     unmq.on("qu1", () => {
       num++;
     })();
+  }, 500);
+  setTimeout(() => {
     expect(num).toEqual(3);
     done();
-  });
+  }, 1000);
 });
 
 test("有且仅消费一条消息，once()方法", function (done) {

@@ -39,6 +39,10 @@ export interface Operator<D> {
    * 消费者成功加入到队列以后
    */
   addedConsumer?: (consumer: Consumer<D>) => unknown;
+  /**
+   * 消息被弹出来
+   */
+  ejectedNews?: (news: News<D>) => unknown;
 }
 /**
  * 队列，理论上一个队列的数据格式应该具有一致性
@@ -130,17 +134,6 @@ export default class Queue<D> {
     const news = new News(content);
     this.pushNews(news);
   }
-
-  /**
-   * 弹出一条消息
-   * @returns
-   *
-   */
-  eject(): News<D> | null {
-    if (this.news.length > 0) return this.news.splice(0, 1)[0];
-    else return null;
-  }
-
   /**
    * 通过id移除指定消息
    * @param newsId
@@ -264,27 +257,31 @@ export default class Queue<D> {
    * 每次执行消费一条消息
    * @returns
    */
-  consumeNews() {
+  async consumeNews() {
     if (this.news.length === 0) return;
     if (this.consumerList.length === 0) return;
     if (!this.async && this.state) return;
-    const news = this.eject();
-    if (news === null) return;
 
+    //先把状态设置为消费中
     this.state = true;
 
-    const getConsumePromise = (): Promise<boolean[]> => {
-      if (this.mode === ConsumMode.Random) {
-        //随机消费者的索引
-        const index = Math.round(Math.random() * (this.consumerList.length - 1));
-        const consumer = this.consumerList[index];
-        return Promise.all([this.consumption(news, consumer)]);
-      }
-      //else if (this.mode === ConsumMode.All) {}
-      //每个消息消费之间是异步的
-      return Promise.all(this.consumerList.map((consumer) => this.consumption(news, consumer)));
-    };
-    getConsumePromise()
+    const consumerList =
+      this.mode === ConsumMode.Random
+        ? [this.consumerList[Math.round(Math.random() * (this.consumerList.length - 1))]]
+        : [...this.consumerList];
+
+    const news = this.news.splice(0, 1)[0];
+
+    //如果是同步的就直接执行下一个消息，因为下面是异步方法
+    this.consumeNews();
+
+    if (!(await this.operate("ejectedNews", news))) {
+      this.state = false;
+      this.consumeNews();
+      return;
+    }
+
+    Promise.all(consumerList.map((consumer) => this.consumption(news, consumer)))
       .then(() => {
         //消息被成功消费
       })
@@ -295,9 +292,8 @@ export default class Queue<D> {
       })
       .finally(() => {
         this.state = false;
-        if (this.news.length > 0) this.consumeNews();
+        this.consumeNews();
       });
-    if (this.async && this.news.length > 0) this.consumeNews();
   }
   /**
    * 指定消费者消费某一条消息的方法
