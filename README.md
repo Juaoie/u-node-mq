@@ -141,14 +141,14 @@ const queue = new Option(Option);
 
 **Option 参数说明**
 
-| 名称    | 类型              | 必填 | 默认     | 说明                                                                        |
-| ------- | ----------------- | ---- | -------- | --------------------------------------------------------------------------- |
-| name    | String            | 否   |          | 队列名称                                                                    |
-| mode    | "Random" \| "All" | 否   | "Random" | 消费模式，Random 代表随机抽取一个消费者消费，ALL 代表所有消费者都会消费消息 |
-| ask     | Boolean           | 否   | false    | 是否需要消息确认，为 true，则需要手动确认消息                               |
-| rcn     | Number            | 否   | 3        | 消费失败后可重复消费次数                                                    |
-| async   | Boolean           | 否   | false    | 是否是异步队列，为 false 则会一条消息消费完成或者失败才会消费下一条消息     |
-| maxTime | Number            | 否   | 3000     | 最长消费时长，单位毫秒，小于 0 代表不限时长                                 |
+| 名称    | 类型              | 必填 | 默认  | 说明                                                                        |
+| ------- | ----------------- | ---- | ----- | --------------------------------------------------------------------------- |
+| name    | String            | 否   |       | 队列名称                                                                    |
+| mode    | "Random" \| "All" | 否   | "All" | 消费模式，Random 代表随机抽取一个消费者消费，All 代表所有消费者都会消费消息 |
+| ask     | Boolean           | 否   | false | 是否需要消息确认，为 true，则需要手动确认消息                               |
+| rcn     | Number            | 否   | 3     | 消费失败后可重复消费次数                                                    |
+| async   | Boolean           | 否   | false | 是否是异步队列，为 false 则会一条消息消费完成或者失败才会消费下一条消息     |
+| maxTime | Number            | 否   | 3000  | 最长消费时长，单位毫秒，小于 0 代表不限时长                                 |
 
 ## 4、News
 
@@ -190,11 +190,11 @@ const consumer = new Consumer(Consume, PayLoad);
 | consume    | Function | 消费方法         |
 | payload    | any      | 固定载荷         |
 
-<h1 id="plugins">💨plugins</h1>
+<h1 id="plugins">💨 plugins</h1>
 
     u-node-mq提供一些内置插件，用来解决复杂场景下异步通信问题；
 
-<h2 id="IframeMessage">🐡IframeMessage</h2>
+<h2 id="IframeMessage">🐡 IframeMessage</h2>
 
 - IframeMessage 是用来解决同一个 tabs 下 iframe 通信的 u-node-mq 插件；
 - u-node-mq 集成 IframeMessage 以后，unmq 的每个 Exchange 将对应一个 iframe 容器，且非当前容器的 Exchange 路由和中继器将会被重写；
@@ -244,11 +244,11 @@ unmq.on("qu2", (res) => {
 });
 ```
 
-<h1 id="operators">🎨operators</h1>
+<h1 id="operators">🎨 operators</h1>
 
     Queue类提供的钩子函数可以集成operators对数据和消费者进行操作
 
-<h2 id="map">🌞map 对队列消息进行映射 </h2>
+<h2 id="map">🌞 map 对队列消息进行映射 </h2>
 
 ```javascript
 import UNodeMQ, { Exchange, Queue, ConsumMode, createQuickUnmq, map } from "u-node-mq";
@@ -259,7 +259,7 @@ const quickUnmq = createQuickUnmq(new Exchange<number>({ routes: ["qu1"] }), {
 });
 ```
 
-<h2 id="task">🏆task 设置队列能加入消息的数量 </h2>
+<h2 id="task">🏆 task 设置队列能加入消息的数量 </h2>
 
 ```javascript
 const quickUnmq = createQuickUnmq(new Exchange<number>({ routes: ["qu1"] }), {
@@ -268,7 +268,7 @@ const quickUnmq = createQuickUnmq(new Exchange<number>({ routes: ["qu1"] }), {
 });
 ```
 
-<h2 id="debounceTime">🚴debounceTime 防抖功能 </h2>
+<h2 id="debounceTime">🚴 debounceTime 防抖功能 </h2>
 
 ```javascript
 const quickUnmq = createQuickUnmq(new Exchange<number>({ routes: ["qu1"] }), {
@@ -277,7 +277,7 @@ const quickUnmq = createQuickUnmq(new Exchange<number>({ routes: ["qu1"] }), {
 });
 ```
 
-<h2 id="throttleTime">🎾throttleTime 节流功能 </h2>
+<h2 id="throttleTime">🎾 throttleTime 节流功能 </h2>
 
 ```javascript
 const quickUnmq = createQuickUnmq(new Exchange<number>({ routes: ["qu1"] }), {

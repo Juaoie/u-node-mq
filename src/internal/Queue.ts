@@ -67,7 +67,7 @@ export default class Queue<D> {
    * - Random 随机抽取消费者消费
    * - All 一条消息所有消费者都消费
    */
-  mode: ConsumMode = ConsumMode.Random;
+  mode: ConsumMode = ConsumMode.All;
   /**
    * 默认是同步消费
    * 是否是异步消费，如果是同步消费，则一条消息消费完成或者消费失败才会消费下一条消息

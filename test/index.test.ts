@@ -41,7 +41,7 @@ test("随机消费", function (done) {
       ex1: new Exchange({ routes: ["qu1"] }),
     },
     {
-      qu1: new Queue(),
+      qu1: new Queue({ mode: ConsumMode.Random }),
     }
   );
   unmq.emit("ex1", "test");
