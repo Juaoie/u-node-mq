@@ -9,7 +9,7 @@ import { Operator } from "..";
  */
 export function throttleTime<D>(duration: number, immediate?: boolean): Operator<D> {
   let now: number = 0;
-  let timeId: NodeJS.Timeout | null = null;
+  let timeId: number | null = null;
   return {
     beforeAddNews() {
       const t = new Date().getTime();

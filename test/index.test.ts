@@ -261,7 +261,7 @@ test("观察者模式", function (done) {
 test("测试中继器返回不存在的队列名称", function (done) {
   const unmq = new UNodeMQ(
     {
-      ex1: new Exchange({ routes: ["qu2", "qu1"] }),
+      ex1: new Exchange({ routes: ["qu1"] }),
     },
     {
       qu1: new Queue({ ask: true, mode: ConsumMode.All }),
@@ -475,7 +475,7 @@ test("测试once this 返回数据", function (done) {
 test("测试最长消费时长", function (done) {
   const unmq = new UNodeMQ(
     {
-      ex1: new Exchange({ routes: ["qu1", "qu2", "qu3", "qu4"] }),
+      ex1: new Exchange({ routes: ["qu1", "qu2", "qu3"] }),
     },
     {
       qu1: new Queue({ ask: true, maxTime: 100 }),

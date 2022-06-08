@@ -9,7 +9,7 @@ import Tools from "../utils/tools";
  */
 export function debounceTime<D>(dueTime: number, immediate?: boolean): Operator<D> {
   let now: number = 0;
-  let timeId: NodeJS.Timeout | null = null;
+  let timeId: number | null = null;
   let res: (value: boolean | PromiseLike<boolean>) => void;
   return {
     beforeAddNews() {

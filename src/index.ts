@@ -31,7 +31,8 @@ export { debounceTime } from "./operators/debounceTime";
 export { throttleTime } from "./operators/throttleTime";
 export { task } from "./operators/task";
 export { newsTime } from "./operators/newsTime";
-
+export { of } from "./operators/of";
+export { interval } from "./operators/interval";
 /**
  * 转换
  */

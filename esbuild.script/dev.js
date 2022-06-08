@@ -1,12 +1,12 @@
 const esbuild = require("esbuild");
-const { dtsPlugin } = require("esbuild-plugin-d.ts");
 
 esbuild
   .build({
-    entryPoints: ["./src/index.ts", "./src/plugins/iframe/index.ts", "./src/plugins/storage/index.ts"],
+    entryPoints: ["./src/index.ts"],
     bundle: true,
     minify: false,
-    outbase: "src",
-    outdir: "./",
+    outfile: "./test-node/u-node-mq.js",
+    sourcemap: true,
+    platform: "node",
   })
   .catch(() => process.exit(1));

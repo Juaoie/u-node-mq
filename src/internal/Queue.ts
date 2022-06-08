@@ -15,35 +15,69 @@ export enum ConsumMode {
   "Random" = "Random",
   "All" = "All",
 }
-export interface Operator<D> {
+//TODO:将组件封装，改成数据响应式，避免频繁手动操作数据导致bug
+interface Component {
+  getId: () => string;
+}
+class Components<Component> {
+  private component: Component[] = [];
+
+  constructor() {}
+}
+/**
+ * 会异步执行的运算方法
+ * 不需要通过返回值控制是否继续执行流程
+ */
+interface AsyncOperator<D> {
   /**
    * 操作挂载执行方法
    * 多个操作符的同个钩子函数会同时执行，所以应该谨慎操作数据，避免产生异步操作数据的问题
    */
   mounted?: (that: Queue<D>) => unknown;
   /**
-   * 将消息添加到队列之前
-   * 返回的boolean控制消息是否加入队列
-   */
-  beforeAddNews?: (news: News<D>) => boolean | Promise<boolean>;
-  /**
    * 消息成功添加到队列以后
    */
   addedNews?: (news: News<D>) => unknown;
-  /**
-   * 加入消费者之前
-   * 返回的boolean控制消费者是否能加入队列
-   */
-  // beforeAddConsumer?: (consumer: Consumer<D>) => boolean | Promise<boolean>;
+
   /**
    * 消费者成功加入到队列以后
    */
   addedConsumer?: (consumer: Consumer<D>) => unknown;
   /**
+   * 消费者成功被移除以后
+   * consumerList 被删除的消费列表
+   */
+  removedConsumer?: (consumerList: Consumer<D>[]) => unknown;
+}
+
+/**
+ * 会同步的执行的运算符方法
+ * 每个运算符方法列表都会同步执行，且一个返回false，后面则不会继续执行，用于控制流程是否继续
+ */
+interface SyncOperator<D> {
+  /**
+   * 将消息添加到队列之前
+   * 返回的boolean控制消息是否加入队列
+   */
+  beforeAddNews?: (news: News<D>) => boolean | Promise<boolean>;
+  /**
+   * 加入消费者之前
+   * 返回的boolean控制消费者是否能加入队列
+   */
+  // beforeAddConsumer?: (consumer: Consumer<D>) => boolean | Promise<boolean>;
+
+  /**
    * 消息被弹出来
    */
   ejectedNews?: (news: News<D>) => boolean | Promise<boolean>;
 }
+function isAsyncOperator<D>(arg: keyof Operator<D>): arg is keyof AsyncOperator<D> {
+  return ["mounted", "addedNews", "addedConsumer", "removedConsumer"].indexOf(arg) !== -1;
+}
+function isSyncOperator<D>(arg: keyof Operator<D>): arg is keyof SyncOperator<D> {
+  return ["beforeAddNews", "ejectedNews"].indexOf(arg) !== -1;
+}
+export type Operator<D> = AsyncOperator<D> & SyncOperator<D>;
 /**
  * 队列，理论上一个队列的数据格式应该具有一致性
  *
@@ -154,32 +188,13 @@ export default class Queue<D> {
     return this.consumerList;
   }
   /**
-   * 通过消费方法移除指定消费者
-   * @param consume
-   * @returns
-   */
-  removeConsumer(consume: Consume<D>) {
-    const index = this.consumerList.findIndex((item) => item.consume === consume);
-    if (index === -1) return false;
-    this.consumerList.splice(index, 1);
-    return true;
-  }
-  /**
-   * 移除所有消费者
-   * @returns
-   */
-  removeAllConsumer() {
-    this.consumerList = [];
-    return true;
-  }
-  /**
    * 加入消费者
    * @param consumerList
    */
   pushConsumer(consumer: Consumer<D>) {
     //过滤重复的消费者id
     if (this.consumerList.findIndex((item) => item.getId() === consumer.getId()) === -1) {
-      //暂不能限制开发者绑定消费者
+      //TODO:暂不能限制开发者绑定消费者
       // this.operate("beforeAddConsumer", consumer).then((isOk) => {
       //   if (!isOk) return;
       //   this.consumerList.push(consumer);
@@ -192,6 +207,19 @@ export default class Queue<D> {
     }
   }
   /**
+   *
+   * 通过消费方法移除指定消费者
+   * @param consume
+   * @returns
+   */
+  removeConsumer(consume: Consume<D>) {
+    const index = this.consumerList.findIndex((item) => item.consume === consume);
+    if (index === -1) return false;
+    const consumerList = this.consumerList.splice(index, 1);
+    this.operate("removedConsumer", consumerList);
+    return true;
+  }
+  /**
    * 加入消费者消费主体
    *
    * @param consume
@@ -201,6 +229,7 @@ export default class Queue<D> {
     const consumer = new Consumer(consume, payload);
     this.pushConsumer(consumer);
   }
+
   /**
    * 通过id移除指定消费者
    * @param consumerId
@@ -209,19 +238,24 @@ export default class Queue<D> {
   removeConsumerById(consumerId: string) {
     const index = this.consumerList.findIndex((item) => item.getId() === consumerId);
     if (index === -1) return false;
-    this.consumerList.splice(index, 1);
+    const consumerList = this.consumerList.splice(index, 1);
+    this.operate("removedConsumer", consumerList);
+    return true;
+  }
+  /**
+   * 移除所有消费者
+   * @returns
+   */
+  removeAllConsumer() {
+    const consumerList = this.consumerList.splice(0);
+    this.operate("removedConsumer", consumerList);
     return true;
   }
   /**
    * 操作符集合
    */
   private operators: Operator<D>[] = [];
-  /**
-   * 操作符执行
-   * @param operator
-   * @returns
-   */
-  // private operate(name: string) {}
+
   /**
    * 添加钩子函数方法
    * @param operator
@@ -233,19 +267,32 @@ export default class Queue<D> {
     return this;
   }
   /**
-   *
-   * @param mounte
-   * @param data
+   * 管道操作符执行
+   * 其中需要阻塞获取返回值（boolea）的是按顺序执行的，如果不需要
+   * @param fun
+   * @param args
    * @returns
    */
-  private async operate(mounte: keyof Operator<D>, data?: any) {
+  private async operate(fun: keyof Operator<D>, ...args: any[]) {
+    //先过滤数据
     const list = this.operators
-      .filter((operator) => operator[mounte])
+      .filter((operator) => operator[fun])
       //
-      .map((operator) => operator[mounte]);
-    for (const iterator of list) {
-      if (!(await iterator?.(data))) return false;
+      .map((operator) => operator[fun]);
+    if (isAsyncOperator(fun)) {
+      for (const iterator of list) {
+        //异步处理
+        iterator?.(arguments[1]);
+      }
+    } else if (isSyncOperator(fun)) {
+      //同步处理
+      for (const iterator of list) {
+        if (!(await iterator?.(arguments[1]))) return false;
+      }
     }
+    //类型异常
+    else throw "operate error";
+
     return true;
   }
   constructor(option?: Option<D>) {
@@ -304,23 +351,23 @@ export default class Queue<D> {
   consumption(news: News<D>, consumer: Consumer<D>): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
       const maxTime = this.maxTime;
-      const id: NodeJS.Timeout | null =
+      const id =
         maxTime >= 0
           ? setTimeout(() => {
-              Logs.log(`队列 消费超时`);
+              // Logs.log(`队列 消费超时`);
               reject(false);
             }, maxTime)
-          : null;
+          : undefined;
 
       consumer.consumption(news, this.ask).then((isOk: boolean) => {
         if (isOk) {
-          Logs.log(`队列 消费成功`);
+          // Logs.log(`队列 消费成功`);
           resolve(isOk);
         } else {
-          Logs.log(`队列 消费失败`);
+          // Logs.log(`队列 消费失败`);
           reject(isOk);
         }
-        if (maxTime >= 0) clearTimeout(id as NodeJS.Timeout);
+        if (maxTime >= 0) clearTimeout(id);
       });
     });
   }

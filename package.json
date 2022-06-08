@@ -1,6 +1,6 @@
 {
   "name": "u-node-mq",
-  "version": "3.5.7",
+  "version": "3.5.8",
   "author": "hugaojie <uaoie@qq.com>",
   "description": "基于发布订阅模型的消息通信插件",
   "keywords": [
@@ -23,15 +23,15 @@
   "scripts": {
     "build": "node ./esbuild.script/build.js && tsc && node ./esbuild.script/addSuffixJs.js",
     "dev": "node ./esbuild.script/dev.js",
-    "test": "jest"
+    "test": "jest",
+    "test-node": "node ./esbuild.script/dev.js && node ./test-node/index.js"
   },
-  "dependencies": {},
   "devDependencies": {
+    "@jest/globals": "^28.1.1",
     "@types/jest": "^27.4.1",
     "esbuild": "^0.14.34",
     "jest": "^27.5.1",
     "ts-jest": "^27.1.4",
     "typescript": "^4.5.5"
-  },
-  "peerDependencies": {}
+  }
 }
