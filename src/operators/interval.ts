@@ -1,4 +1,4 @@
-import { Operator, Queue, Consumer } from "..";
+import { Operator, Queue } from "..";
 
 /**
  * 管道操作方法是可以随意组合的，即使在interval之前还有其它操作方法也不影响setInterval的继续运行
@@ -18,8 +18,12 @@ export function interval(period = 1000, optimal = true): Operator<number> {
   let num = 0;
   let id: number | null = null;
   let interval = {
-    go: () => {},
-    stop: () => {},
+    go: () => {
+      //
+    },
+    stop: () => {
+      //
+    },
   };
   let queue: Queue<number>;
 
@@ -56,7 +60,7 @@ export function interval(period = 1000, optimal = true): Operator<number> {
 
       interval.go();
     },
-    removedConsumer(consumerList: Consumer<number>[]) {
+    removedConsumer() {
       if (!optimal) return;
       //判断是否以及在循环执行了
       if (id === null) return;

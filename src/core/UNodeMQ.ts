@@ -11,10 +11,7 @@ import Collection from "./Collection";
 export type ReturnPanShapeExchange<T> = T extends Exchange<infer U> ? U : never;
 export type ReturnPanShapeQueue<T> = T extends Queue<infer U> ? U : never;
 
-export type PluginInstallFunction = <
-  ExchangeCollection extends Record<string, Exchange<any>>,
-  QueueCollection extends Record<string, Queue<any>>
->(
+export type PluginInstallFunction = <ExchangeCollection extends Record<string, Exchange<any>>, QueueCollection extends Record<string, Queue<any>>>(
   unmq: UNodeMQ<ExchangeCollection, QueueCollection>,
   ...options: any[]
 ) => void;
@@ -23,10 +20,10 @@ export type Plugin =
   | {
       install: PluginInstallFunction;
     };
-export function createUnmq<
-  ExchangeCollection extends Record<string, Exchange<any>>,
-  QueueCollection extends Record<string, Queue<any>>
->(exchangeCollection: ExchangeCollection, queueCollection: QueueCollection) {
+export function createUnmq<ExchangeCollection extends Record<string, Exchange<any>>, QueueCollection extends Record<string, Queue<any>>>(
+  exchangeCollection: ExchangeCollection,
+  queueCollection: QueueCollection,
+) {
   return new UNodeMQ(exchangeCollection, queueCollection);
 }
 //TODO:增加可以使用数组的方式创建Exchange和Queue
@@ -35,7 +32,7 @@ export function createUnmq<
  */
 export default class UNodeMQ<
   ExchangeCollection extends Record<string, Exchange<any>>,
-  QueueCollection extends Record<string, Queue<any>>
+  QueueCollection extends Record<string, Queue<any>>,
 > extends Collection<ExchangeCollection, QueueCollection> {
   constructor(exchangeCollection: ExchangeCollection, queueCollection: QueueCollection) {
     super(exchangeCollection, queueCollection);
@@ -58,10 +55,7 @@ export default class UNodeMQ<
    * @param contentList 消息体列表
    * @returns
    */
-  emit<E extends keyof ExchangeCollection & string>(
-    exchangeName: E,
-    ...contentList: ReturnPanShapeExchange<ExchangeCollection[E]>[]
-  ) {
+  emit<E extends keyof ExchangeCollection & string>(exchangeName: E, ...contentList: ReturnPanShapeExchange<ExchangeCollection[E]>[]) {
     super.pushContentListToExchange(exchangeName, ...contentList);
     return this;
   }
@@ -71,10 +65,7 @@ export default class UNodeMQ<
    * @param contentList
    * @returns
    */
-  emitToQueue<Q extends keyof QueueCollection & string>(
-    queueName: Q,
-    ...contentList: ReturnPanShapeQueue<QueueCollection[Q]>[]
-  ) {
+  emitToQueue<Q extends keyof QueueCollection & string>(queueName: Q, ...contentList: ReturnPanShapeQueue<QueueCollection[Q]>[]) {
     super.pushContentListToQueue(queueName, ...contentList);
     return this;
   }
@@ -88,11 +79,7 @@ export default class UNodeMQ<
    * @param payload 固定参数，有效载荷，在每次消费的时候都传给消费者
    * @returns
    */
-  on<Q extends keyof QueueCollection & string>(
-    queueName: Q,
-    consume: Consume<ReturnPanShapeQueue<QueueCollection[Q]>>,
-    payload?: any
-  ) {
+  on<Q extends keyof QueueCollection & string>(queueName: Q, consume: Consume<ReturnPanShapeQueue<QueueCollection[Q]>>, payload?: any) {
     super.subscribeQueue(queueName, consume, payload);
     return () => this.off(queueName, consume);
   }
@@ -117,19 +104,11 @@ export default class UNodeMQ<
    * @param payload
    * @returns
    */
-  once<Q extends keyof QueueCollection & string>(
-    queueName: Q,
-    consume: Consume<ReturnPanShapeQueue<QueueCollection[Q]>>,
-    payload?: any
-  ): this;
+  once<Q extends keyof QueueCollection & string>(queueName: Q, consume: Consume<ReturnPanShapeQueue<QueueCollection[Q]>>, payload?: any): this;
   once<Q extends keyof QueueCollection & string>(queueName: Q): Promise<ReturnPanShapeQueue<QueueCollection[Q]>>;
-  once<Q extends keyof QueueCollection & string>(
-    queueName: Q,
-    consume?: Consume<ReturnPanShapeQueue<QueueCollection[Q]>>,
-    payload?: any
-  ) {
+  once<Q extends keyof QueueCollection & string>(queueName: Q, consume?: Consume<ReturnPanShapeQueue<QueueCollection[Q]>>, payload?: any) {
     if (!isFunction(consume)) {
-      return new Promise((resolve) => {
+      return new Promise(resolve => {
         const consumeProxy = (content: any) => {
           this.off(queueName, consumeProxy);
           resolve(content);
@@ -147,10 +126,7 @@ export default class UNodeMQ<
     }
   }
 }
-export function createQuickUnmq<D, QueueCollection extends Record<string, Queue<D>>>(
-  exchange: Exchange<D>,
-  queueCollection: QueueCollection
-) {
+export function createQuickUnmq<D, QueueCollection extends Record<string, Queue<D>>>(exchange: Exchange<D>, queueCollection: QueueCollection) {
   return new QuickUNodeMQ(exchange, queueCollection);
 }
 /**
@@ -230,7 +206,7 @@ export class QuickUNodeMQ<D, QueueCollection extends Record<string, Queue<D>>> {
   once<Q extends keyof QueueCollection & string>(queueName: Q): Promise<D>;
   once<Q extends keyof QueueCollection & string>(queueName: Q, consume?: Consume<D>, payload?: any) {
     if (!isFunction(consume)) {
-      return new Promise((resolve) => {
+      return new Promise(resolve => {
         const consumeProxy = (content: any) => {
           this.off(queueName, consumeProxy);
           resolve(content);

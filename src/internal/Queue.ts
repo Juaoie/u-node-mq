@@ -1,8 +1,7 @@
 import News from "./News";
 import Consumer, { Consume } from "./Consumer";
-import Logs from "./Logs";
 import Tools from "../utils/tools";
-interface Option<D> {
+interface Option {
   ask?: boolean;
   rcn?: number;
   mode?: ConsumMode;
@@ -15,15 +14,7 @@ export enum ConsumMode {
   "Random" = "Random",
   "All" = "All",
 }
-//TODO:将组件封装，改成数据响应式，避免频繁手动操作数据导致bug
-interface Component {
-  getId: () => string;
-}
-class Components<Component> {
-  private component: Component[] = [];
 
-  constructor() {}
-}
 /**
  * 会异步执行的运算方法
  * 不需要通过返回值控制是否继续执行流程
@@ -95,11 +86,11 @@ export default class Queue<D> {
   /**
    * 是否需要消息确认
    */
-  ask: boolean = false;
+  ask = false;
   /**
    * 可重新消费次数，消费失败会重复消费
    */
-  rcn: number = 3;
+  rcn = 3;
   /**
    * 消费模式
    * - Random 随机抽取消费者消费
@@ -111,19 +102,19 @@ export default class Queue<D> {
    * 是否是异步消费，如果是同步消费，则一条消息消费完成或者消费失败才会消费下一条消息
    * 为同步消费时，mode为ALL则需要所有消费者都消费完或者消费失败才能消费下一条消息
    */
-  async: boolean = false;
+  async = false;
   /**
    * 消费状态，true为正在消费，false为未在消费
    * 用于同步消费判断当前的消费状态
    */
-  private state: boolean = false;
+  private state = false;
   /**
    * 每个消费者最长消费时长
    * 同步阻塞型代码计算所花时长不计算入内，仅仅控制异步消费者消费代码所花时长
    * 设置为-1表示无时长限制
    * 在ask为true和async为false的情况下设置maxTime为-1可能会导致队列将被阻塞
    */
-  maxTime: number = 3000;
+  maxTime = 3000;
   /**
    * 消息 list
    */
@@ -150,8 +141,8 @@ export default class Queue<D> {
 
     if (news.consumedTimes > 0) {
       //过滤重复的消息id
-      if (this.news.findIndex((item) => item.getId() === news.getId()) === -1) {
-        this.operate("beforeAddNews", news).then((isOk) => {
+      if (this.news.findIndex(item => item.getId() === news.getId()) === -1) {
+        this.operate("beforeAddNews", news).then(isOk => {
           if (!isOk) return;
           this.news.push(news);
           this.operate("addedNews", news);
@@ -174,7 +165,7 @@ export default class Queue<D> {
    * @returns
    */
   removeNewsById(newsId: string) {
-    const index = this.news.findIndex((item) => item.getId() === newsId);
+    const index = this.news.findIndex(item => item.getId() === newsId);
     if (index === -1) return false;
     this.news.splice(index, 1);
     return true;
@@ -193,7 +184,7 @@ export default class Queue<D> {
    */
   pushConsumer(consumer: Consumer<D>) {
     //过滤重复的消费者id
-    if (this.consumerList.findIndex((item) => item.getId() === consumer.getId()) === -1) {
+    if (this.consumerList.findIndex(item => item.getId() === consumer.getId()) === -1) {
       //TODO:暂不能限制开发者绑定消费者
       // this.operate("beforeAddConsumer", consumer).then((isOk) => {
       //   if (!isOk) return;
@@ -213,7 +204,7 @@ export default class Queue<D> {
    * @returns
    */
   removeConsumer(consume: Consume<D>) {
-    const index = this.consumerList.findIndex((item) => item.consume === consume);
+    const index = this.consumerList.findIndex(item => item.consume === consume);
     if (index === -1) return false;
     const consumerList = this.consumerList.splice(index, 1);
     this.operate("removedConsumer", consumerList);
@@ -236,7 +227,7 @@ export default class Queue<D> {
    * @returns
    */
   removeConsumerById(consumerId: string) {
-    const index = this.consumerList.findIndex((item) => item.getId() === consumerId);
+    const index = this.consumerList.findIndex(item => item.getId() === consumerId);
     if (index === -1) return false;
     const consumerList = this.consumerList.splice(index, 1);
     this.operate("removedConsumer", consumerList);
@@ -263,7 +254,7 @@ export default class Queue<D> {
    */
   add(operator: Operator<D>) {
     this.operators.push(operator);
-    if (operator?.mounted) operator!.mounted(this);
+    if (operator?.mounted) operator.mounted(this);
     return this;
   }
   /**
@@ -276,18 +267,18 @@ export default class Queue<D> {
   private async operate(fun: keyof Operator<D>, ...args: any[]) {
     //先过滤数据
     const list = this.operators
-      .filter((operator) => operator[fun])
+      .filter(operator => operator[fun])
       //
-      .map((operator) => operator[fun]);
+      .map(operator => operator[fun]);
     if (isAsyncOperator(fun)) {
       for (const iterator of list) {
         //异步处理
-        iterator?.(arguments[1]);
+        iterator?.(args[0]);
       }
     } else if (isSyncOperator(fun)) {
       //同步处理
       for (const iterator of list) {
-        if (!(await iterator?.(arguments[1]))) return false;
+        if (!(await iterator?.(args[0]))) return false;
       }
     }
     //类型异常
@@ -295,7 +286,7 @@ export default class Queue<D> {
 
     return true;
   }
-  constructor(option?: Option<D>) {
+  constructor(option?: Option) {
     Object.assign(this, option);
   }
 
@@ -313,9 +304,7 @@ export default class Queue<D> {
     this.state = true;
 
     const consumerList =
-      this.mode === ConsumMode.Random
-        ? [this.consumerList[Math.round(Math.random() * (this.consumerList.length - 1))]]
-        : [...this.consumerList];
+      this.mode === ConsumMode.Random ? [this.consumerList[Math.round(Math.random() * (this.consumerList.length - 1))]] : [...this.consumerList];
 
     const news = this.news.splice(0, 1)[0];
 
@@ -328,7 +317,7 @@ export default class Queue<D> {
       return;
     }
 
-    Promise.all(consumerList.map((consumer) => this.consumption(news, consumer)))
+    Promise.all(consumerList.map(consumer => this.consumption(news, consumer)))
       .then(() => {
         //消息被成功消费
       })

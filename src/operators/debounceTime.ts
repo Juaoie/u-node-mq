@@ -1,5 +1,4 @@
 import { Operator } from "..";
-import Tools from "../utils/tools";
 
 /**
  * debounceTime 防抖函数
@@ -8,7 +7,7 @@ import Tools from "../utils/tools";
  * @returns
  */
 export function debounceTime<D>(dueTime: number, immediate?: boolean): Operator<D> {
-  let now: number = 0;
+  let now = 0;
   let timeId: number | null = null;
   let res: (value: boolean | PromiseLike<boolean>) => void;
   return {

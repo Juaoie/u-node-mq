@@ -49,6 +49,7 @@ export const isArray = Array.isArray;
 export const isMap = (val: unknown): val is Map<any, any> => toTypeString(val) === "[object Map]";
 export const isSet = (val: unknown): val is Set<any> => toTypeString(val) === "[object Set]";
 export const isDate = (val: unknown): val is Date => val instanceof Date;
+// eslint-disable-next-line @typescript-eslint/ban-types
 export const isFunction = (val: unknown): val is Function => typeof val === "function";
 export const isString = (val: unknown): val is string => typeof val === "string";
 export const isNumber = (val: unknown): val is number => typeof val === "number";

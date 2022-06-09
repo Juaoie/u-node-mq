@@ -8,9 +8,9 @@ export interface Consume<D> {
   (content: D, next?: Next, payload?: any): Promise<any> | any;
   (content: D, payload?: any): any;
 }
-type ThenParameter<D> = (isOk: boolean) => void;
-interface Payload<D> {
-  then: (res: ThenParameter<D>) => void;
+type ThenParameter = (isOk: boolean) => void;
+interface Payload {
+  then: (res: ThenParameter) => void;
 }
 export default class Consumer<D> {
   [k: string]: any;
@@ -44,8 +44,8 @@ export default class Consumer<D> {
    * @param ask
    * @returns
    */
-  consumption(news: News<D>, ask: boolean): Payload<D> {
-    const then = (thenParameter: ThenParameter<D>) => {
+  consumption(news: News<D>, ask: boolean): Payload {
+    const then = (thenParameter: ThenParameter) => {
       //不加入任务队列，会导致消费失败的数据重写到队列失败
       try {
         if (!ask) {
@@ -60,14 +60,16 @@ export default class Consumer<D> {
         //如果消息需要确认，且返回的内容为Promise
         if (isPromise(res)) {
           res
-            .then((onfulfilled) => {
+            .then(onfulfilled => {
               thenParameter(Boolean(onfulfilled));
             })
             .catch(() => {
               thenParameter(false);
             });
         } else if (typeof res === "boolean") {
-          confirm = () => {};
+          confirm = () => {
+            //
+          };
           thenParameter(res);
         }
       } catch (error) {

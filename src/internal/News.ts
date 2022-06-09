@@ -20,7 +20,7 @@ export default class News<D> {
   /**
    * 剩余可重复消费次数
    */
-  consumedTimes: number = -1;
+  consumedTimes = -1;
 
   constructor(content: D) {
     this.createTime = new Date().getTime();

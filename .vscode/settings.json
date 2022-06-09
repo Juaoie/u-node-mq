@@ -1,5 +1,18 @@
 {
-  "typescript.tsdk": "./node_modules/typescript/lib",
   "jest.autoRun": "off",
-  "jest.showCoverageOnLoad": false
+  "jest.showCoverageOnLoad": false,
+  // Use the project's typescript version
+  "typescript.tsdk": "node_modules/typescript/lib",
+
+
+  // Use prettier to format typescript, javascript and JSON files
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
 }

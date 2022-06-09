@@ -4,7 +4,7 @@ import ExchangeCollectionHandle from "./ExchangeCollectionHandle";
 import QueueCollectionHandle from "./QueueCollectionHandle";
 export default class Collection<
   ExchangeCollection extends Record<string, Exchange<unknown>>,
-  QueueCollection extends Record<string, Queue<unknown>>
+  QueueCollection extends Record<string, Queue<unknown>>,
 > {
   private readonly exchangeCollectionHandle = new ExchangeCollectionHandle();
   private readonly queueCollectionHandle = new QueueCollectionHandle();
@@ -42,7 +42,7 @@ export default class Collection<
   pushNewsListToExchange<E extends keyof ExchangeCollection & string>(exchangeName: E, ...news: News<unknown>[]) {
     for (const newsItem of news) {
       //分别发送每一条消息
-      this.exchangeCollectionHandle.getQueueNameList(exchangeName, newsItem.content).then((queueNameList) => {
+      this.exchangeCollectionHandle.getQueueNameList(exchangeName, newsItem.content).then(queueNameList => {
         for (const queueName in queueNameList) {
           this.pushNewsListToQueue(queueName, newsItem);
         }
@@ -68,7 +68,7 @@ export default class Collection<
   pushContentListToExchange<E extends keyof ExchangeCollection & string>(exchangeName: E, ...contentList: unknown[]) {
     for (const content of contentList) {
       //分别发送每一条消息
-      this.exchangeCollectionHandle.getQueueNameList(exchangeName, content).then((queueNameList) => {
+      this.exchangeCollectionHandle.getQueueNameList(exchangeName, content).then(queueNameList => {
         for (const queueName of queueNameList) {
           this.pushContentListToQueue(queueName, content);
         }

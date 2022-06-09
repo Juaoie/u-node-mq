@@ -8,7 +8,7 @@ import { Operator } from "..";
  * @returns
  */
 export function throttleTime<D>(duration: number, immediate?: boolean): Operator<D> {
-  let now: number = 0;
+  let now = 0;
   let timeId: number | null = null;
   return {
     beforeAddNews() {

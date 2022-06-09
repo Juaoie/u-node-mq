@@ -1,0 +1,9 @@
+.git
+.vscode
+dist
+esbuild.script
+docs
+test
+test-node
+node_modules
+

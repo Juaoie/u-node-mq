@@ -22,7 +22,7 @@ export default class IframePlugin {
   constructor(private readonly name: string) {
     this.name = name;
   }
-  install(unmq: UNodeMQ<Record<string, Exchange<any>>, Record<string, Queue<any>>>, ...options: any[]) {
+  install(unmq: UNodeMQ<Record<string, Exchange<any>>, Record<string, Queue<any>>>) {
     const selfExchange = unmq.getExchange(this.name);
     if (!selfExchange) {
       throw `${this.name}交换机不存在`;
@@ -106,13 +106,7 @@ export default class IframePlugin {
    * @param origin
    * @param transfer
    */
-  private postMessage(
-    currentWindow: Window,
-    type: MessageType,
-    message: any,
-    origin: string = "*",
-    transfer?: Transferable[]
-  ) {
+  private postMessage(currentWindow: Window, type: MessageType, message: any, origin = "*", transfer?: Transferable[]) {
     currentWindow.postMessage(
       {
         mask: "u-node-mq-plugin",
