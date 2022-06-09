@@ -33,6 +33,8 @@ export { task } from "./operators/task";
 export { newsTime } from "./operators/newsTime";
 export { of } from "./operators/of";
 export { interval } from "./operators/interval";
+export { filter } from "./operators/filter";
+export { removeDuplicates } from "./operators/removeDuplicates";
 /**
  * 转换
  */
