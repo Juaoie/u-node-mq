@@ -3,11 +3,16 @@
 - [💨 plugins](#plugins)
   - [🐡 IframeMessage](#IframeMessage)
 - [🎨 operators](#operators)
-  - [🌞 map](#map)
-  - [🏆 task](#task)
-  - [🚴 debounceTime](#🚴debounceTime-防抖功能)
-  - [🎾 throttleTime](#throttleTime)
-  - [🚲 newsTime](#newsTime)
+  - [map](#map)
+  - [task](#task)
+  - [debounceTime](#debounceTime-防抖功能)
+  - [throttleTime](#throttleTime)
+  - [newsTime](#newsTime)
+  - [of](#of)
+  - [interval](#interval)
+  - [filter](#filter)
+  - [removeDuplicates](#removeDuplicates)
+  - [instant](#instant)
 
 <!-- https://duotones.co/ -->
 <p align="center">
@@ -83,7 +88,7 @@ function getData(data) {
 
 - `Queue` 队列，队列是一个能存储少量数据和唯一能分配数据给不同服务的模块，理论上每个队列的消息应该是相同数据类型的
 
-- `News` 消息，消息一般不直接由用户创建，而是由 UNodeMQ 创建，除非你有持久化数据的需求，那么你可以配合`u-cache-ui api`管理和存储数据，在下次应用启动的时候初始化`news`到`queue`中
+- `News` 消息，存储内容的容器
 
 - `Consumer` 消费者，消费者一般也不直接由用户创建，而是由 UNodeMQ 创建，除非你有其他一些更加复杂的业务需求，例如：同时创建多个不同消费者，或者创建消费特定次数的消费者等
 
@@ -218,7 +223,7 @@ const unmq = new UNodeMQ(
   },
   {
     qu1: new Queue(),
-  }
+  },
 );
 unmq.use(new IframeMessage("iframeName1"));
 unmq.emit("iframeName2", "发送给iframeName2的消息");
@@ -237,10 +242,10 @@ const unmq = new UNodeMQ(
   },
   {
     qu2: new Queue(),
-  }
+  },
 );
 unmq.use(new IframeMessage("iframeName2"));
-unmq.on("qu2", (res) => {
+unmq.on("qu2", res => {
   console.log("接受来自其他iframe容器的消息", res);
 });
 ```
