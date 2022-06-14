@@ -1,4 +1,4 @@
-import { Operator, Queue, ConsumMode } from "..";
+import { Operator, Queue, ConsumMode } from "../index";
 
 /**
  * 扩展为观察者模式，即在同一事件循环内消费所有消息
