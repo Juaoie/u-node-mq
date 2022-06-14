@@ -252,9 +252,11 @@ export default class Queue<D> {
    * @param operator
    * @returns
    */
-  add(operator: Operator<D>) {
-    this.operators.push(operator);
-    if (operator?.mounted) operator.mounted(this);
+  add(...operators: Operator<D>[]) {
+    operators.forEach(operator => {
+      this.operators.push(operator ?? {});
+      if (operator?.mounted) operator.mounted(this);
+    });
     return this;
   }
   /**
