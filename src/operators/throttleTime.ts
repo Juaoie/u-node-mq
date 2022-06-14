@@ -3,8 +3,9 @@ import { Operator } from "..";
 /**
  * throttleTime 节流函数
  * @param duration 节流间隔时间，单位毫秒
- * @param immediate 是否立即执行，一般不用立即执行，如果设置为true，则会拿第一次触发的参数到结束时间执行，而不是拿结束时间之前的最后一次触发的参数去执行
- * 例如在，1秒内触发了5次，传递的参数依次为1、2、3、4、5，则会在第1秒处执行参数为1的方法
+ * @param immediate 是否立即执行，默认为false：
+ * 如果为false，则会拿第一次触发的参数到结束时间执行，而不是拿结束时间之前的最后一次触发的参数去执行；
+ * 如果为true，则会拿第一次触发的参数立即执行
  * @returns
  */
 export function throttleTime<D>(duration: number, immediate?: boolean): Operator<D> {
@@ -22,7 +23,7 @@ export function throttleTime<D>(duration: number, immediate?: boolean): Operator
         //
         if (timeId !== null) return false;
 
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
           timeId = setTimeout(() => {
             timeId = null;
             resolve(true);
