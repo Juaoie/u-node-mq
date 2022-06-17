@@ -1,4 +1,5 @@
-import { Exchange, Queue, isFunction } from "../index";
+import { isFunction } from "src/utils/tools";
+import { Exchange, Queue } from "../index";
 import { Consume, Next } from "../internal/Consumer";
 
 /**

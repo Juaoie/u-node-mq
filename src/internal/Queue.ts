@@ -1,6 +1,6 @@
 import News from "./News";
 import Consumer, { Consume } from "./Consumer";
-import Tools from "../utils/tools";
+import { random } from "src/utils/tools";
 interface Option {
   ask?: boolean;
   rcn?: number;
@@ -79,7 +79,7 @@ export default class Queue<D> {
   /**
    * id
    */
-  private readonly id: string = Tools.random();
+  private readonly id: string = random();
   getId() {
     return this.id;
   }
@@ -155,10 +155,10 @@ export default class Queue<D> {
    * 加入消息内容
    * @param content
    */
-  pushContent(content: D) {
+  pushContent = ((content: D) => {
     const news = new News(content);
     this.pushNews(news);
-  }
+  }).bind(this);
   /**
    * 通过id移除指定消息
    * @param newsId

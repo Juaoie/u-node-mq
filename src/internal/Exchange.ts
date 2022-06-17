@@ -1,4 +1,4 @@
-import Tools from "../utils/tools";
+import { random } from "src/utils/tools";
 import Logs from "./Logs";
 /**
  * 中继器类型
@@ -20,7 +20,7 @@ export default class Exchange<D> {
   /**
    * id
    */
-  private readonly id: string = Tools.random();
+  private readonly id: string = random();
   getId() {
     return this.id;
   }

@@ -1,0 +1,64 @@
+.vdr-container {
+  position: fixed;
+  box-sizing: border-box;
+}
+.vdr-handle {
+  box-sizing: border-box;
+  position: absolute;
+}
+.vdr-handle-tl {
+  width: 10px;
+  height: 10px;
+  top: -5px;
+  left: -5px;
+  cursor: nw-resize;
+}
+.vdr-handle-tm {
+  width: calc(100% - 10px);
+  height: 10px;
+  top: -5px;
+  left: 5px;
+  cursor: n-resize;
+}
+.vdr-handle-tr {
+  width: 10px;
+  height: 10px;
+  top: -5px;
+  right: -5px;
+  cursor: ne-resize;
+}
+.vdr-handle-ml {
+  width: 10px;
+  height: calc(100% - 10px);
+  top: 5px;
+  left: -5px;
+  cursor: w-resize;
+}
+.vdr-handle-mr {
+  width: 10px;
+  height: calc(100% - 10px);
+  top: 5px;
+  right: -5px;
+  cursor: e-resize;
+}
+.vdr-handle-bl {
+  width: 10px;
+  height: 10px;
+  bottom: -5px;
+  left: -5px;
+  cursor: sw-resize;
+}
+.vdr-handle-bm {
+  width: calc(100% - 10px);
+  height: 10px;
+  bottom: -5px;
+  left: 5px;
+  cursor: s-resize;
+}
+.vdr-handle-br {
+  width: 10px;
+  height: 10px;
+  bottom: -5px;
+  right: -5px;
+  cursor: se-resize;
+}

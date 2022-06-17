@@ -1,11 +1,11 @@
-import Tools from "../utils/tools";
+import { random } from "src/utils/tools";
 
 export default class News<D> {
   [k: string]: any;
   /**
    * id
    */
-  private readonly id: string = Tools.random();
+  private readonly id: string = random();
   getId() {
     return this.id;
   }

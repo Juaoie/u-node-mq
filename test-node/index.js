@@ -10,7 +10,7 @@ const unmq = new UNodeMQ(
   },
   {
     qu1: new Queue(),
-  }
+  },
 );
 const t1 = new Date().getTime();
 unmq.emit("ex1", "test");
@@ -21,3 +21,4 @@ unmq.on("qu1", () => {
 });
 
 require("./operators/interval")();
+require("./operators/state")();

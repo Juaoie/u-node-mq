@@ -1,4 +1,5 @@
-import { Logs, Queue, News, isFunction } from "../index";
+import { isFunction } from "src/utils/tools";
+import { Logs, Queue, News } from "../index";
 import { Consume } from "../internal/Consumer";
 
 /**

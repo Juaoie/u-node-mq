@@ -1,7 +1,24 @@
 var __defProp = Object.defineProperty;
+var __defProps = Object.defineProperties;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
 var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 var __export = (target, all) => {
   for (var name in all)
     __defProp(target, name, { get: all[name], enumerable: true });
@@ -52,6 +69,8 @@ __export(src_exports, {
   debounceTime: () => debounceTime,
   default: () => src_default,
   extend: () => extend,
+  filter: () => filter,
+  instant: () => instant,
   interval: () => interval,
   isArray: () => isArray,
   isBoolean: () => isBoolean,
@@ -68,6 +87,9 @@ __export(src_exports, {
   newsTime: () => newsTime,
   objectToString: () => objectToString,
   of: () => of,
+  removeDuplicates: () => removeDuplicates,
+  session: () => session,
+  state: () => state,
   task: () => task,
   throttleTime: () => throttleTime,
   toTypeString: () => toTypeString
@@ -492,7 +514,7 @@ var Consumer = class {
           this.consume(news.content, this.payload);
           return thenParameter(true);
         }
-        let confirm = (value = true) => thenParameter(value);
+        const confirm = (value = true) => thenParameter(value);
         const res = this.consume(news.content, confirm, this.payload);
         if (isPromise(res)) {
           res.then((onfulfilled) => {
@@ -501,12 +523,10 @@ var Consumer = class {
             thenParameter(false);
           });
         } else if (typeof res === "boolean") {
-          confirm = () => {
-          };
           thenParameter(res);
         }
       } catch (error) {
-        Logs.error("Consumer consumption error");
+        Logs.error(error);
         thenParameter(!ask);
       }
     };
@@ -538,6 +558,10 @@ var Queue3 = class {
     this.state = false;
     this.maxTime = 3e3;
     this.news = [];
+    this.pushContent = ((content) => {
+      const news = new News2(content);
+      this.pushNews(news);
+    }).bind(this);
     this.consumerList = [];
     this.operators = [];
     Object.assign(this, option);
@@ -567,10 +591,6 @@ var Queue3 = class {
         });
       }
     }
-  }
-  pushContent(content) {
-    const news = new News2(content);
-    this.pushNews(news);
   }
   removeNewsById(newsId) {
     const index = this.news.findIndex((item) => item.getId() === newsId);
@@ -615,22 +635,24 @@ var Queue3 = class {
     this.operate("removedConsumer", consumerList);
     return true;
   }
-  add(operator) {
-    this.operators.push(operator);
-    if (operator == null ? void 0 : operator.mounted)
-      operator.mounted(this);
+  add(...operators) {
+    operators.forEach((operator) => {
+      this.operators.push(operator != null ? operator : {});
+      if (operator == null ? void 0 : operator.mounted)
+        operator.mounted(this);
+    });
     return this;
   }
-  operate(_0) {
-    return __async(this, arguments, function* (fun, ...args) {
+  operate(fun, ...args) {
+    return __async(this, null, function* () {
       const list = this.operators.filter((operator) => operator[fun]).map((operator) => operator[fun]);
       if (isAsyncOperator(fun)) {
         for (const iterator of list) {
-          iterator == null ? void 0 : iterator(arguments[1]);
+          iterator == null ? void 0 : iterator(args[0]);
         }
       } else if (isSyncOperator(fun)) {
         for (const iterator of list) {
-          if (!(yield iterator == null ? void 0 : iterator(arguments[1])))
+          if (!(yield iterator == null ? void 0 : iterator(args[0])))
             return false;
         }
       } else
@@ -715,7 +737,7 @@ var IframePlugin = class {
     this.unmq = null;
     this.name = name;
   }
-  install(unmq, ...options) {
+  install(unmq) {
     const selfExchange = unmq.getExchange(this.name);
     if (!selfExchange) {
       throw `${this.name}\u4EA4\u6362\u673A\u4E0D\u5B58\u5728`;
@@ -930,7 +952,7 @@ function interval(period = 1e3, optimal = true) {
         return;
       interval2.go();
     },
-    removedConsumer(consumerList) {
+    removedConsumer() {
       if (!optimal)
         return;
       if (id === null)
@@ -938,6 +960,79 @@ function interval(period = 1e3, optimal = true) {
       if (queue.getConsumerList.length === 0)
         interval2.stop();
       return "";
+    }
+  };
+}
+
+// src/operators/filter.ts
+function filter(fun) {
+  return {
+    beforeAddNews(res) {
+      return fun(res.content);
+    }
+  };
+}
+
+// src/operators/removeDuplicates.ts
+function removeDuplicates(fun) {
+  const list = [];
+  return {
+    beforeAddNews(res) {
+      const id = fun(res.content);
+      if (list.indexOf(id) === -1) {
+        list.push(id);
+        return true;
+      } else
+        return false;
+    }
+  };
+}
+
+// src/operators/instant.ts
+function instant() {
+  return {
+    mounted(that) {
+      if (that.mode !== "All" /* All */)
+        throw `${that.name} \u961F\u5217 mode \u9700\u8981\u8BBE\u7F6E\u6210All`;
+      that.pushConsume(() => true);
+    }
+  };
+}
+
+// src/operators/state.ts
+function state(repeatObject) {
+  let d = null;
+  return __spreadProps(__spreadValues({}, instant()), {
+    beforeAddNews(news) {
+      let boolean = d !== news.content;
+      if (isObject(news.content) && repeatObject)
+        boolean = true;
+      d = news.content;
+      return boolean;
+    },
+    addedConsumer(consumer) {
+      if (d !== null)
+        consumer.consume(d);
+    }
+  });
+}
+
+// src/operators/session.ts
+function session() {
+  let name = "";
+  return {
+    mounted(that) {
+      if (!sessionStorage)
+        throw "sessionStorage \u4E3A\u7A7A";
+      name = that.name || "null";
+      const d = sessionStorage.getItem(name);
+      if (d !== null)
+        that.pushContent(JSON.parse(d));
+    },
+    addedNews(news) {
+      if (!sessionStorage)
+        throw "sessionStorage\u4E0D\u5B58\u5728";
+      sessionStorage.setItem(name, JSON.stringify(news.content));
     }
   };
 }
@@ -974,6 +1069,8 @@ var isPromise = (val) => {
   createUnmq,
   debounceTime,
   extend,
+  filter,
+  instant,
   interval,
   isArray,
   isBoolean,
@@ -990,8 +1087,10 @@ var isPromise = (val) => {
   newsTime,
   objectToString,
   of,
+  removeDuplicates,
+  session,
+  state,
   task,
   throttleTime,
   toTypeString
 });
-//# sourceMappingURL=u-node-mq.js.map

@@ -1,5 +1,4 @@
-import { isPromise } from "../index";
-import Tools from "../utils/tools";
+import { isPromise, random } from "src/utils/tools";
 import Logs from "./Logs";
 import News from "./News";
 export type Next = (value?: boolean) => void;
@@ -17,7 +16,7 @@ export default class Consumer<D> {
   /**
    * id
    */
-  private readonly id: string = Tools.random();
+  private readonly id: string = random();
   getId() {
     return this.id;
   }
@@ -54,7 +53,7 @@ export default class Consumer<D> {
           return thenParameter(true);
         }
         //构建消息确认的方法
-        let confirm: Next = (value = true) => thenParameter(value);
+        const confirm: Next = (value = true) => thenParameter(value);
         //需要确认的消费方法
         const res = this.consume(news.content, confirm, this.payload);
         //如果消息需要确认，且返回的内容为Promise
@@ -67,13 +66,10 @@ export default class Consumer<D> {
               thenParameter(false);
             });
         } else if (typeof res === "boolean") {
-          confirm = () => {
-            //
-          };
           thenParameter(res);
         }
       } catch (error) {
-        Logs.error("Consumer consumption error");
+        Logs.error(error);
         thenParameter(!ask);
       }
     };

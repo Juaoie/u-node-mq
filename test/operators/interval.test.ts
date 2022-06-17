@@ -1,12 +1,4 @@
-import UNodeMQ, {
-  Exchange,
-  Queue,
-  ConsumMode,
-  QuickUNodeMQ,
-  createQuickUnmq,
-  interval,
-  throttleTime,
-} from "../../src/index";
+import UNodeMQ, { Exchange, Queue, ConsumMode, QuickUNodeMQ, createQuickUnmq, interval, throttleTime } from "../../src/index";
 import { describe, expect, test } from "@jest/globals";
 
 test("interval测试，一直循环", function (done) {
@@ -75,10 +67,7 @@ test("interval测试，组合使用技巧", function (done) {
   const qu1 = new Queue<number>().add(interval(100));
   const qu2 = new Queue<number>().add(throttleTime(200, true));
   //将qu1的内容发射到qu2上，并在qu2上做其他业务操作
-  qu1.pushConsume((res) => {
-    qu2.pushContent(res);
-  });
-  // qu1.pushConsume(qu2.pushContent);TODO:暂无法使用简写，需要排除原因进行优化
+  qu1.pushConsume(qu2.pushContent.bind(qu2));
 
   let num2 = "";
   qu2.pushConsume((res: number) => {

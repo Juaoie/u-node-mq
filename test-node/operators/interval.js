@@ -6,12 +6,12 @@ module.exports = () => {
   });
   const qu2 = new Queue().add(throttleTime(200, true));
   //将qu1的内容发射到qu2上，并在qu2上做其他业务操作
-  quickUnmq.on("qu1", (res) => {
-    qu2.pushContent(res);
-  });
+  // const q = qu2.pushContent.bind(qu2);
+  // console.log(q === qu2.pushContent.bind(qu2));
+  quickUnmq.on("qu1", qu2.pushContent);
 
   let num2 = "";
-  qu2.pushConsume((res) => {
+  qu2.pushConsume(res => {
     num2 += res;
   });
   setTimeout(() => {

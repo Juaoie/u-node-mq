@@ -1,9 +1,12 @@
 .git
 .vscode
 dist
-esbuild.script
+script
 docs
 test
 test-node
 node_modules
-
+plugins
+operators
+index.js
+index.js.map
