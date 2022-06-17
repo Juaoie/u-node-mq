@@ -1,14 +1,9 @@
 <template>
-  <img
-    v-if="storage.mode === 'dark'"
-    class="wallpaper"
-    src="@a/img/wallpaper-night.jpg"
-    :class="{ 'input-focus': focus }"
-  />
+  <img v-if="mode === 'dark'" class="wallpaper" src="@a/img/wallpaper-night.jpg" :class="{ 'input-focus': focus }" />
   <img v-else class="wallpaper" src="@a/img/wallpaper-day.jpg" :class="{ 'input-focus': focus }" />
   <div class="page df aic jcc ffcn">
     <img class="avatar" src="@a/img/avatar.jpg" title="密码：123456" />
-    <span class="user-name fp">{{ storage.userName }}</span>
+    <span class="user-name fp">{{ userName }}</span>
     <input
       class="password"
       v-model="password"
@@ -26,10 +21,9 @@
 
 <script lang="ts" setup>
   import { ref } from 'vue'
-  import storage from '@t/storage'
   import { useRouter } from 'vue-router'
-  storage.userName = 'Gaojie Hu'
-  storage.userId = 1
+  const mode = 'dark'
+  const userName = 'Gaojie Hu'
 
   const router = useRouter()
 

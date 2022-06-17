@@ -6,7 +6,4 @@ docs
 test
 test-node
 node_modules
-plugins
-operators
-index.js
-index.js.map
+u-node-mq

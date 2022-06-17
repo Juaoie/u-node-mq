@@ -7,16 +7,11 @@
     "serve": "vite preview"
   },
   "dependencies": {
-    "js-base64": "^3.7.2",
-    "js-md5": "^0.7.3",
-    "u-node-mq": "^2.0.12",
     "vue": "^3.2.37",
     "vue-router": "4.0.12",
-    "vue3-draggable-resizable": "^1.6.1",
-    "vuex": "^4.0.2"
+    "vue3-draggable-resizable": "^1.6.1"
   },
   "devDependencies": {
-    "@types/js-md5": "^0.4.3",
     "@types/node": "^16.11.10",
     "@vitejs/plugin-vue": "^1.9.3",
     "autoprefixer": "^10.4.0",

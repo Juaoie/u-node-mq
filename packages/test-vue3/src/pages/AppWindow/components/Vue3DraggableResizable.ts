@@ -1,194 +1,194 @@
-import { defineComponent, ref, toRef, h, Ref, inject } from "vue";
+import { defineComponent, ref, toRef, h, Ref, inject } from 'vue'
 import {
   initDraggableContainer,
   watchProps,
   initState,
   initParent,
   initLimitSizeAndMethods,
-  initResizeHandle,
-} from "./hooks";
-import { getElSize, filterHandles, IDENTITY } from "./utils";
-import { UpdatePosition, GetPositionStore, ResizingHandle, ContainerProvider, SetMatchedLine } from "./types";
+  initResizeHandle
+} from './hooks'
+import { getElSize, filterHandles, IDENTITY } from './utils'
+import { UpdatePosition, GetPositionStore, ResizingHandle, ContainerProvider, SetMatchedLine } from './types'
 
-export const ALL_HANDLES: ResizingHandle[] = ["tl", "tm", "tr", "ml", "mr", "bl", "bm", "br"];
+export const ALL_HANDLES: ResizingHandle[] = ['tl', 'tm', 'tr', 'ml', 'mr', 'bl', 'bm', 'br']
 
 const VdrProps = {
   fullScreen: {
     type: Boolean,
-    default: false,
+    default: false
   },
   zIndex: {
     type: Number,
-    default: 0,
+    default: 0
   },
   initW: {
     type: Number,
-    default: null,
+    default: null
   },
   initH: {
     type: Number,
-    default: null,
+    default: null
   },
   w: {
     type: Number,
-    default: 0,
+    default: 0
   },
   h: {
     type: Number,
-    default: 0,
+    default: 0
   },
   x: {
     type: Number,
-    default: 0,
+    default: 0
   },
   y: {
     type: Number,
-    default: 0,
+    default: 0
   },
   draggable: {
     type: Boolean,
-    default: true,
+    default: true
   },
   resizable: {
     type: Boolean,
-    default: true,
+    default: true
   },
   disabledX: {
     type: Boolean,
-    default: false,
+    default: false
   },
   disabledY: {
     type: Boolean,
-    default: false,
+    default: false
   },
   disabledW: {
     type: Boolean,
-    default: false,
+    default: false
   },
   disabledH: {
     type: Boolean,
-    default: false,
+    default: false
   },
   minW: {
     type: Number,
-    default: 20,
+    default: 20
   },
   minH: {
     type: Number,
-    default: 20,
+    default: 20
   },
   active: {
     type: Boolean,
-    default: false,
+    default: false
   },
   parent: {
     type: Boolean,
-    default: false,
+    default: false
   },
   handles: {
     type: Array,
     default: ALL_HANDLES,
     validator: (handles: ResizingHandle[]) => {
-      return filterHandles(handles).length === handles.length;
-    },
+      return filterHandles(handles).length === handles.length
+    }
   },
   classNameDraggable: {
     type: String,
-    default: "draggable",
+    default: 'draggable'
   },
   classNameResizable: {
     type: String,
-    default: "resizable",
+    default: 'resizable'
   },
   classNameDragging: {
     type: String,
-    default: "dragging",
+    default: 'dragging'
   },
   classNameResizing: {
     type: String,
-    default: "resizing",
+    default: 'resizing'
   },
   classNameActive: {
     type: String,
-    default: "active",
+    default: 'active'
   },
   classNameHandle: {
     type: String,
-    default: "handle",
+    default: 'handle'
   },
   lockAspectRatio: {
     type: Boolean,
-    default: false,
-  },
-};
+    default: false
+  }
+}
 
 const emits = [
-  "activated",
-  "deactivated",
-  "drag-start",
-  "resize-start",
-  "dragging",
-  "resizing",
-  "drag-end",
-  "resize-end",
-  "update:w",
-  "update:h",
-  "update:x",
-  "update:y",
-  "update:active",
-];
+  'activated',
+  'deactivated',
+  'drag-start',
+  'resize-start',
+  'dragging',
+  'resizing',
+  'drag-end',
+  'resize-end',
+  'update:w',
+  'update:h',
+  'update:x',
+  'update:y',
+  'update:active'
+]
 
 const VueDraggableResizable = defineComponent({
-  name: "Vue3DraggableResizable",
+  name: 'Vue3DraggableResizable',
   props: VdrProps,
   emits: emits,
   setup(props, { emit }) {
-    const containerProps = initState(props, emit);
-    const provideIdentity = inject("identity");
-    let containerProvider: ContainerProvider | null = null;
+    const containerProps = initState(props, emit)
+    const provideIdentity = inject('identity')
+    let containerProvider: ContainerProvider | null = null
     if (provideIdentity === IDENTITY) {
       containerProvider = {
-        updatePosition: inject<UpdatePosition>("updatePosition")!,
-        getPositionStore: inject<GetPositionStore>("getPositionStore")!,
-        disabled: inject<Ref<boolean>>("disabled")!,
-        adsorbParent: inject<Ref<boolean>>("adsorbParent")!,
-        adsorbCols: inject<number[]>("adsorbCols")!,
-        adsorbRows: inject<number[]>("adsorbRows")!,
-        setMatchedLine: inject<SetMatchedLine>("setMatchedLine")!,
-      };
+        updatePosition: inject<UpdatePosition>('updatePosition')!,
+        getPositionStore: inject<GetPositionStore>('getPositionStore')!,
+        disabled: inject<Ref<boolean>>('disabled')!,
+        adsorbParent: inject<Ref<boolean>>('adsorbParent')!,
+        adsorbCols: inject<number[]>('adsorbCols')!,
+        adsorbRows: inject<number[]>('adsorbRows')!,
+        setMatchedLine: inject<SetMatchedLine>('setMatchedLine')!
+      }
     }
-    const containerRef = ref<HTMLElement>();
-    const parentSize = initParent(containerRef);
-    const limitProps = initLimitSizeAndMethods(props, parentSize, containerProps);
+    const containerRef = ref<HTMLElement>()
+    const parentSize = initParent(containerRef)
+    const limitProps = initLimitSizeAndMethods(props, parentSize, containerProps)
     initDraggableContainer(
       containerRef,
       containerProps,
       limitProps,
-      toRef(props, "draggable"),
+      toRef(props, 'draggable'),
       emit,
       containerProvider,
       parentSize
-    );
-    const resizeHandle = initResizeHandle(containerProps, limitProps, parentSize, props, emit);
-    watchProps(props, limitProps);
+    )
+    const resizeHandle = initResizeHandle(containerProps, limitProps, parentSize, props, emit)
+    watchProps(props, limitProps)
     return {
       containerRef,
       containerProvider,
       ...containerProps,
       ...parentSize,
       ...limitProps,
-      ...resizeHandle,
-    };
+      ...resizeHandle
+    }
   },
   computed: {
     style(): { [propName: string]: string | number } {
       return {
-        width: this.width + "px",
-        height: this.height + "px",
-        top: this.top + "px",
-        left: this.left + "px",
-        "z-index": this.zIndex,
-      };
+        width: this.width + 'px',
+        height: this.height + 'px',
+        top: this.top + 'px',
+        left: this.left + 'px',
+        'z-index': this.zIndex
+      }
     },
     klass(): { [propName: string]: string | boolean } {
       return {
@@ -196,54 +196,54 @@ const VueDraggableResizable = defineComponent({
         [this.classNameDragging]: this.dragging,
         [this.classNameResizing]: this.resizing,
         [this.classNameDraggable]: this.draggable,
-        [this.classNameResizable]: this.resizable,
-      };
-    },
+        [this.classNameResizable]: this.resizable
+      }
+    }
   },
   mounted() {
-    if (!this.containerRef) return;
-    this.containerRef.ondragstart = () => false;
-    const { width, height } = getElSize(this.containerRef);
-    this.setWidth(this.initW === null ? this.w || width : this.initW);
-    this.setHeight(this.initH === null ? this.h || height : this.initH);
+    if (!this.containerRef) return
+    this.containerRef.ondragstart = () => false
+    const { width, height } = getElSize(this.containerRef)
+    this.setWidth(this.initW === null ? this.w || width : this.initW)
+    this.setHeight(this.initH === null ? this.h || height : this.initH)
     if (this.containerProvider) {
       this.containerProvider.updatePosition(this.id, {
         x: this.left,
         y: this.top,
         w: this.width,
-        h: this.height,
-      });
+        h: this.height
+      })
     }
   },
   render() {
     return h(
-      "div",
+      'div',
       {
-        ref: "containerRef",
-        class: ["vdr-container", this.klass],
+        ref: 'containerRef',
+        class: ['vdr-container', this.klass],
         style: this.fullScreen
           ? {
-              width: "100vw",
-              height: "100vh",
-              top: "0",
-              lef: "0",
-              "z-index": "9999999",
+              width: '100vw',
+              height: '100vh',
+              top: '0',
+              lef: '0',
+              'z-index': '9999999'
             }
-          : this.style,
+          : this.style
       },
       [
         this.$slots.default && this.$slots.default(),
         ...this.handlesFiltered.map((item) =>
-          h("div", {
-            class: ["vdr-handle", "vdr-handle-" + item, this.classNameHandle, `${this.classNameHandle}-${item}`],
+          h('div', {
+            class: ['vdr-handle', 'vdr-handle-' + item, this.classNameHandle, `${this.classNameHandle}-${item}`],
             // style: { display: this.enable ? 'block' : 'none' }, //失去焦点会隐藏拖动按钮
             onMousedown: (e: MouseEvent) => this.resizeHandleDown(e, <ResizingHandle>item),
-            onTouchstart: (e: TouchEvent) => this.resizeHandleDown(e, <ResizingHandle>item),
+            onTouchstart: (e: TouchEvent) => this.resizeHandleDown(e, <ResizingHandle>item)
           })
-        ),
+        )
       ]
-    );
-  },
-});
+    )
+  }
+})
 
-export default VueDraggableResizable;
+export default VueDraggableResizable
