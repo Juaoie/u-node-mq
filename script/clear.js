@@ -1,7 +1,7 @@
-const del = require("del");
+const chalk = require("chalk");
+const fs = require("fs-extra");
 
 (async () => {
-  const deletedDirectoryPaths = await del(["dist", "operators", "plugins", "index.js", "index.js.map"]);
-
-  console.log("Deleted directories:\n", deletedDirectoryPaths.join("\n"));
+  await Promise.all([fs.remove("u-node-mq"), fs.remove("packages/test-vue3/u-node-mq")]);
+  console.log(chalk.blue("缓存清除成功！"));
 })();
