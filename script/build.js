@@ -3,14 +3,21 @@ const chalk = require("chalk");
 const fs = require("fs-extra");
 const execa = require("execa");
 
-const minify = true;
+const minify = false;
 const bundle = true;
 const platform = "neutral";
 const now = new Date().getTime();
 
 async function buildMian() {
-  await execa("pnpm", ["clr"]);
-  // unmq
+  //清除缓存和使用tsc构建
+  await Promise.all([execa("pnpm", ["clr"]), execa("tsc")]);
+  // 使用tsc输出operators d.ts文件进行覆盖
+  await fs.copy("dist/operators", "types/operators", {
+    filter: src => src.slice(-3) !== ".js",
+  });
+  //先复制类型
+  await fs.copy("types", "u-node-mq");
+  // 构建
   const unmq = esbuild.build({
     entryPoints: ["src/index.ts"],
     outfile: "u-node-mq/index.js",
@@ -52,8 +59,7 @@ async function buildMian() {
     minify,
     sourcemap: true,
   });
-  //先复杂类型
-  await fs.copy("types", "u-node-mq");
+
   await Promise.all([
     unmq,
     plugin,
@@ -62,7 +68,10 @@ async function buildMian() {
     fs.copy("LICENSE", "u-node-mq/LICENSE"),
     fs.copy("README.md", "u-node-mq/README.md"),
   ]);
-  await fs.copy("u-node-mq", "packages/test-vue3/node_modules/u-node-mq");
+  // await fs.copy("u-node-mq", "packages/test-vue3/src/u-node-mq");
+
+  //删除dist
+  await fs.remove("dist");
 
   console.log(chalk.cyanBright("执行时长：" + (new Date().getTime() - now) / 1000 + "秒"));
 }

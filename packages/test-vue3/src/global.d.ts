@@ -8,19 +8,21 @@ import UNodeMQ, {
   News,
   Logs,
   ConsumMode
-} from 'u-node-mq'
-import debounceTime from 'u-node-mq/operators/debounceTime'
-import filter from 'u-node-mq/operators/filter'
-import instant from 'u-node-mq/operators/instant'
-import interval from 'u-node-mq/operators/interval'
-import map from 'u-node-mq/operators/map'
-import newsTime from 'u-node-mq/operators/newsTime'
-import of from 'u-node-mq/operators/of'
-import removeDuplicates from 'u-node-mq/operators/removeDuplicates'
-import session from 'u-node-mq/operators/session'
-import state from 'u-node-mq/operators/state'
-import task from 'u-node-mq/operators/task'
-import throttleTime from 'u-node-mq/operators/throttleTime'
+} from '@u/index'
+import debounceTime from '@u/operators/debounceTime'
+import filter from '@u/operators/filter'
+import instant from '@u/operators/instant'
+import interval from '@u/operators/interval'
+import map from '@u/operators/map'
+import newsTime from '@u/operators/newsTime'
+import of from '@u/operators/of'
+import removeDuplicates from '@u/operators/removeDuplicates'
+import session from '@u/operators/session'
+import state from '@u/operators/state'
+import task from '@u/operators/task'
+import throttleTime from '@u/operators/throttleTime'
+
+import IframePlugin from '@u/plugins/iframe'
 
 declare global {
   //设置全局属性
@@ -48,5 +50,6 @@ declare global {
     state: typeof state
     task: typeof task
     throttleTime: typeof throttleTime
+    IframePlugin: typeof IframePlugin
   }
 }

@@ -18,7 +18,8 @@
       "@a/*": ["src/assets/*"],
       "@s/*": ["src/socket/*"],
       "@t/*": ["src/tools/*"],
-      "@p/*": ["src/pages/*"]
+      "@p/*": ["src/pages/*"],
+      "@u/*": ["./../../u-node-mq/*"]
     }
   }
 }
