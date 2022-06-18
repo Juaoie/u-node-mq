@@ -1,4 +1,6 @@
 {
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "shims-vue.d.ts"],
+  "exclude": ["node_modules"],
   "compilerOptions": {
     "target": "esnext",
     "useDefineForClassFields": true,
@@ -18,6 +20,5 @@
       "@t/*": ["src/tools/*"],
       "@p/*": ["src/pages/*"]
     }
-  },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue", "shims-vue.d.ts"]
+  }
 }

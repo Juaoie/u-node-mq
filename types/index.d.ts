@@ -480,3 +480,8 @@ export declare class Consumer<D> {
    */
   consumption(news: News<D>, ask: boolean): Payload;
 }
+export declare class Logs {
+  static unmq: null;
+  static error(message: any): void;
+  static log(message: any): void;
+}

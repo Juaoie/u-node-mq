@@ -62,7 +62,7 @@ async function buildMian() {
     fs.copy("LICENSE", "u-node-mq/LICENSE"),
     fs.copy("README.md", "u-node-mq/README.md"),
   ]);
-  await fs.copy("u-node-mq", "packages/test-vue3/u-node-mq");
+  await fs.copy("u-node-mq", "packages/test-vue3/node_modules/u-node-mq");
 
   console.log(chalk.cyanBright("执行时长：" + (new Date().getTime() - now) / 1000 + "秒"));
 }
