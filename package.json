@@ -11,6 +11,9 @@
     "消费者",
     "观察者"
   ],
+  "bin": {
+    "u-node-mq": "bin/u-node-mq.js"
+  },
   "main": "index.js",
   "types": "index.d.ts",
   "repository": "https://github.com/Juaoie/u-node-mq.git",

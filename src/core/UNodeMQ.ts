@@ -127,12 +127,17 @@ export default class UNodeMQ<
     }
   }
 }
+/**
+ * 
+ * @param exchange 
+ * @param queueCollection 
+ * @returns 
+ */
 export function createQuickUnmq<D, QueueCollection extends Record<string, Queue<D>>>(exchange: Exchange<D>, queueCollection: QueueCollection) {
   return new QuickUNodeMQ(exchange, queueCollection);
 }
 /**
- * quick start unmq
- * single type unmq
+ * quick start unmq, single type unmq
  */
 export class QuickUNodeMQ<D, QueueCollection extends Record<string, Queue<D>>> {
   constructor(private readonly exchange: Exchange<D>, private readonly queueCollection: QueueCollection) {
