@@ -1,14 +1,14 @@
-const esbuild = require("esbuild");
-const chalk = require("chalk");
-const fs = require("fs-extra");
-const execa = require("execa");
+import esbuild from "esbuild";
+import chalk from "chalk";
+import fs from "fs-extra";
+import { execa } from "execa";
 
 const minify = true;
 const bundle = true;
 const platform = "neutral";
 const now = new Date().getTime();
 
-async function buildMian() {
+async function buildMain() {
   //清除缓存和使用tsc构建
   await Promise.all([execa("pnpm", ["clr"]), execa("tsc")]);
   // 使用tsc输出operators d.ts文件进行覆盖
@@ -72,4 +72,4 @@ async function buildMian() {
 
   console.log(chalk.cyanBright("执行时长：" + (new Date().getTime() - now) / 1000 + "秒"));
 }
-buildMian();
+buildMain();

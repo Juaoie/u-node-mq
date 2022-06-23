@@ -28,11 +28,9 @@ test("先发送消息，再挂载消费者", function (done) {
     },
   );
   unmq.emit("ex1", "test");
-  setTimeout(() => {
-    unmq.on("qu1", (res: any) => {
-      expect(res).toBe("test");
-      done();
-    });
+  unmq.on("qu1", (res: any) => {
+    expect(res).toBe("test");
+    done();
   });
 });
 

@@ -1,7 +1,6 @@
 .git
 .vscode
 dist
-script
 docs
 test-node
 node_modules

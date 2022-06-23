@@ -14,6 +14,7 @@
   "bin": {
     "u-node-mq": "bin/u-node-mq.js"
   },
+  "type": "module",
   "main": "index.js",
   "types": "index.d.ts",
   "repository": "https://github.com/Juaoie/u-node-mq.git",
@@ -22,8 +23,7 @@
   "scripts": {
     "build": "node ./script/build.js",
     "dev": "node ./script/dev.js",
-    "test": "jest",
-    "test-node": "node ./script/dev.js && node ./test-node/index.js",
+    "test": "set NODE_OPTIONS=--experimental-vm-modules && jest",
     "eslint": "eslint",
     "clr": "node ./script/clear.js",
     "pub": "node ./script/publish.js"
@@ -31,12 +31,13 @@
   "devDependencies": {
     "@jest/globals": "^28.1.1",
     "@jest/types": "^28.1.1",
+    "@types/fs-extra": "^9.0.13",
     "@typescript-eslint/eslint-plugin": "^5.27.1",
     "@typescript-eslint/parser": "^5.27.1",
-    "chalk": "^4.1.2",
+    "chalk": "^5.0.1",
     "esbuild": "^0.14.34",
     "eslint": "^8.17.0",
-    "execa": "^5.1.1",
+    "execa": "^6.1.0",
     "fs-extra": "^10.1.0",
     "jest": "^27.5.1",
     "prettier": "^2.6.2",
