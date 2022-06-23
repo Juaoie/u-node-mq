@@ -1,6 +1,6 @@
-import UNodeMQ, { Exchange, Queue, ConsumMode, QuickUNodeMQ, News } from "../src/index";
-import { describe, expect, test } from "@jest/globals";
-import Tools from "../src/utils/tools";
+import UNodeMQ, { Exchange, Queue, ConsumMode, QuickUNodeMQ } from "../src/index";
+import { expect, test } from "@jest/globals";
+import { promiseSetTimeout } from "../src/utils/tools";
 
 test("先挂载消费者，再发送消息", function (done) {
   const unmq = new UNodeMQ(
@@ -9,7 +9,7 @@ test("先挂载消费者，再发送消息", function (done) {
     },
     {
       qu1: new Queue(),
-    }
+    },
   );
   unmq.on("qu1", (res: any) => {
     expect(res).toBe("test");
@@ -25,7 +25,7 @@ test("先发送消息，再挂载消费者", function (done) {
     },
     {
       qu1: new Queue(),
-    }
+    },
   );
   unmq.emit("ex1", "test");
   setTimeout(() => {
@@ -43,7 +43,7 @@ test("随机消费", function (done) {
     },
     {
       qu1: new Queue({ mode: ConsumMode.Random }),
-    }
+    },
   );
   unmq.emit("ex1", "test");
   unmq.on("qu1", () => done());
@@ -57,11 +57,11 @@ test("全部消费", function (done) {
     },
     {
       qu1: new Queue({ mode: ConsumMode.All }),
-    }
+    },
   );
   let num = 0;
   unmq.emit("ex1", "test");
-  unmq.on("qu1", (res: any) => {
+  unmq.on("qu1", () => {
     num++;
   });
   unmq.on("qu1", () => {
@@ -81,7 +81,7 @@ test("routes分发到多个队列", function (done) {
     {
       qu1: new Queue({ mode: ConsumMode.All }),
       qu2: new Queue({ mode: ConsumMode.All }),
-    }
+    },
   );
   unmq.emit("ex1", "test");
   let num = 0;
@@ -104,7 +104,7 @@ test("检查名称是否自动填充", function (done) {
     },
     {
       qu1: new Queue(),
-    }
+    },
   );
   expect(unmq.getExchange("ex1")?.name).toEqual("ex1");
   expect(unmq.getQueue("qu1")?.name).toBe("qu1");
@@ -118,7 +118,7 @@ test("有且仅消费一条消息，emit异步，off同步", function (done) {
     },
     {
       qu1: new Queue(),
-    }
+    },
   );
   let num = 0;
   unmq.on("qu1", () => {
@@ -147,7 +147,7 @@ test("执行一次任务队列里面所有数据", function (done) {
     },
     {
       qu1: new Queue({ async: true }),
-    }
+    },
   );
   let num = 0;
   /**
@@ -178,7 +178,7 @@ test("有且仅消费一条消息，once()方法", function (done) {
     },
     {
       qu1: new Queue(),
-    }
+    },
   );
   let num = 0;
   unmq.once("qu1", () => {
@@ -199,7 +199,7 @@ test("移除方法", function (done) {
     },
     {
       qu1: new Queue(),
-    }
+    },
   );
   let num = 0;
   unmq.emit("ex1", 1, 2, 3);
@@ -220,7 +220,7 @@ test("直接发送消息给队列的方法", function (done) {
     {},
     {
       qu1: new Queue(),
-    }
+    },
   );
   let num = 0;
   unmq.emitToQueue("qu1", 1, 2, 3);
@@ -240,7 +240,7 @@ test("观察者模式", function (done) {
     },
     {
       qu1: new Queue({ ask: true, mode: ConsumMode.All }),
-    }
+    },
   );
   let num = 0;
   unmq.on("qu1", () => true);
@@ -265,7 +265,7 @@ test("测试中继器返回不存在的队列名称", function (done) {
     },
     {
       qu1: new Queue({ ask: true, mode: ConsumMode.All }),
-    }
+    },
   );
   let num = 0;
   unmq.emit("ex1", 1, 2, 3);
@@ -300,17 +300,17 @@ test("promise确认消费成功", function (done) {
     },
     {
       qu1: new Queue({ ask: true }),
-    }
+    },
   );
-  unmq.on("qu1", (res: string) => {
-    return new Promise((res) => {
+  unmq.on("qu1", () => {
+    return new Promise(res => {
       setTimeout(() => {
         res(true);
       }, 500);
     });
   });
   setTimeout(() => {
-    expect(unmq.getQueue("qu1")!.getNews()).toHaveLength(1);
+    expect(unmq.getQueue("qu1")?.getNews()).toHaveLength(1);
     done();
   }, 700);
   unmq.emit("ex1", 1, 2, 3);
@@ -323,11 +323,11 @@ test("promise确认消费失败", function (done) {
     },
     {
       qu1: new Queue({ ask: true }),
-    }
+    },
   );
   let num = 0;
   unmq.on("qu1", (data: number) => {
-    return new Promise((res) => {
+    return new Promise(res => {
       setTimeout(() => {
         num++;
         if (data === 1) res(true);
@@ -338,11 +338,11 @@ test("promise确认消费失败", function (done) {
 
   setTimeout(() => {
     //检查1是否被消费
-    const news = unmq.getQueue("qu1")!.getNews();
+    const news = unmq.getQueue("qu1")?.getNews();
     expect(news).toHaveLength(1);
     //3应该被取出正在消费，2应该消费失败一次
-    expect(news[0].consumedTimes).toBe(2);
-    expect(news[0].content).toBe(2);
+    expect(news?.[0].consumedTimes).toBe(2);
+    expect(news?.[0].content).toBe(2);
     expect(num).toBe(2);
     done();
   }, 1200);
@@ -356,14 +356,14 @@ test("异步队列消费", function (done) {
     },
     {
       qu1: new Queue({ ask: true, async: true }),
-    }
+    },
   );
   let num = 0;
   unmq.emit("ex1", 1, 2, 3);
   //消息是一条一条加入队列，则可以轻易实现异步消费功能，但如果队列里面本来就有消息，就需要单独处理异步消费功能
   setTimeout(() => {
     unmq.on("qu1", (data: number) => {
-      return new Promise((res) => {
+      return new Promise(res => {
         setTimeout(() => {
           num++;
           if (data === 1) res(true);
@@ -375,7 +375,7 @@ test("异步队列消费", function (done) {
 
   setTimeout(() => {
     //检查1是否被消费
-    const news = unmq.getQueue("qu1")!.getNews();
+    const news = unmq.getQueue("qu1")?.getNews();
     expect(news).toHaveLength(0);
     expect(num).toBe(5);
     done();
@@ -389,19 +389,19 @@ test("消费一条消息是否会影响别的消息", function (done) {
     },
     {
       qu1: new Queue({ ask: true }),
-    }
+    },
   );
-  unmq.once("qu1", (res: string) => {
-    return new Promise((res) => {
+  unmq.once("qu1", () => {
+    return new Promise(res => {
       setTimeout(() => {
         res(true);
       }, 500);
     });
   });
   setTimeout(() => {
-    const news = unmq.getQueue("qu1")!.getNews();
+    const news = unmq.getQueue("qu1")?.getNews();
     expect(news).toHaveLength(2);
-    news.forEach((item) => {
+    news?.forEach(item => {
       expect(item.consumedTimes).toBe(3);
     });
     done();
@@ -416,19 +416,19 @@ test("检测是否出现增量循环消费的问题", function (done) {
     },
     {
       qu1: new Queue({ ask: true, rcn: 4, mode: ConsumMode.All }),
-    }
+    },
   );
   let num = 0;
-  unmq.on("qu1", (res: string) => {
+  unmq.on("qu1", () => {
     num++;
     return false;
   });
-  unmq.on("qu1", (res: string) => {
+  unmq.on("qu1", () => {
     num++;
     return false;
   });
   setTimeout(() => {
-    const news = unmq.getQueue("qu1")!.getNews();
+    const news = unmq.getQueue("qu1")?.getNews();
     expect(num).toBe(8);
     expect(news).toHaveLength(0);
     done();
@@ -443,7 +443,7 @@ test("测试once promise返回的方法", function (done) {
     },
     {
       qu1: new Queue({ ask: true, rcn: 4, mode: ConsumMode.All }),
-    }
+    },
   );
   unmq.once("qu1").then((res: string) => {
     expect(res).toBe("test");
@@ -461,7 +461,7 @@ test("测试once this 返回数据", function (done) {
     },
     {
       qu1: new Queue(),
-    }
+    },
   );
 
   async function fun() {
@@ -481,7 +481,7 @@ test("测试最长消费时长", function (done) {
       qu1: new Queue({ ask: true, maxTime: 100 }),
       qu2: new Queue({ ask: true, maxTime: -1 }),
       qu3: new Queue({ ask: true, maxTime: 0 }),
-    }
+    },
   );
   let num = 0;
   unmq.emit("ex1", 1);
@@ -506,9 +506,9 @@ test("测试最长消费时长", function (done) {
   });
 
   setTimeout(() => {
-    const news1 = unmq.getQueue("qu1")!.getNews();
-    const news2 = unmq.getQueue("qu2")!.getNews();
-    const news3 = unmq.getQueue("qu3")!.getNews();
+    const news1 = unmq.getQueue("qu1")?.getNews();
+    const news2 = unmq.getQueue("qu2")?.getNews();
+    const news3 = unmq.getQueue("qu3")?.getNews();
     expect(news1).toHaveLength(0);
     expect(news2).toHaveLength(0);
     expect(news3).toHaveLength(0);
@@ -527,19 +527,19 @@ test("测试operators 钩子函数为同步消费", function (done) {
       qu1: new Queue()
         .add({
           beforeAddNews: async () => {
-            await Tools.promiseSetTimeout(2000);
+            await promiseSetTimeout(2000);
             num++;
             return true;
           },
         })
         .add({
           beforeAddNews: async () => {
-            await Tools.promiseSetTimeout(2000);
+            await promiseSetTimeout(2000);
             num++;
             return true;
           },
         }),
-    }
+    },
   );
   unmq.emit("ex1", "test");
   setTimeout(() => {

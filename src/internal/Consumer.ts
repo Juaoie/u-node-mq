@@ -1,4 +1,4 @@
-import { isPromise, random } from "src/utils/tools";
+import { isPromise, random } from "../utils/tools";
 import Logs from "./Logs";
 import News from "./News";
 export type Next = (value?: boolean) => void;

@@ -1,6 +1,6 @@
 import News from "./News";
 import Consumer, { Consume } from "./Consumer";
-import { random } from "src/utils/tools";
+import { random } from "../utils/tools";
 interface Option {
   ask?: boolean;
   rcn?: number;

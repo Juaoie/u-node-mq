@@ -1,5 +1,7 @@
-import UNodeMQ, { Exchange, Queue, ConsumMode, QuickUNodeMQ, createQuickUnmq, map } from "../../src/index";
-import { describe, expect, test } from "@jest/globals";
+import { Exchange, Queue, createQuickUnmq } from "../../src/index";
+import map from "../../src/operators/map";
+
+import { expect, test } from "@jest/globals";
 
 test("快速unmq，map测试", function (done) {
   const quickUnmq = createQuickUnmq(new Exchange<number>({ routes: ["qu1"] }), {
@@ -9,7 +11,7 @@ test("快速unmq，map测试", function (done) {
         map((value, index) => {
           expect(index).toEqual(0);
           return value * 10;
-        })
+        }),
       ),
   });
   quickUnmq.on("qu1", (res: number) => {

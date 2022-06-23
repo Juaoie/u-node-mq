@@ -1,5 +1,8 @@
-import UNodeMQ, { Exchange, Queue, ConsumMode, QuickUNodeMQ, createQuickUnmq, interval, throttleTime } from "../../src/index";
-import { describe, expect, test } from "@jest/globals";
+import { Exchange, Queue, createQuickUnmq } from "../../src/index";
+import interval from "../../src/operators/interval";
+import throttleTime from "../../src/operators/throttleTime";
+
+import { expect, test } from "@jest/globals";
 
 test("interval测试，一直循环", function (done) {
   const quickUnmq = createQuickUnmq(new Exchange<number>(), {

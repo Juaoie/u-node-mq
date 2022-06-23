@@ -1,4 +1,4 @@
-import { random } from "src/utils/tools";
+import { random } from "../utils/tools";
 
 export default class News<D> {
   [k: string]: any;

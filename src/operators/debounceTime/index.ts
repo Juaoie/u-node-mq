@@ -28,7 +28,7 @@ export default function debounceTime<D = unknown>(dueTime: number, immediate?: b
         now = t;
         return new Promise(resolve => {
           res = resolve;
-          timeId = setTimeout(() => {
+          timeId = window.setTimeout(() => {
             timeId = null;
             resolve(true);
           }, dueTime);

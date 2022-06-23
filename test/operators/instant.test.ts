@@ -1,5 +1,7 @@
-import UNodeMQ, { Exchange, Queue, ConsumMode, QuickUNodeMQ, createQuickUnmq, instant } from "../../src/index";
-import { describe, expect, test } from "@jest/globals";
+import { Queue } from "../../src/index";
+import instant from "../../src/operators/instant";
+
+import { expect, test } from "@jest/globals";
 
 test("快速unmq，instant测试", function (done) {
   const qu1 = new Queue<number>()

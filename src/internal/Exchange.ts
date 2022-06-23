@@ -1,4 +1,4 @@
-import { random } from "src/utils/tools";
+import { random } from "../utils/tools";
 import Logs from "./Logs";
 /**
  * 中继器类型

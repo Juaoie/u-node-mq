@@ -1,11 +1,13 @@
-import UNodeMQ, { Exchange, Queue, ConsumMode, QuickUNodeMQ, createQuickUnmq, filter } from "../../src/index";
-import { describe, expect, test } from "@jest/globals";
+import { Exchange, Queue, createQuickUnmq } from "../../src/index";
+import filter from "../../src/operators/filter";
+
+import { expect, test } from "@jest/globals";
 
 test("快速unmq，filter测试", function (done) {
   const quickUnmq = createQuickUnmq(new Exchange<number>({ routes: ["qu1"] }), {
     qu1: new Queue<number>()
       //使用 operate
-      .add(filter((res) => res > 3)),
+      .add(filter(res => res > 3)),
   });
   let n = "";
   quickUnmq.on("qu1", (res: number) => {
