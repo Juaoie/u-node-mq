@@ -4,3 +4,5 @@ index.js
 index.js.map
 u-node-mq
 *.tgz
+vendor
+*.log

@@ -1044,7 +1044,7 @@ packages:
     dev: true
 
   /ansi-escapes/4.3.2:
-    resolution: {integrity: sha512-gKXj5ALrKWQLsYG9jlTRmR/xKluxHV+Z9QEwNIgCfM1/uwPMCuzVVnh5mwTd+OuBZcwSIMbqssNWRm1lE51QaQ==, registry: https://registry.yarnpkg.com/, tarball: https://registry.yarnpkg.com/ansi-escapes/-/ansi-escapes-4.3.2.tgz}
+    resolution: {integrity: sha512-gKXj5ALrKWQLsYG9jlTRmR/xKluxHV+Z9QEwNIgCfM1/uwPMCuzVVnh5mwTd+OuBZcwSIMbqssNWRm1lE51QaQ==}
     engines: {node: '>=8'}
     dependencies:
       type-fest: 0.21.3
@@ -1675,7 +1675,7 @@ packages:
     dev: true
 
   /escape-string-regexp/2.0.0:
-    resolution: {integrity: sha512-UpzcLCXolUWcNu5HtVMHYdXJjArjsF9C0aNnquZYY4uW/Vu0miy5YoWvbV345HauVvcAUnpRuhMMcqTcGOY2+w==, registry: https://registry.yarnpkg.com/, tarball: https://registry.yarnpkg.com/escape-string-regexp/-/escape-string-regexp-2.0.0.tgz}
+    resolution: {integrity: sha512-UpzcLCXolUWcNu5HtVMHYdXJjArjsF9C0aNnquZYY4uW/Vu0miy5YoWvbV345HauVvcAUnpRuhMMcqTcGOY2+w==}
     engines: {node: '>=8'}
     dev: true
 
@@ -3656,7 +3656,7 @@ packages:
     dev: true
 
   /type-fest/0.21.3:
-    resolution: {integrity: sha512-t0rzBq87m3fVcduHDUFhKmyyX+9eo6WQjZvf51Ea/M0Q7+T374Jp1aUiyUl0GKxp8M/OETVHSDvmkyPgvX+X2w==, registry: https://registry.yarnpkg.com/, tarball: https://registry.yarnpkg.com/type-fest/-/type-fest-0.21.3.tgz}
+    resolution: {integrity: sha512-t0rzBq87m3fVcduHDUFhKmyyX+9eo6WQjZvf51Ea/M0Q7+T374Jp1aUiyUl0GKxp8M/OETVHSDvmkyPgvX+X2w==}
     engines: {node: '>=10'}
     dev: true
 

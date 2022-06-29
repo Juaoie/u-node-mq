@@ -1,4 +1,4 @@
-import UNodeMQ, { Exchange, Queue } from "../../dist/index.js";
+import UNodeMQ, { Exchange, Queue } from "../../u-node-mq/index.js";
 const unmq = new UNodeMQ(
   {
     ex1: new Exchange(),
