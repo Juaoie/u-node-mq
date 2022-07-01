@@ -1,4 +1,5 @@
 import { Operator, Queue } from "../..";
+import { IntTime } from "../../utils/types";
 
 /**
  * setinterval发射数据，发射内容为从0开始的数字
@@ -10,7 +11,7 @@ import { Operator, Queue } from "../..";
 export default function interval(period = 1000, optimal = true): Operator<number> {
   if (period < 0) period = 0;
   let num = 0;
-  let id: number | null = null;
+  let id: IntTime | null = null;
   let interval = {
     go: () => {
       //
@@ -27,7 +28,7 @@ export default function interval(period = 1000, optimal = true): Operator<number
       queue = that;
       interval = {
         go() {
-          id = window.setInterval(() => {
+          id = setInterval(() => {
             num++;
             queue.pushContent(num);
           }, period);

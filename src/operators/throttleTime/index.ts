@@ -1,4 +1,5 @@
 import { Operator } from "../..";
+import { IntTime } from "../../utils/types";
 
 /**
  * throttleTime 节流函数
@@ -10,7 +11,7 @@ import { Operator } from "../..";
  */
 export default function throttleTime<D = unknown>(duration: number, immediate?: boolean): Operator<D> {
   let now = 0;
-  let timeId: number | null = null;
+  let timeId: IntTime | null = null;
   return {
     beforeAddNews() {
       const t = new Date().getTime();
@@ -24,7 +25,7 @@ export default function throttleTime<D = unknown>(duration: number, immediate?: 
         if (timeId !== null) return false;
 
         return new Promise(resolve => {
-          timeId = window.setTimeout(() => {
+          timeId = setTimeout(() => {
             timeId = null;
             resolve(true);
           }, duration);

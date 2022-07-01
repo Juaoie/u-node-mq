@@ -1,4 +1,5 @@
 import { Operator } from "../..";
+import { IntTime } from "../../utils/types";
 
 /**
  * debounceTime 防抖函数
@@ -9,7 +10,7 @@ import { Operator } from "../..";
  */
 export default function debounceTime<D = unknown>(dueTime: number, immediate?: boolean): Operator<D> {
   let now = 0;
-  let timeId: number | null = null;
+  let timeId: IntTime | null = null;
   let res: (value: boolean | PromiseLike<boolean>) => void;
   return {
     beforeAddNews() {
@@ -28,7 +29,7 @@ export default function debounceTime<D = unknown>(dueTime: number, immediate?: b
         now = t;
         return new Promise(resolve => {
           res = resolve;
-          timeId = window.setTimeout(() => {
+          timeId = setTimeout(() => {
             timeId = null;
             resolve(true);
           }, dueTime);
