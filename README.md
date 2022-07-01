@@ -1,8 +1,3 @@
-- [💠 简介](#introduction)
-- [✨ u-node-mq 基本使用方法](#u-node-mq)
-- [💨 plugins](./docs/plugins/index.md)
-- [🎨 operators](./docs//operators//index.md)
-
 <!-- https://duotones.co/ -->
 <p align="center">
   <a href="https://github.com/Juaoie/u-node-mq" style="margin-right:20px"><img src="https://img.shields.io/github/stars/Juaoie/u-node-mq?labelColor=11245E&color=DC4379&logo=github" alt="Stars"></a>
@@ -13,27 +8,37 @@
   <a href="https://github.com/Juaoie/u-node-mq" style="margin-right:20px"><img src="https://img.shields.io/github/license/Juaoie/u-node-mq?labelColor=7F01D3&color=01DBFE" alt="Count"></a>
 </p>
 
-<h1 id="introduction">💠 简介</h1>
-  
-## `u-node-mq` 是什么？
+## 文档目录结构
+
+- [README.md](./README.md)
+- docs
+  - [more.md](./docs/more.md) 导航预览
+  - [unmq.md](./docs/unmq.md) 快速开发
+  - internal
+    - [index.md](./docs/internal/index.md) 组件介绍
+  - plugins
+    - [index.md](./docs/plugins/index.md) 插件介绍
+    - [IframePlugin.md](./docs/plugins/IframePlugin.md)
+
+## 文档内容
+
+### `u-node-mq` 是什么？
 
 `u-node-mq`是用来解决前端项目中数据异步通信问题的工具，可以准确的将一个模块的数据传到另一个模块，就像`rabbitMQ`使用发布订阅模型的中间件一样，使用`u-node-mq`可以完全解耦前端模块的耦合；
 
-## 为什么是`u-node-mq`而不是`rxjs`？
+### 为什么是`u-node-mq`而不是`rxjs`？
 
 `rxjs`是使用 `Observables` 的响应式编程的库，`rxjs`使用的观察者模式，而`u-node-mq`使用的发布订阅模型；虽然两者都可以实现众多复杂的业务场景，但是`rxjs`似乎有着更加陡峭的学习曲线，而`u-node-mq`只需要简单的理解五个基础组件由浅入深的工具；
 
     `观察者模式`与`发布订阅模型`的区别在于后者多了一个队列，能够在生产者生产数据以后对数据进行存储到队列；
 
-## 其他
+### 其他
 
 - `u-node-mq`在文档和代码注释中有时也会写成简写`unmq`；
 
 - `u-node-mq`中的`u`是标识词；`node`是最初创建项目的执行环境是 node，但是后面经过使用 ts 升级和重构，现在已经升级到可以在所有 js 环境中执行；`mq`是`message queue`的简写；
 
-## [学习更多详细内容](./docs//more.md)
-
-## npm 安装
+### npm 安装
 
 `pnpm add u-node-mq`
 
@@ -45,7 +50,7 @@ or
 
 `npm install u-node-mq`
 
-<h1 id="u-node-mq">✨ u-node-mq 基本使用方法</h1>
+### `u-node-mq` 基本使用方法
 
 **unmq.js**
 
@@ -86,3 +91,5 @@ function getData(data) {
   console.log(data);
 }
 ```
+
+### [学习更多详细内容](./docs//more.md)
