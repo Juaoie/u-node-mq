@@ -1,6 +1,7 @@
 import News from "./News";
 import Consumer, { Consume } from "./Consumer";
 import { random } from "../utils/tools";
+import Logs, { queueLogsOperator } from "./Logs";
 interface Option {
   ask?: boolean;
   rcn?: number;
@@ -58,15 +59,15 @@ interface SyncOperator<D> {
   // beforeAddConsumer?: (consumer: Consumer<D>) => boolean | Promise<boolean>;
 
   /**
-   * 消息被弹出来
+   * 控制消息是否可以被弹出，为false则移除消息
    */
-  ejectedNews?: (news: News<D>) => boolean | Promise<boolean>;
+  ejectNews?: (news: News<D>) => boolean | Promise<boolean>;
 }
 function isAsyncOperator<D>(arg: keyof Operator<D>): arg is keyof AsyncOperator<D> {
   return ["mounted", "addedNews", "addedConsumer", "removedConsumer"].indexOf(arg) !== -1;
 }
 function isSyncOperator<D>(arg: keyof Operator<D>): arg is keyof SyncOperator<D> {
-  return ["beforeAddNews", "ejectedNews"].indexOf(arg) !== -1;
+  return ["beforeAddNews", "ejectNews"].indexOf(arg) !== -1;
 }
 export type Operator<D> = AsyncOperator<D> & SyncOperator<D>;
 /**
@@ -76,6 +77,10 @@ export type Operator<D> = AsyncOperator<D> & SyncOperator<D>;
 export default class Queue<D> {
   [k: string]: any;
   name?: string;
+  /**
+   * 创建时间戳
+   */
+  readonly createdTime: number;
   /**
    * id
    */
@@ -98,9 +103,12 @@ export default class Queue<D> {
    */
   mode: ConsumMode = ConsumMode.All;
   /**
-   * 默认是同步消费
-   * 是否是异步消费，如果是同步消费，则一条消息消费完成或者消费失败才会消费下一条消息
+   * 是否是异步消费，默认false是同步消费
+   *
+   * 如果是同步消费，则一条消息消费完成或者消费失败才会消费下一条消息
    * 为同步消费时，mode为ALL则需要所有消费者都消费完或者消费失败才能消费下一条消息
+   *
+   * 如果是异步消费，则会在同一时间内去消费所有消息
    */
   async = false;
   /**
@@ -152,6 +160,19 @@ export default class Queue<D> {
     }
   }
   /**
+   * 弹出一条消息
+   * @returns
+   *
+   */
+  async eject(start: number = 0): Promise<News<D> | null> {
+    if (this.news.length > 0) {
+      const news = this.news.splice(start, 1)[0];
+      if (!(await this.operate("ejectNews", news))) return null;
+
+      return news;
+    } else return null;
+  }
+  /**
    * 加入消息内容
    * @param content
    */
@@ -167,7 +188,7 @@ export default class Queue<D> {
   removeNewsById(newsId: string) {
     const index = this.news.findIndex(item => item.getId() === newsId);
     if (index === -1) return false;
-    this.news.splice(index, 1);
+    this.eject(index);
     return true;
   }
 
@@ -261,7 +282,7 @@ export default class Queue<D> {
   }
   /**
    * 管道操作符执行
-   * 其中需要阻塞获取返回值（boolea）的是按顺序执行的，如果不需要
+   * 其中需要阻塞获取返回值（boolea）的是按顺序执行的
    * @param fun
    * @param args
    * @returns
@@ -290,6 +311,8 @@ export default class Queue<D> {
   }
   constructor(option?: Option) {
     Object.assign(this, option);
+    this.createdTime = new Date().getTime();
+    this.add(queueLogsOperator());
   }
 
   /**
@@ -308,30 +331,30 @@ export default class Queue<D> {
     const consumerList =
       this.mode === ConsumMode.Random ? [this.consumerList[Math.round(Math.random() * (this.consumerList.length - 1))]] : [...this.consumerList];
 
-    const news = this.news.splice(0, 1)[0];
-
-    //如果是同步的就直接执行下一个消息，因为下面是异步方法
-    this.consumeNews();
-
-    if (!(await this.operate("ejectedNews", news))) {
-      this.state = false;
-      this.consumeNews();
-      return;
-    }
-
-    Promise.all(consumerList.map(consumer => this.consumption(news, consumer)))
-      .then(() => {
-        //消息被成功消费
-      })
-      .catch(() => {
-        //消费失败
-        news.consumedTimes--;
-        this.pushNews(news);
-      })
-      .finally(() => {
+    this.eject().then(news => {
+      if (news === null) {
         this.state = false;
         this.consumeNews();
-      });
+        return;
+      }
+
+      Promise.all(consumerList.map(consumer => this.consumption(news, consumer)))
+        .then(() => {
+          //消息被成功消费
+        })
+        .catch(() => {
+          //消费失败
+          news.consumedTimes--;
+          this.pushNews(news);
+        })
+        .finally(() => {
+          this.state = false;
+          this.consumeNews();
+        });
+    });
+
+    //如果是异步的就需要执行，因为此时消息已被弹出
+    if (this.async) this.consumeNews();
   }
   /**
    * 指定消费者消费某一条消息的方法

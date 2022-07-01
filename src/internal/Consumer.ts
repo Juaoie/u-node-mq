@@ -69,7 +69,7 @@ export default class Consumer<D> {
           thenParameter(res);
         }
       } catch (error) {
-        Logs.error(error);
+        Logs.getLogsInstance()?.error(error);
         thenParameter(!ask);
       }
     };

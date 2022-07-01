@@ -1,6 +1,7 @@
-import UNodeMQ, { Exchange, Queue, ConsumMode, QuickUNodeMQ } from "../src/index";
+import UNodeMQ, { Exchange, Queue, ConsumMode, QuickUNodeMQ, Logs } from "../src/index";
 import { expect, test } from "@jest/globals";
 import { promiseSetTimeout } from "../src/utils/tools";
+Logs.setLogsConfig({ logs: true });
 
 test("先挂载消费者，再发送消息", function (done) {
   const unmq = new UNodeMQ(

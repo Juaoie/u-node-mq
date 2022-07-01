@@ -18,6 +18,10 @@ export default class Exchange<D> {
   [k: string]: any;
   name?: string;
   /**
+   * 创建时间戳
+   */
+  readonly createdTime: number;
+  /**
    * id
    */
   private readonly id: string = random();
@@ -50,6 +54,8 @@ export default class Exchange<D> {
 
   constructor(option?: Option<D>) {
     Object.assign(this, option);
+    this.createdTime = new Date().getTime();
+    Logs.getLogsInstance()?.addExchangeData({ id: this.getId(), name: this.name || "", createdTime: this.createdTime });
   }
 
   /**
@@ -67,11 +73,20 @@ export default class Exchange<D> {
    * @returns
    */
   async getQueueNameList(content: D): Promise<string[]> {
+    Logs.getLogsInstance()?.addExchangeData({ id: this.getId(), accepted: 1, name: this.name || "", createdTime: this.createdTime });
     try {
       //中继器模式
-      return await this.repeater(content);
+      const queueNames = await this.repeater(content);
+      Logs.getLogsInstance()?.addExchangeData({
+        id: this.getId(),
+        send: queueNames.length,
+        queueNames,
+        name: this.name || "",
+        createdTime: this.createdTime,
+      });
+      return queueNames;
     } catch (error) {
-      Logs.error(`exchange function getstringList exception`);
+      Logs.getLogsInstance()?.error(`exchange function getstringList exception`);
       return [];
     }
   }

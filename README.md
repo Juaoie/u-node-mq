@@ -262,7 +262,7 @@ unmq.on("qu2", res => {
 | beforeAddNews | News     | boolean \| Promise<boolean> | 消息加入队列之前执行，通过返回值控制是否加入队列 |
 | addedNews     | News     | unknown                     | 消息加入队列以后执行                             |
 | addedConsumer | Consumer | unknown                     | 消费者订阅队列以后执行                           |
-| ejectedNews   | News     | boolean \| Promise<boolean> | 消息弹出来以后执行，返回值用于控制消息是否被丢弃 |
+| ejectNews   | News     | boolean \| Promise<boolean> | 消息弹出来以后执行，返回值用于控制消息是否被丢弃 |
 
 <h2 id="map">🌞 map 对队列消息进行映射 </h2>
 

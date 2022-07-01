@@ -477,7 +477,7 @@ interface SyncOperator<D> {
  /**
   * 消息被弹出来
   */
- ejectedNews?: (news: News<D>) => boolean | Promise<boolean>;
+ ejectNews?: (news: News<D>) => boolean | Promise<boolean>;
 }
 declare type Operator<D> = AsyncOperator<D> & SyncOperator<D>;
 

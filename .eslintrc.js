@@ -9,6 +9,6 @@ module.exports = {
   globals: {},
 
   rules: {
-    "@typescript-eslint/no-explicit-any": "off",//关闭禁用any类型
+    "@typescript-eslint/no-explicit-any": "off", //关闭禁用any类型
   },
 };

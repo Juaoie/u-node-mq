@@ -6,7 +6,7 @@ export default class ExchangeCollectionHandle {
   has(exchangeName: string) {
     if (this.exchangeCollection.has(exchangeName)) return true;
     else {
-      Logs.error(`${exchangeName} not find`);
+      Logs.getLogsInstance()?.error(`${exchangeName} not find`);
       return false;
     }
   }
@@ -16,7 +16,7 @@ export default class ExchangeCollectionHandle {
   getExchange(exchangeName: string): Exchange<unknown> | null {
     const exchange = this.exchangeCollection.get(exchangeName);
     if (exchange === undefined) {
-      Logs.error(`${exchangeName} not find`);
+      Logs.getLogsInstance()?.error(`${exchangeName} not find`);
       return null;
     }
     return exchange;

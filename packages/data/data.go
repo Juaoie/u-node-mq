@@ -9,13 +9,12 @@ import (
 */
 
 type QueueLog struct {
-	Id          string `json:"id"`
-	Name        string `json:"name"`
-	CreatedTime string `json:"createdTime"`
-	Accepted    int    `json:"accepted"`   //累计接受消息数量
-	Send        int    `json:"send"`       //累计发送数量
-	News        int    `json:"news"`       //消息数量
-	UpdateTime  int    `json:"updateTime"` //最后更新时间
+	Name     string `json:"name"`
+	Accepted int    `json:"accepted"` //累计接受消息数量
+	Send     int    `json:"send"`     //累计发送数量
+	NewsNum  int    `json:"newsNum"`  //消息数量
+	NewsIds  []int  `json:newsIds`    //消息id列表
+	Component
 }
 type QueueLogList struct {
 	lock  sync.RWMutex
@@ -24,7 +23,7 @@ type QueueLogList struct {
 }
 
 var (
-	Q = &QueueLogList{}
+	Q = QueueLogList{}
 )
 
 func (q *QueueLogList) DelQueueLogList() {
@@ -36,17 +35,14 @@ func (q *QueueLogList) DelQueueLogList() {
 	q.lock.Unlock()
 }
 
-func (q *QueueLogList) AddQueueLog(id string, name string, createdTimie string) {
-	queueLog := &QueueLog{}
-	queueLog.Id = id
-	queueLog.Name = name
-	queueLog.CreatedTime = createdTimie
-	queueLog.Accepted = 0
-	queueLog.Send = 0
+func (q *QueueLogList) AddQueueLog(queueLog QueueLog) {
+
+	queue := findById(Q.list, "123")
 
 	q.lock.Lock()
 
-	q.list = append(q.list, *queueLog)
+	Q.list.
+		q.list = append(q.list, *queueLog)
 	q.State = true
 
 	q.lock.Unlock()

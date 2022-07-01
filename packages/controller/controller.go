@@ -24,16 +24,15 @@ func SetQueueData() {
 
 //添加一条queue创建数据
 func addQueueData(c *gin.Context) {
-	q := &data.QueueLog{}
+	q := data.QueueLog{}
 	c.BindJSON(&q)
+	if q.Id == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "fail"})
+	} else {
+		data.Q.AddQueueLog(q)
+		c.JSON(http.StatusOK, gin.H{"message": "ok!"})
 
-	data.Q.AddQueueLog(q.Id, q.Name, q.CreatedTime)
-	//拿到数据更新视图
-	view.UpdateView()
-	c.JSON(http.StatusOK, gin.H{
-		"message": "ok!",
-	})
-
+	}
 }
 
 //添加一条exchange创建数据

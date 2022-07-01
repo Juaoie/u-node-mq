@@ -8,8 +8,8 @@ import News from "../../internal/News";
  */
 export default function newsTime<D = unknown>(time: number): Operator<D> {
   return {
-    ejectedNews(news: News<any>) {
-      return new Date().getTime() < time + news.createTime;
+    ejectNews(news: News<any>) {
+      return new Date().getTime() < time + news.createdTime;
     },
   };
 }

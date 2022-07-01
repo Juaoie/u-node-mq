@@ -10,7 +10,7 @@ export default class QueueCollectionHandle {
   has(queueName: string) {
     if (this.queueCollection.has(queueName)) return true;
     else {
-      Logs.error(`${queueName} not find`);
+      Logs.getLogsInstance()?.error(`${queueName} not find`);
       return false;
     }
   }
@@ -21,7 +21,7 @@ export default class QueueCollectionHandle {
   getQueue(queueName: string): Queue<unknown> | null {
     const queue = this.queueCollection.get(queueName);
     if (queue === undefined) {
-      Logs.error(`${queueName} not find`);
+      Logs.getLogsInstance()?.error(`${queueName} not find`);
       return null;
     }
     return queue;

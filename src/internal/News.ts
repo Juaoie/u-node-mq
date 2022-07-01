@@ -12,7 +12,7 @@ export default class News<D> {
   /**
    * 消费者创建时间戳
    */
-  readonly createTime: number;
+  readonly createdTime: number;
   /**
    * 消息内容
    */
@@ -23,7 +23,7 @@ export default class News<D> {
   consumedTimes = -1;
 
   constructor(content: D) {
-    this.createTime = new Date().getTime();
+    this.createdTime = new Date().getTime();
     this.content = content;
   }
 }
