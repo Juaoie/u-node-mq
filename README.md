@@ -16,6 +16,7 @@
   - [unmq.md](./docs/unmq.md) 快速开发
   - internal
     - [index.md](./docs/internal/index.md) 组件介绍
+    - [logs_sys_dev.md](./docs/internal/logs_sys_dev.md) 自定义日志系统开发
   - plugins
     - [index.md](./docs/plugins/index.md) 插件介绍
     - [IframePlugin.md](./docs/plugins/IframePlugin.md)
@@ -36,7 +37,7 @@
 
 - `u-node-mq`在文档和代码注释中有时也会写成简写`unmq`；
 
-- `u-node-mq`中的`u`是标识词；`node`是最初创建项目的执行环境是 node，但是后面经过使用 ts 升级和重构，现在已经升级到可以在所有 js 环境中执行；`mq`是`message queue`的简写；
+- `u-node-mq`中的`u`是标识词；`node`是最初创建项目的执行环境是 `node`，但是后面经过使用 `ts` 升级和重构，现在已经升级到可以在所有 `js` 环境中执行；`mq`是`message queue`的简写；
 
 ### npm 安装
 

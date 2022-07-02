@@ -1,3 +1,4 @@
+import { ComponentEnum } from "../utils/types";
 import { random } from "../utils/tools";
 import Logs from "./Logs";
 /**
@@ -55,7 +56,7 @@ export default class Exchange<D> {
   constructor(option?: Option<D>) {
     Object.assign(this, option);
     this.createdTime = new Date().getTime();
-    Logs.getLogsInstance()?.addExchangeData({ id: this.getId(), name: this.name || "", createdTime: this.createdTime });
+    Logs.getLogsInstance()?.setLogs(ComponentEnum.EXCHANGE, { id: this.getId(), name: this.name, createdTime: this.createdTime });
   }
 
   /**
@@ -73,20 +74,25 @@ export default class Exchange<D> {
    * @returns
    */
   async getQueueNameList(content: D): Promise<string[]> {
-    Logs.getLogsInstance()?.addExchangeData({ id: this.getId(), accepted: 1, name: this.name || "", createdTime: this.createdTime });
+    Logs.getLogsInstance()?.setLogs(ComponentEnum.EXCHANGE, { id: this.getId(), accepted: 1, name: this.name, createdTime: this.createdTime });
     try {
       //中继器模式
       const queueNames = await this.repeater(content);
-      Logs.getLogsInstance()?.addExchangeData({
+      Logs.getLogsInstance()?.setLogs(ComponentEnum.EXCHANGE, {
         id: this.getId(),
         send: queueNames.length,
         queueNames,
-        name: this.name || "",
+        name: this.name,
         createdTime: this.createdTime,
       });
       return queueNames;
     } catch (error) {
-      Logs.getLogsInstance()?.error(`exchange function getstringList exception`);
+      Logs.getLogsInstance()?.setLogs(ComponentEnum.EXCHANGE, {
+        id: this.getId(),
+        name: this.name,
+        createdTime: this.createdTime,
+        message: JSON.stringify(error),
+      });
       return [];
     }
   }

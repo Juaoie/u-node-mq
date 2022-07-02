@@ -1,4 +1,6 @@
+import { ComponentEnum } from "../utils/types";
 import { random } from "../utils/tools";
+import Logs from "./Logs";
 
 export default class News<D> {
   [k: string]: any;
@@ -25,5 +27,6 @@ export default class News<D> {
   constructor(content: D) {
     this.createdTime = new Date().getTime();
     this.content = content;
+    Logs.getLogsInstance()?.setLogs(ComponentEnum.NEWS, { id: this.getId(), createdTime: this.createdTime });
   }
 }

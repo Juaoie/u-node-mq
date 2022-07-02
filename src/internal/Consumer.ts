@@ -1,3 +1,4 @@
+import { ComponentEnum } from "../utils/types";
 import { isPromise, random } from "../utils/tools";
 import Logs from "./Logs";
 import News from "./News";
@@ -36,6 +37,7 @@ export default class Consumer<D> {
     this.createTime = new Date().getTime();
     this.consume = consume;
     this.payload = payload;
+    Logs.getLogsInstance()?.setLogs(ComponentEnum.CONSUMER, { id: this.getId(), createdTime: this.createdTime });
   }
   /**
    * 消费消息
@@ -44,6 +46,7 @@ export default class Consumer<D> {
    * @returns
    */
   consumption(news: News<D>, ask: boolean): Payload {
+    Logs.getLogsInstance()?.setLogs(ComponentEnum.CONSUMER, { id: this.getId(), createdTime: this.createdTime, accepted: 1 });
     const then = (thenParameter: ThenParameter) => {
       //不加入任务队列，会导致消费失败的数据重写到队列失败
       try {
@@ -69,7 +72,7 @@ export default class Consumer<D> {
           thenParameter(res);
         }
       } catch (error) {
-        Logs.getLogsInstance()?.error(error);
+        Logs.getLogsInstance()?.setLogs(ComponentEnum.CONSUMER, { id: this.getId(), createdTime: this.createdTime, message: JSON.stringify(error) });
         thenParameter(!ask);
       }
     };

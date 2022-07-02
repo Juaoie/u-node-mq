@@ -2,6 +2,7 @@ import News from "./News";
 import Consumer, { Consume } from "./Consumer";
 import { random } from "../utils/tools";
 import Logs, { queueLogsOperator } from "./Logs";
+import { ComponentEnum } from "../utils/types";
 interface Option {
   ask?: boolean;
   rcn?: number;
@@ -375,10 +376,8 @@ export default class Queue<D> {
 
       consumer.consumption(news, this.ask).then((isOk: boolean) => {
         if (isOk) {
-          // Logs.log(`队列 消费成功`);
           resolve(isOk);
         } else {
-          // Logs.log(`队列 消费失败`);
           reject(isOk);
         }
         if (maxTime >= 0) clearTimeout(id);
