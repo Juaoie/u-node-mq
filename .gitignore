@@ -6,3 +6,5 @@ u-node-mq
 *.tgz
 vendor
 *.log
+*.exe
+u-node-mq-termui

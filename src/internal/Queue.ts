@@ -2,7 +2,6 @@ import News from "./News";
 import Consumer, { Consume } from "./Consumer";
 import { random } from "../utils/tools";
 import Logs, { queueLogsOperator } from "./Logs";
-import { ComponentEnum } from "../utils/types";
 interface Option {
   ask?: boolean;
   rcn?: number;

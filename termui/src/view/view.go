@@ -3,7 +3,7 @@ package view
 import (
 	"log"
 	"time"
-	"u-node-mq/packages/data"
+	"u-node-mq-termui/src/data"
 
 	ui "github.com/gizak/termui/v3"
 	"github.com/gizak/termui/v3/widgets"
@@ -18,6 +18,10 @@ var (
 	queueTable = widgets.NewTable()
 	//交换机表格
 	exchangeTable = widgets.NewTable()
+	//news表格
+	newsTable = widgets.NewTable()
+	//consumer表格
+	consumerTable = widgets.NewTable()
 )
 
 func Init() {
@@ -65,9 +69,12 @@ func Repaint() {
 	for {
 		time.Sleep(1 * time.Second)
 		nw, nh := ui.TerminalDimensions()
-		if w != nw || h != nh || data.Q.State || data.E.State {
+		//如果一秒前后宽高发生变化就重绘
+		if w != nw || h != nh || data.Q.State || data.E.State || data.N.State || data.C.State {
 			data.Q.State = false
 			data.E.State = false
+			data.N.State = false
+			data.C.State = false
 			w = nw
 			h = nh
 			UpdateView()
@@ -80,16 +87,22 @@ func Repaint() {
 func DelComponentView() {
 	switch tabs.ActiveTabIndex {
 	case 0:
-		data.Q.DelQueueLogList()
+		data.Q.DeleAll()
 	case 1:
-		data.E.DelExchangeLogList()
+		data.E.DeleAll()
+	case 2:
+		data.N.DeleAll()
+	case 3:
+		data.C.DeleAll()
 	}
 }
 
 //清空所有组件数据
 func DelCompoentsView() {
-	data.Q.DelQueueLogList()
-	data.E.DelExchangeLogList()
+	data.Q.DeleAll()
+	data.E.DeleAll()
+	data.N.DeleAll()
+	data.C.DeleAll()
 
 }
 
@@ -102,6 +115,10 @@ func UpdateView() {
 		renderQueueTable()
 	case 1:
 		renderExchangeTable()
+	case 2:
+		renderNewsTable()
+	case 3:
+		renderConsumerTable()
 	}
 
 }

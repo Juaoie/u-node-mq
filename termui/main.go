@@ -1,8 +1,8 @@
 package main
 
 import (
-	"u-node-mq/packages/controller"
-	"u-node-mq/packages/view"
+	"u-node-mq-termui/src/controller"
+	"u-node-mq-termui/src/view"
 )
 
 func main() {

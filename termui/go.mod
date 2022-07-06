@@ -1,4 +1,4 @@
-module u-node-mq
+module u-node-mq-termui
 
 go 1.18
 

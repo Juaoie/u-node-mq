@@ -122,6 +122,10 @@ export declare class Exchange<D> {
   [k: string]: any;
   name?: string;
   /**
+   * 创建时间戳
+   */
+  readonly createdTime: number;
+  /**
    * id
    */
   private readonly id;
@@ -158,6 +162,10 @@ export declare class Exchange<D> {
 export declare class Queue<D> {
   [k: string]: any;
   name?: string;
+  /**
+   * 创建时间戳
+   */
+  readonly createdTime: number;
   /**
    * id
    */
@@ -300,9 +308,9 @@ export declare class News<D> {
   private readonly id;
   getId(): string;
   /**
-   * 消费者创建时间戳
+   * 创建时间戳
    */
-  readonly createTime: number;
+  readonly createdTime: number;
   /**
    * 消息内容
    */
@@ -324,9 +332,9 @@ export declare class Consumer<D> {
   private readonly id;
   getId(): string;
   /**
-   * 消费者创建时间戳
+   * 创建时间戳
    */
-  createTime: number;
+  readonly createdTime: number;
   /**
    * 消费方法
    */
@@ -344,59 +352,50 @@ export declare class Consumer<D> {
    */
   consumption(news: News<D>, ask: boolean): Payload;
 }
+
 /**
- * @export Logs 日志
+ * 使用operator记录queue日志
+ * @returns
  */
-declare type LogsType = "http" | "console";
-declare type LogsComponent = "Exchange" | "Queue" | "News" | "Consumer";
+export declare function queueLogsOperator<D = unknown>(): Operator<D>;
+declare enum LogsEnum {
+  "CUSTOM" = "custom",
+  "CONSOLE" = "console",
+}
+declare type LogsType = LogsEnum.CUSTOM | LogsEnum.CONSOLE;
+declare type LogsComponent = ComponentEnum.EXCHANGE | ComponentEnum.QUEUE | ComponentEnum.NEWS | ComponentEnum.CONSUMER;
 interface LogsConfig {
-  logs: boolean;
-  types?: LogsType[];
-  logsComponents?: LogsComponent[];
-  httpUrl?: string;
+  logs: boolean; //是否开启日志
+  types?: LogsType[]; //日志类型
+  logsComponents?: LogsComponent[]; //日志覆盖组件类型
+  customFunction?: <D>(name: LogsComponent, data: D) => void; //自定义日志函数执行方法
 }
 /**
- * Logs配置
+ * 日志配置
  */
 export class Logs {
   private constructor();
   private static logs;
   private static types;
   private static logsComponents;
-  private static httpUrl;
+  private static customFunction;
   static setLogsConfig(logsConfig: LogsConfig): void;
   /**
-   *
+   * 获取日志实例
    * @returns
    */
   static getLogsInstance():
     | {
-        logs: true;
-        types: LogsType[];
-        logsComponents: LogsComponent[];
-        httpUrl: string;
-        error: typeof Logs.error;
-        addQueueData: typeof Logs.addQueueData;
-        addExchangeData: typeof Logs.addExchangeData;
+        setLogs: typeof Logs.setLogs;
       }
     | undefined;
   /**
-   *
-   * @param message
-   */
-  private static error;
-  /**
-   * 添加队列数据
+   * 设置日志
+   * @param name
    * @param data
    * @returns
    */
-  private static addQueueData;
-  /**
-   *
-   * @param data
-   * @returns
-   */
-  private static addExchangeData;
+  private static setLogs;
 }
 type ReturnPanShapeExchange<T> = T extends Exchange<infer U> ? U : never;
 type ReturnPanShapeQueue<T> = T extends Queue<infer U> ? U : never;
@@ -540,4 +539,18 @@ interface Consume<D> {
 declare type ThenParameter = (isOk: boolean) => void;
 interface Payload {
   then: (res: ThenParameter) => void;
+}
+/**
+ * 定时器id类型
+ */
+export declare type IntTime = NodeJS.Timeout | number;
+/**
+ * 五个组件名称的枚举
+ */
+export declare enum ComponentEnum {
+  "EXCHANGE" = "exchange",
+  "QUEUE" = "queue",
+  "NEWS" = "news",
+  "CONSUMER" = "consumer",
+  "LOGS" = "logs",
 }

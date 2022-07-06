@@ -127,9 +127,9 @@ export default class Logs {
 
     this.types.forEach(type => {
       if (type === LogsEnum.CUSTOM) {
-        this.customFunction(ComponentEnum.QUEUE, data);
+        this.customFunction(name, data);
       } else if (type === LogsEnum.CONSOLE) {
-        console.log(ComponentEnum.QUEUE, data);
+        console.log(name, data);
       }
     });
   }

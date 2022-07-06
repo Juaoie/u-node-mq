@@ -24,7 +24,7 @@ export default class Consumer<D> {
   /**
    * 消费者创建时间戳
    */
-  createTime: number;
+  createdTime: number;
   /**
    * 消费方法
    */
@@ -34,7 +34,7 @@ export default class Consumer<D> {
    */
   payload?: any;
   constructor(consume: Consume<D>, payload?: any) {
-    this.createTime = new Date().getTime();
+    this.createdTime = new Date().getTime();
     this.consume = consume;
     this.payload = payload;
     Logs.getLogsInstance()?.setLogs(ComponentEnum.CONSUMER, { id: this.getId(), createdTime: this.createdTime });

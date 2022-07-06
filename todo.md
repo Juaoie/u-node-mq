@@ -9,3 +9,9 @@
 - 完成 operators 新文档介绍
 
 - 实现 logs 输出 include 和 exclude 功能
+
+- 暂时只打包 window 平台，后面使用 gox 打包其他平台 termui
+
+- termui 数据展示排序
+
+- 禁止 gin 输入日志文件

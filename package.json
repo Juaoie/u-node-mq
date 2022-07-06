@@ -1,6 +1,6 @@
 {
   "name": "u-node-mq",
-  "version": "3.6.0-beta.7",
+  "version": "3.6.1",
   "author": "hugaojie <uaoie@qq.com>",
   "description": "基于发布订阅模型的消息通信插件",
   "keywords": [
@@ -12,7 +12,7 @@
     "观察者"
   ],
   "bin": {
-    "u-node-mq": "bin/u-node-mq.js"
+    "u-node-mq": "bin/u-node-mq-termui.exe"
   },
   "type": "module",
   "main": "index.js",
@@ -22,6 +22,7 @@
   "license": "MIT",
   "scripts": {
     "build": "node ./script/build.js",
+    "gobuild": "cd termui && go build",
     "dev": "node ./script/dev.js",
     "test": "set NODE_OPTIONS=--experimental-vm-modules && jest",
     "eslint": "eslint",
