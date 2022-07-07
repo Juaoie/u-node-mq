@@ -1,6 +1,7 @@
 package data
 
 import (
+	"sort"
 	"sync"
 	"time"
 	"u-node-mq-termui/src/util"
@@ -39,7 +40,7 @@ var (
 
 //添加数据
 //一个id的组件只会创建一次
-func (queueTable *QueueTable) Add(queueLogData QueueLogData) {
+func (qt *QueueTable) Add(queueLogData QueueLogData) {
 	q := QueueTableField{}
 	q.Id = queueLogData.Id
 	q.CreatedTime = queueLogData.CreatedTime
@@ -49,25 +50,25 @@ func (queueTable *QueueTable) Add(queueLogData QueueLogData) {
 	q.NewsIds = queueLogData.NewsIds
 	q.ConsumerNum = queueLogData.ConsumerNum
 	q.ConsumerIds = queueLogData.ConsumerIds
-	queueTable.list = append(queueTable.list, q)
-	queueTable.State = true
+	qt.list = append(qt.list, q)
+	qt.State = true
 
 }
 
 //删除list
-func (queueTable *QueueTable) DeleAll() {
-	queueTable.list = []QueueTableField{}
-	queueTable.State = true
+func (qt *QueueTable) DeleAll() {
+	qt.list = []QueueTableField{}
+	qt.State = true
 
 }
 
 //设置值，如果id不存在，就添加一条
-func (queueTable *QueueTable) Set(queueLogData QueueLogData) {
-	q := queueTable.Find(queueLogData.Id)
+func (qt *QueueTable) Set(queueLogData QueueLogData) {
+	q := qt.Find(queueLogData.Id)
 	//是否需要加锁呢？
-	queueTable.lock.Lock()
+	qt.lock.Lock()
 	if q.Id == "" {
-		queueTable.Add(queueLogData)
+		qt.Add(queueLogData)
 	} else {
 		q.Name = queueLogData.Name
 		q.NewsNum = queueLogData.NewsNum
@@ -78,22 +79,25 @@ func (queueTable *QueueTable) Set(queueLogData QueueLogData) {
 		q.UpdateTime = time.Now().In(util.CstSh).UnixMilli()
 
 	}
-	queueTable.State = true
+	qt.State = true
 
-	queueTable.lock.Unlock()
+	qt.lock.Unlock()
 }
 
 //通过id查找一条数据，返回一条数据的指针
-func (queueTable *QueueTable) Find(id string) *QueueTableField {
-	for i := 0; i < len(queueTable.list); i++ {
-		if id == queueTable.list[i].Id {
-			return &queueTable.list[i]
+func (qt *QueueTable) Find(id string) *QueueTableField {
+	for i := 0; i < len(qt.list); i++ {
+		if id == qt.list[i].Id {
+			return &qt.list[i]
 		}
 	}
 	return &QueueTableField{}
 }
 
-func (queueTable *QueueTable) FindList() []QueueTableField {
+func (qt *QueueTable) FindList() []QueueTableField {
+	sort.Slice(qt.list, func(i, j int) bool {
+		return qt.list[i].UpdateTime > qt.list[j].UpdateTime
+	})
 
-	return queueTable.list
+	return qt.list
 }

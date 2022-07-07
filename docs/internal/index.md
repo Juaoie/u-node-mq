@@ -115,4 +115,4 @@ Logs.setLogsConfig(LogsConfig);
 
 ## go 控制台快速开发日志
 
-`unmq`内置了`go`开发的控制台日志输出，开发者可快速响应开发；
+`unmq`内置了`go`开发的控制台日志输出，开发者可快速响应开发；[点击查看使用方法](./termui.md)

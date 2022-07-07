@@ -1,8 +1,8 @@
 **因为代码中的 TODO 比较分散，即使是使用 vscode 插件也没有用起来，所以以后的计划将写在这个文档**
 
-- 完成 logs 控制台服务的 go 的开发和文档完善
+- ~~完成 logs 控制台服务的 go 的开发和文档完善~~
 
-- 完成 logs mackdown 文档功能
+- ~~完成 logs mackdown 文档功能~~
 
 - 完成 IframeMessage 测试代码功能
 
@@ -12,6 +12,6 @@
 
 - 暂时只打包 window 平台，后面使用 gox 打包其他平台 termui
 
-- termui 数据展示排序
+- ~~termui 数据展示排序~~
 
-- 禁止 gin 输入日志文件
+- termui 使用键盘上下键选中数据功能

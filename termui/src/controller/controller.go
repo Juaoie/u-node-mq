@@ -11,7 +11,7 @@ import (
 
 func SetQueueData() {
 	// 记录到文件。
-	f, _ := os.Create("gin.log")
+	f, _ := os.Create("unmq-termui.log")
 	gin.DefaultWriter = io.MultiWriter(f)
 
 	r := gin.Default()

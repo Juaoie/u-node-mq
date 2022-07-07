@@ -12,11 +12,14 @@
 
 - [README.md](./README.md)
 - docs
-  - [more.md](./docs/more.md) 导航预览
+  - [nav.md](./docs/nav.md) 导航预览
   - [unmq.md](./docs/unmq.md) 快速开发
   - internal
     - [index.md](./docs/internal/index.md) 组件介绍
     - [logs_sys_dev.md](./docs/internal/logs_sys_dev.md) 自定义日志系统开发
+    - [termui.md](./docs/internal/termui.md) termui 使用
+  - operators
+    - [index.md](./docs/operators/index.md) 操作符介绍
   - plugins
     - [index.md](./docs/plugins/index.md) 插件介绍
     - [IframePlugin.md](./docs/plugins/IframePlugin.md)
@@ -93,4 +96,6 @@ function getData(data) {
 }
 ```
 
-### [学习更多详细内容](./docs//more.md)
+### [了解更多详细内容](./docs/nav.md)
+
+### [TODO](./todo.md)

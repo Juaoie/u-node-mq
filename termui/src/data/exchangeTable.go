@@ -1,6 +1,7 @@
 package data
 
 import (
+	"sort"
 	"sync"
 	"time"
 	"u-node-mq-termui/src/util"
@@ -36,7 +37,7 @@ var (
 
 //添加数据
 //一个id的组件只会创建一次
-func (exchangeTable *ExchangeTable) Add(ExchangeLogData ExchangeLogData) {
+func (et *ExchangeTable) Add(ExchangeLogData ExchangeLogData) {
 	e := ExchangeTableField{}
 	e.Id = ExchangeLogData.Id
 	e.Name = ExchangeLogData.Name
@@ -45,25 +46,25 @@ func (exchangeTable *ExchangeTable) Add(ExchangeLogData ExchangeLogData) {
 	e.AcceptedCount += ExchangeLogData.Accepted
 	e.SendCount += ExchangeLogData.Send
 	e.QueueNames = ExchangeLogData.QueueNames
-	exchangeTable.list = append(exchangeTable.list, e)
-	exchangeTable.State = true
+	et.list = append(et.list, e)
+	et.State = true
 
 }
 
 //删除list
-func (exchangeTable *ExchangeTable) DeleAll() {
-	exchangeTable.list = []ExchangeTableField{}
-	exchangeTable.State = true
+func (et *ExchangeTable) DeleAll() {
+	et.list = []ExchangeTableField{}
+	et.State = true
 
 }
 
 //设置值，如果id不存在，就添加一条
-func (exchangeTable *ExchangeTable) Set(ExchangeLogData ExchangeLogData) {
-	e := exchangeTable.Find(ExchangeLogData.Id)
+func (et *ExchangeTable) Set(ExchangeLogData ExchangeLogData) {
+	e := et.Find(ExchangeLogData.Id)
 	//是否需要加锁呢？
-	exchangeTable.lock.Lock()
+	et.lock.Lock()
 	if e.Id == "" {
-		exchangeTable.Add(ExchangeLogData)
+		et.Add(ExchangeLogData)
 	} else {
 		e.Name = ExchangeLogData.Name
 		e.AcceptedCount += ExchangeLogData.Accepted
@@ -85,22 +86,25 @@ func (exchangeTable *ExchangeTable) Set(ExchangeLogData ExchangeLogData) {
 		e.UpdateTime = time.Now().In(util.CstSh).UnixMilli()
 
 	}
-	exchangeTable.State = true
+	et.State = true
 
-	exchangeTable.lock.Unlock()
+	et.lock.Unlock()
 }
 
 //通过id查找一条数据，返回一条数据的指针
-func (exchangeTable *ExchangeTable) Find(id string) *ExchangeTableField {
-	for i := 0; i < len(exchangeTable.list); i++ {
-		if id == exchangeTable.list[i].Id {
-			return &exchangeTable.list[i]
+func (et *ExchangeTable) Find(id string) *ExchangeTableField {
+	for i := 0; i < len(et.list); i++ {
+		if id == et.list[i].Id {
+			return &et.list[i]
 		}
 	}
 	return &ExchangeTableField{}
 }
 
-func (exchangeTable *ExchangeTable) FindList() []ExchangeTableField {
+func (et *ExchangeTable) FindList() []ExchangeTableField {
+	sort.Slice(et.list, func(i, j int) bool {
+		return et.list[i].UpdateTime > et.list[j].UpdateTime
+	})
 
-	return exchangeTable.list
+	return et.list
 }
