@@ -24,7 +24,7 @@ if (-1 !== stdout.indexOf(_package.version)) {
 const data = execaSync("npm", ["pack", "./u-node-mq"]);
 try {
   //发布正式包
-  if (_package.version.search("beta") === -1) execaSync("npm", ["publish", data.stdout, "--tag", "next"]);
+  if (_package.version.search("beta") === -1) execaSync("npm", ["publish", data.stdout, "--tag", "latest"]);
   //发布测试包
   else execaSync("npm", ["publish", data.stdout, "--tag", "beta"]);
 } finally {

@@ -61,7 +61,7 @@ or
 ```javascript
 import UNodeMQ, { Exchange, Queue } from "u-node-mq";
 
-//声明交换机ex1和交换机ex2，以及队列qu1
+//声明交换机ex1，以及队列qu1
 const unmq = new UNodeMQ({ ex1: new Exchange({ routes: ["qu1"] }) }, { qu1: new Queue() });
 
 export default unmq;

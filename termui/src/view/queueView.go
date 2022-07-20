@@ -11,8 +11,12 @@ import (
 
 func paseString(list []string) string {
 	s := ""
-	for _, v := range list {
+	l := len(list)
+	for i, v := range list {
 		s += v
+		if i != l-1 {
+			s += ", "
+		}
 	}
 	return s
 }
