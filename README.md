@@ -11,9 +11,11 @@
 ## 文档目录结构
 
 - [README.md](./README.md)
+- [todo.md](./todo.md)
 - docs
   - [nav.md](./docs/nav.md) 导航预览
   - [unmq.md](./docs/unmq.md) 快速开发
+  - [other.md](./docs/other.md) 其他
   - internal
     - [index.md](./docs/internal/index.md) 组件介绍
     - [logs_sys_dev.md](./docs/internal/logs_sys_dev.md) 自定义日志系统开发
@@ -22,7 +24,7 @@
     - [index.md](./docs/operators/index.md) 操作符介绍
   - plugins
     - [index.md](./docs/plugins/index.md) 插件介绍
-    - [IframePlugin.md](./docs/plugins/IframePlugin.md)
+    - [IframePlugin.md](./docs/plugins/IframePlugin.md) Iframe 通信插件
 
 ## 文档内容
 
@@ -30,17 +32,13 @@
 
 `u-node-mq`是用来解决前端项目中数据异步通信问题的工具，可以准确的将一个模块的数据传到另一个模块，就像`rabbitMQ`使用发布订阅模型的中间件一样，使用`u-node-mq`可以完全解耦前端模块的耦合；
 
-### 为什么是`u-node-mq`而不是`rxjs`？
-
-`rxjs`是使用 `Observables` 的响应式编程的库，`rxjs`使用的观察者模式，而`u-node-mq`使用的发布订阅模型；虽然两者都可以实现众多复杂的业务场景，但是`rxjs`似乎有着更加陡峭的学习曲线，而`u-node-mq`只需要简单的理解五个基础组件由浅入深的工具；
-
-    `观察者模式`与`发布订阅模型`的区别在于后者多了一个队列，能够在生产者生产数据以后对数据进行存储到队列；
-
 ### 其他
 
 - `u-node-mq`在文档和代码注释中有时也会写成简写`unmq`；
 
 - `u-node-mq`中的`u`是标识词；`node`是最初创建项目的执行环境是 `node`，但是后面经过使用 `ts` 升级和重构，现在已经升级到可以在所有 `js` 环境中执行；`mq`是`message queue`的简写；
+
+- [其他知识](./docs/other.md)
 
 ### npm 安装
 

@@ -3,9 +3,6 @@ import { isObject, isString } from "../../utils/tools";
 /**
  * 使用postMessage进行iframe跨域通信
  */
-//TODO:解决插件引用路径长度问题
-//TODO:跨iframe共享storage
-//TODO:单元测试框架集成
 export enum MessageType {
   GeneralMessage, //普通消息
   FindExchangeMessage, //广播查找交换机消息

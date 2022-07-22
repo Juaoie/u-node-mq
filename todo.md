@@ -12,6 +12,8 @@
 
 - termui 使用键盘上下键选中数据功能
 
+- 实现 WebSocket plugin
+
 ### 3.6.3
 
 - ~~termui 名称数据展示使用分隔符~~
