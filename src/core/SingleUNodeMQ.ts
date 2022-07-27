@@ -1,32 +1,54 @@
 import { ConstructorParameter, isFunction } from "../utils/tools";
-import {  Operator, Queue } from "../index";
+import { Operator, Queue } from "../index";
 import { Consume, Next } from "../internal/Consumer";
-
-export class SingleUNodeMQ<D> {
-  private queue :Queue<D>
-  constructor( );
-  constructor( queue: Queue<D>);
+/**
+ * 创建SingleUNodeMQ函数
+ * @param queueOption
+ */
+function createSingleUnmq<D>(queueOption?: ConstructorParameter<typeof Queue> | Queue<D>): SingleUNodeMQ<D>;
+function createSingleUnmq<D>(queue?: ConstructorParameter<typeof Queue> | Queue<D>): SingleUNodeMQ<D>;
+function createSingleUnmq<D>(): SingleUNodeMQ<D>;
+function createSingleUnmq<D>(x?: Queue<D> | ConstructorParameter<typeof Queue>) {
+  return new SingleUNodeMQ(x);
+}
+export { createSingleUnmq };
+/**
+ * 单Queue的UNodeMQ类
+ */
+export default class SingleUNodeMQ<D> {
+  private queue: Queue<D>;
   constructor(queueOption: ConstructorParameter<typeof Queue>);
+  constructor(queue: Queue<D>);
+  constructor();
   constructor(x?: Queue<D> | ConstructorParameter<typeof Queue>) {
-           if(x instanceof Queue<D>){
-      this.queue=x
-    }else {
-      this.queue=new Queue(x)
-    }
+    if (x instanceof Queue) this.queue = x;
+    else this.queue = new Queue(x);
   }
+  /**
+   * 发送消息
+   * @param contentList
+   * @returns
+   */
   emit(...contentList: D[]) {
     for (const content of contentList) {
       this.queue.pushContent(content);
     }
     return this;
   }
-  emitToQueue(...contentList: D[]) {
-    return this.emit(...contentList);
-  }
+  /**
+   * 订阅消息
+   * @param consume
+   * @param payload
+   * @returns
+   */
   on(consume: Consume<D>, payload?: any) {
     this.queue.pushConsume(consume, payload);
     return this;
   }
+  /**
+   * 移除消费者
+   * @param consume
+   */
   off(consume: Consume<D>): this;
   off(): this;
   off(x?: Consume<D>): this {
@@ -34,6 +56,11 @@ export class SingleUNodeMQ<D> {
     else this.queue.removeAllConsumer();
     return this;
   }
+  /**
+   * 订阅一条消息
+   * @param consume
+   * @param payload
+   */
   once(consume: Consume<D>, payload?: any): this;
   once(): Promise<D>;
   once(consume?: Consume<D>, payload?: any) {
@@ -55,10 +82,13 @@ export class SingleUNodeMQ<D> {
       });
     }
   }
+  /**
+   * 添加operators
+   * @param operators
+   * @returns
+   */
   add(...operators: Operator<D>[]) {
     this.queue.add(...operators);
     return this;
   }
 }
-
-const qu1 = new SingleUNodeMQ(new Queue());

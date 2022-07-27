@@ -10,9 +10,9 @@ module.exports = {
   globals: {},
 
   rules: {
-    "@typescript-eslint/no-explicit-any": "off", //运行使用any类型
+    "@typescript-eslint/no-explicit-any": "off", //允许使用any类型
   },
-  parserOptions: {
-    project: "./tsconfig.json",
-  },
+  // parserOptions: {
+  //   project: "./tsconfig.json",
+  // },
 };

@@ -8,7 +8,7 @@ import { Operator, Queue } from "../..";
 export default function of<D = unknown>(...args: D[]): Operator<D> {
   return {
     mounted(queue: Queue<D>) {
-      args.forEach((item) => {
+      args.forEach(item => {
         queue.pushContent(item);
       });
     },

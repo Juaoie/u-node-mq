@@ -32,17 +32,17 @@ export function queueLogsOperator<D = unknown>(): Operator<D> {
       queueInstance = queue;
       addQueueData();
     },
-    addedNews(news) {
+    addedNews() {
       addQueueData();
     },
-    ejectNews(news) {
+    ejectNews() {
       addQueueData();
       return true;
     },
-    addedConsumer(consumer) {
+    addedConsumer() {
       addQueueData();
     },
-    removedConsumer(consumerList) {
+    removedConsumer() {
       addQueueData();
     },
   };
@@ -76,7 +76,7 @@ interface QueueLogData {
   consumerNum: number; //当前消费者数量
   consumerIds: string[]; //当前消费者id列表
 }
-interface NewsLogData {}
+// interface NewsLogData {}
 interface ConsumerLogData {
   accepted?: number; //当前消费数量
 }
@@ -84,7 +84,7 @@ interface ConsumerLogData {
 interface LogDataTypes {
   [ComponentEnum.EXCHANGE]: BaseLogData & ExchangeLogData;
   [ComponentEnum.QUEUE]: BaseLogData & QueueLogData;
-  [ComponentEnum.NEWS]: BaseLogData & NewsLogData;
+  [ComponentEnum.NEWS]: BaseLogData;
   [ComponentEnum.CONSUMER]: BaseLogData & ConsumerLogData;
 }
 type CustomLogFunction = <K extends LogsComponent>(name: LogsComponent, data: LogDataTypes[K]) => unknown;
@@ -95,8 +95,7 @@ type CustomLogFunction = <K extends LogsComponent>(name: LogsComponent, data: Lo
   ```
  */
 export default class Logs {
-  private constructor() {}
-  private static logs: boolean = false;
+  private static logs = false;
   private static types: LogsType[];
   private static logsComponents: LogsComponent[];
   private static customFunction: CustomLogFunction;
@@ -104,7 +103,11 @@ export default class Logs {
     this.logs = logsConfig.logs;
     this.types = logsConfig.types ?? [LogsEnum.CONSOLE];
     this.logsComponents = logsConfig.logsComponents ?? [ComponentEnum.EXCHANGE, ComponentEnum.QUEUE, ComponentEnum.NEWS, ComponentEnum.CONSUMER];
-    this.customFunction = logsConfig.customFunction ?? function () {};
+    this.customFunction =
+      logsConfig.customFunction ??
+      function (res) {
+        console.log(res);
+      };
   }
   /**
    * 获取日志实例

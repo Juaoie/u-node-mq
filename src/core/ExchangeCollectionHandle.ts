@@ -1,5 +1,4 @@
 import { Exchange } from "../index";
-import Logs from "../internal/Logs";
 
 export default class ExchangeCollectionHandle {
   private exchangeCollection = new Map<string, Exchange<any>>();

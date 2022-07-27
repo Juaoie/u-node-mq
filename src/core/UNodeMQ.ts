@@ -1,13 +1,12 @@
 import { isFunction } from "../utils/tools";
-import { Exchange, Operator, Queue } from "../index";
+import { Exchange, Queue } from "../index";
 import { Consume, Next } from "../internal/Consumer";
+import Collection from "./Collection";
 
 /**
  * 获取队列名称返回的promise导致消费事件加入微任务队列延迟消费（ios属于加入普通任务队列）
  * 这样同时保证了在观察者模式中数据能准确分发
  */
-
-import Collection from "./Collection";
 
 export type ReturnPanShapeExchange<T> = T extends Exchange<infer U> ? U : never;
 export type ReturnPanShapeQueue<T> = T extends Queue<infer U> ? U : never;

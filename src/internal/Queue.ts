@@ -1,7 +1,7 @@
 import News from "./News";
 import Consumer, { Consume } from "./Consumer";
 import { random } from "../utils/tools";
-import Logs, { queueLogsOperator } from "./Logs";
+import { queueLogsOperator } from "./Logs";
 interface Option {
   ask?: boolean;
   rcn?: number;
@@ -164,7 +164,7 @@ export default class Queue<D> {
    * @returns
    *
    */
-  async eject(start: number = 0): Promise<News<D> | null> {
+  async eject(start = 0): Promise<News<D> | null> {
     if (this.news.length > 0) {
       const news = this.news.splice(start, 1)[0];
       if (!(await this.operate("ejectNews", news))) return null;

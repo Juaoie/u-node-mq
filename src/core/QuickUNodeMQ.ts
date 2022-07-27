@@ -1,24 +1,38 @@
-import { isFunction } from "../utils/tools";
-import { Exchange, Operator, Queue } from "../index";
+import { ConstructorParameter, isFunction } from "../utils/tools";
+import { Exchange, Queue } from "../index";
 import { Consume, Next } from "../internal/Consumer";
 
-/**
- *
- * @param exchange
- * @param queueCollection
- * @returns
- */
-export function createQuickUnmq<D, QueueCollection extends Record<string, Queue<D>>>(exchange: Exchange<D>, queueCollection: QueueCollection) {
-  return new QuickUNodeMQ(exchange, queueCollection);
+function createQuickUnmq<D, QueueCollection extends Record<string, Queue<D>>>(
+  exchangeOption: ConstructorParameter<typeof Exchange>,
+  queueCollection: QueueCollection,
+): QuickUNodeMQ<D, QueueCollection>;
+function createQuickUnmq<D, QueueCollection extends Record<string, Queue<D>>>(
+  exchange: Exchange<D>,
+  queueCollection: QueueCollection,
+): QuickUNodeMQ<D, QueueCollection>;
+function createQuickUnmq<D, QueueCollection extends Record<string, Queue<D>>>(
+  x: ConstructorParameter<typeof Exchange> | Exchange<D>,
+  y: QueueCollection,
+) {
+  return new QuickUNodeMQ(x, y);
 }
+export { createQuickUnmq };
 /**
- * quick start unmq, single type unmq
+ * 单交换机的UNodeMQ类
  */
-export class QuickUNodeMQ<D, QueueCollection extends Record<string, Queue<D>>> {
-  constructor(private readonly exchange: Exchange<D>, private readonly queueCollection: QueueCollection) {
-    for (const name in queueCollection) {
-      queueCollection[name].name = name;
+export default class QuickUNodeMQ<D, QueueCollection extends Record<string, Queue<D>>> {
+  private exchange: Exchange<D>;
+  private queueCollection: QueueCollection;
+  constructor(exchangeOption: ConstructorParameter<typeof Exchange>, queueCollection: QueueCollection);
+  constructor(exchange: Exchange<D>, queueCollection: QueueCollection);
+  constructor(x: ConstructorParameter<typeof Exchange> | Exchange<D>, y: QueueCollection) {
+    if (x instanceof Exchange) this.exchange = x;
+    else this.exchange = new Exchange<D>(x);
+
+    for (const name in y) {
+      y[name].name = name;
     }
+    this.queueCollection = y;
   }
   /**
    * 发射数据到交换机
