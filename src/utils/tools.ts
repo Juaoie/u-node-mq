@@ -90,3 +90,5 @@ export const isObject = (val: unknown): val is Record<any, any> => val !== null 
 export const isPromise = <T = any>(val: unknown): val is Promise<T> => {
   return isObject(val) && isFunction(val.then) && isFunction(val.catch);
 };
+//获取构造函数第一个参评的类型
+export type ConstructorParameter<T extends new (args: any) => any> = T extends new (args: infer P) => any ? P : never;

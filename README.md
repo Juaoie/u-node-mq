@@ -38,7 +38,7 @@
 
 - `u-node-mq`中的`u`是标识词；`node`是最初创建项目的执行环境是 `node`，但是后面经过使用 `ts` 升级和重构，现在已经升级到可以在所有 `js` 环境中执行；`mq`是`message queue`的简写；
 
-- [其他知识](./docs/other.md)
+- [其他信息](./docs/other.md)
 
 ### npm 安装
 

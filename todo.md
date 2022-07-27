@@ -14,6 +14,12 @@
 
 - 实现 WebSocket plugin
 
+- 完成 ts 类型测试
+
+- 兼容不使用 new 关键字创建组件
+
+- 配置 prettier
+
 ### 3.6.3
 
 - ~~termui 名称数据展示使用分隔符~~

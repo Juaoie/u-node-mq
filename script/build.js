@@ -2,7 +2,6 @@ import esbuild from "esbuild";
 import chalk from "chalk";
 import fs from "fs-extra";
 import { execa } from "execa";
-import path from "path";
 
 const minify = true;
 const bundle = true;
