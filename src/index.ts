@@ -8,7 +8,8 @@ export { createUnmq, PluginInstallFunction };
  * 扩展包
  */
 import SingleUNodeMQ, { createSingleUnmq } from "./core/SingleUNodeMQ";
-export { SingleUNodeMQ, createSingleUnmq };
+import QuickUNodeMQ, { createQuickUnmq } from "./core/QuickUNodeMQ";
+export { SingleUNodeMQ, createSingleUnmq, QuickUNodeMQ, createQuickUnmq };
 /**
  * 组件
  */

@@ -18,6 +18,14 @@
 
 - 兼容不使用 new 关键字创建组件
 
+- 补充 SingleUNodeMQ 的文档和声明式文件
+
+- 完成 core 文件代码的测试代码
+
+- 集成 Intersection Observer api
+
+- QuickUNodeMQ 和 SingleUNodeMQ 添加 plugins
+
 ### 3.6.3
 
 - ~~配置 prettier~~

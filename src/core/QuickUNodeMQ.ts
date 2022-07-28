@@ -1,20 +1,23 @@
 import { ConstructorParameter, isFunction } from "../utils/tools";
 import { Exchange, Queue } from "../index";
 import { Consume, Next } from "../internal/Consumer";
-
+type ExchangeOption = NonNullable<ConstructorParameter<typeof Exchange>>;
+/**
+ * 创建QuickUNodeMQ函数
+ * @param exchangeOption
+ * @param queueCollection
+ */
 function createQuickUnmq<D, QueueCollection extends Record<string, Queue<D>>>(
-  exchangeOption: ConstructorParameter<typeof Exchange>,
+  exchangeOption: ExchangeOption,
   queueCollection: QueueCollection,
 ): QuickUNodeMQ<D, QueueCollection>;
 function createQuickUnmq<D, QueueCollection extends Record<string, Queue<D>>>(
   exchange: Exchange<D>,
   queueCollection: QueueCollection,
 ): QuickUNodeMQ<D, QueueCollection>;
-function createQuickUnmq<D, QueueCollection extends Record<string, Queue<D>>>(
-  x: ConstructorParameter<typeof Exchange> | Exchange<D>,
-  y: QueueCollection,
-) {
-  return new QuickUNodeMQ(x, y);
+function createQuickUnmq<D, QueueCollection extends Record<string, Queue<D>>>(x: ExchangeOption | Exchange<D>, y: QueueCollection) {
+  if (x instanceof Exchange) return new QuickUNodeMQ<D, QueueCollection>(x, y);
+  else return new QuickUNodeMQ<D, QueueCollection>(x, y);
 }
 export { createQuickUnmq };
 /**
@@ -23,9 +26,10 @@ export { createQuickUnmq };
 export default class QuickUNodeMQ<D, QueueCollection extends Record<string, Queue<D>>> {
   private exchange: Exchange<D>;
   private queueCollection: QueueCollection;
-  constructor(exchangeOption: ConstructorParameter<typeof Exchange>, queueCollection: QueueCollection);
+
+  constructor(exchangeOption: ExchangeOption, queueCollection: QueueCollection);
   constructor(exchange: Exchange<D>, queueCollection: QueueCollection);
-  constructor(x: ConstructorParameter<typeof Exchange> | Exchange<D>, y: QueueCollection) {
+  constructor(x: ExchangeOption | Exchange<D>, y: QueueCollection) {
     if (x instanceof Exchange) this.exchange = x;
     else this.exchange = new Exchange<D>(x);
 
