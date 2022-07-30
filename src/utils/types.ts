@@ -1,7 +1,7 @@
 /**
  * 定时器id类型
  */
-export type IntTime = NodeJS.Timeout | number;
+export type IntTime = number;
 
 /**
  * 五个组件名称的枚举

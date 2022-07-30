@@ -89,10 +89,7 @@ interface LogDataTypes {
 }
 type CustomLogFunction = <K extends LogsComponent>(name: LogsComponent, data: LogDataTypes[K]) => unknown;
 /**
- * 添加队列事件
-  ```ts
-    Logs.getLogsInstance()?.addQueueData({});
-  ```
+ * 全局日志组件
  */
 export default class Logs {
   private static logs = false;

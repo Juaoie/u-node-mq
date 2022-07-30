@@ -26,9 +26,9 @@
 
 - QuickUNodeMQ 和 SingleUNodeMQ 添加 plugins
 
-- 配置使用自动生成.d.ts 文件的工具
-
 ### 3.6.3
+
+- ~~配置使用自动生成.d.ts 文件的工具~~
 
 - ~~兼容不使用 new 关键字创建组件~~
 

@@ -28,7 +28,7 @@ export default function interval(period = 1000, optimal = true): Operator<number
       queue = that;
       interval = {
         go() {
-          id = setInterval(() => {
+          id = window.setInterval(() => {
             num++;
             queue.pushContent(num);
           }, period);

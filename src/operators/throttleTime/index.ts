@@ -25,7 +25,7 @@ export default function throttleTime<D = unknown>(duration: number, immediate?: 
         if (timeId !== null) return false;
 
         return new Promise(resolve => {
-          timeId = setTimeout(() => {
+          timeId = window.setTimeout(() => {
             timeId = null;
             resolve(true);
           }, duration);

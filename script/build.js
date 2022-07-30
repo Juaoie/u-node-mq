@@ -7,20 +7,11 @@ const minify = true;
 const bundle = true;
 const platform = "neutral";
 const now = new Date().getTime();
+const operatorsDirList = fs.readdirSync("src/operators");
 
 async function buildMain() {
   //清除缓存
   await execa("pnpm", ["clr"]);
-
-  /**
-   //配置执行目录失效
-  const data = await execa("dir", [], {
-    // cmd: path.join(process.cwd(), "./termui"),
-    // execPath: path.join(process.cwd(), "./termui"),
-    nodePath: path.join(process.cwd(), "./termui"),
-  });
-  console.log(data);
-   */
 
   // 构建
   const unmq = esbuild.build({
@@ -42,18 +33,7 @@ async function buildMain() {
   });
 
   const operators = esbuild.build({
-    entryPoints: [
-      "src/operators/debounceTime/index.ts",
-      "src/operators/filter/index.ts",
-      "src/operators/instant/index.ts",
-      "src/operators/interval/index.ts",
-      "src/operators/map/index.ts",
-      "src/operators/newsTime/index.ts",
-      "src/operators/of/index.ts",
-      "src/operators/removeDuplicates/index.ts",
-      "src/operators/task/index.ts",
-      "src/operators/throttleTime/index.ts",
-    ],
+    entryPoints: operatorsDirList.map(item => `src/operators/${item}/index.ts`),
     external: [],
     outdir: "u-node-mq/operators",
     platform,
@@ -67,18 +47,12 @@ async function buildMain() {
     plugin,
     operators,
     execa("pnpm", ["gobuild"]),
-    // execa("npx", ["dts-bundle-generator", "-o", "./u-node-mq/index.d.ts", "./src/index.ts"]),
-  ]);
-
-  //生成u-node-mq包
-  await Promise.all([
+    execa("pnpm", ["gdts"]),
     fs.copy("package.json", "u-node-mq/package.json"),
     fs.copy("LICENSE", "u-node-mq/LICENSE"),
     fs.copy("README.md", "u-node-mq/README.md"),
-    fs.copy("types", "u-node-mq"),
-    fs.copy("./termui/u-node-mq-termui.exe", "u-node-mq/bin/u-node-mq-termui.exe"),
   ]);
-
+  fs.copy("./termui/u-node-mq-termui.exe", "u-node-mq/bin/u-node-mq-termui.exe");
   console.log(chalk.cyanBright("执行时长：" + (new Date().getTime() - now) / 1000 + "秒"));
 }
 buildMain();

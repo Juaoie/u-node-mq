@@ -1,6 +1,6 @@
 module.exports = {
   env: {
-    node: true,
+    node: false,
     browser: true,
   },
   extends: ["plugin:@typescript-eslint/recommended", "plugin:prettier/recommended"], //定义文件继承的子规范
