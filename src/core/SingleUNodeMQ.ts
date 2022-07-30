@@ -1,18 +1,14 @@
-import { ConstructorParameter, isFunction } from "../utils/tools";
+import { isFunction } from "../utils/tools";
 import { Operator, Queue } from "../index";
 import { Consume, Next } from "../internal/Consumer";
-type QueueOption = NonNullable<ConstructorParameter<typeof Queue>>;
+import { QueueOption } from "../internal/Queue";
 
 /**
  * 创建SingleUNodeMQ函数
- * @param queueOption
+ * @param x
  */
-function createSingleUnmq<D>(queueOption: QueueOption): SingleUNodeMQ<D>;
-function createSingleUnmq<D>(queue: Queue<D>): SingleUNodeMQ<D>;
-function createSingleUnmq<D>(): SingleUNodeMQ<D>;
 function createSingleUnmq<D>(x?: Queue<D> | QueueOption) {
-  if (typeof x === "undefined") return new SingleUNodeMQ();
-  else return new SingleUNodeMQ(x);
+  return new SingleUNodeMQ(x);
 }
 export { createSingleUnmq };
 /**
@@ -21,9 +17,6 @@ export { createSingleUnmq };
 export default class SingleUNodeMQ<D> {
   private queue: Queue<D>;
 
-  constructor(queueOption: QueueOption);
-  constructor(queue: Queue<D>);
-  constructor();
   constructor(x?: Queue<D> | QueueOption) {
     if (x instanceof Queue) this.queue = x;
     else this.queue = new Queue(x);
@@ -94,5 +87,12 @@ export default class SingleUNodeMQ<D> {
   add(...operators: Operator<D>[]) {
     this.queue.add(...operators);
     return this;
+  }
+  /**
+   * 获取组件
+   * @returns
+   */
+  getComponent() {
+    return this.queue;
   }
 }

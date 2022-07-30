@@ -57,63 +57,59 @@ export declare function createUnmq<ExchangeCollection extends Record<string, Exc
   queueCollection: QueueCollection,
 ): UNodeMQ<ExchangeCollection, QueueCollection>;
 
+declare type QueueOption = NonNullable<ConstructorParameter<typeof Queue>>;
 /**
- * @export createQuickUnmq 创建快速的unmq方法
- * @param exchange
- * @param queueCollection
+ * 创建SingleUNodeMQ函数
+ * @param x
  */
-export declare function createQuickUnmq<D, QueueCollection extends Record<string, Queue<D>>>(
-  exchange: Exchange<D>,
-  queueCollection: QueueCollection,
-): QuickUNodeMQ<D, QueueCollection>;
-
+declare function createSingleUnmq<D>(x?: Queue<D> | QueueOption): SingleUNodeMQ<D>;
+export { createSingleUnmq };
 /**
- * @export QuickUNodeMQ 快速unmq,仅有一个交换机和多个队列
+ * 单Queue的UNodeMQ类
  */
-export declare class QuickUNodeMQ<D, QueueCollection extends Record<string, Queue<D>>> {
-  private readonly exchange;
-  private readonly queueCollection;
-  constructor(exchange: Exchange<D>, queueCollection: QueueCollection);
+export default class SingleUNodeMQ<D> {
+  private queue;
+  constructor(x?: Queue<D> | QueueOption);
   /**
-   * 发射数据到交换机
-   * @param contentList 消息体列表
+   * 发送消息
+   * @param contentList
    * @returns
    */
   emit(...contentList: D[]): this;
   /**
-   * 发射数据到队列
-   * @param queueName
-   * @param contentList
-   * @returns
-   */
-  emitToQueue<Q extends keyof QueueCollection & string>(queueName: Q, ...contentList: D[]): this;
-  /**
-   *  订阅队列消息
-   * 队列名称为null 则订阅所有队列
-   * 消费方法
-   * @param queueName 队列名称
-   * @param consume 消费方法
-   * @param payload 固定参数，有效载荷，在每次消费的时候都传给消费者
-   * @returns
-   */
-  on<Q extends keyof QueueCollection & string>(queueName: Q, consume: Consume<D>, payload?: any): () => this;
-  /**
-   * 移除消费者
-   * @param queueName
-   * @param consume
-   */
-  off<Q extends keyof QueueCollection>(queueName: Q, consume: Consume<D>): this;
-  off<Q extends keyof QueueCollection>(queueName: Q): this;
-  /**
-   * 订阅一条消息
-   * @param queueName
+   * 订阅消息
    * @param consume
    * @param payload
    * @returns
    */
-  once<Q extends keyof QueueCollection & string>(queueName: Q, consume: Consume<D>, payload?: any): this;
-  once<Q extends keyof QueueCollection & string>(queueName: Q): Promise<D>;
+  on(consume: Consume<D>, payload?: any): this;
+  /**
+   * 移除消费者
+   * @param consume
+   */
+  off(consume: Consume<D>): this;
+  off(): this;
+  /**
+   * 订阅一条消息
+   * @param consume
+   * @param payload
+   */
+  once(consume: Consume<D>, payload?: any): this;
+  once(): Promise<D>;
+  /**
+   * 添加operators
+   * @param operators
+   * @returns
+   */
+  add(...operators: Operator<D>[]): this;
+  /**
+   * 获取组件
+   * @returns
+   */
+  getComponent(): Queue<D>;
 }
+
+//-------------------------------------组件
 
 /**
  * @export Exchange 交换机

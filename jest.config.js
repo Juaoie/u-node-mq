@@ -2,6 +2,5 @@
 
 export default {
   preset: "ts-jest",
-  testEnvironment: "jsdom",
-  transform: {},
+  testEnvironment: "node",
 };

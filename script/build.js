@@ -62,13 +62,14 @@ async function buildMain() {
     sourcemap: true,
   });
 
-  await Promise.all([unmq, plugin, operators, execa("pnpm", ["gobuild"]), execa("tsc")]);
+  await Promise.all([
+    unmq,
+    plugin,
+    operators,
+    execa("pnpm", ["gobuild"]),
+    // execa("npx", ["dts-bundle-generator", "-o", "./u-node-mq/index.d.ts", "./src/index.ts"]),
+  ]);
 
-  // 使用tsc输出operators d.ts文件进行覆盖，会改变源码
-  await fs.copy("dist/operators", "types/operators", {
-    //过滤.js文件，只要d.js文件
-    filter: src => src.slice(-3) !== ".js",
-  });
   //生成u-node-mq包
   await Promise.all([
     fs.copy("package.json", "u-node-mq/package.json"),

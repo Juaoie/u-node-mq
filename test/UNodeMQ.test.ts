@@ -1,7 +1,7 @@
-import UNodeMQ, { Exchange, Queue, ConsumMode, QuickUNodeMQ, Logs } from "../src/index";
+import UNodeMQ, { Exchange, Queue, ConsumMode, Logs } from "../src/index";
 import { expect, test } from "@jest/globals";
 import { promiseSetTimeout } from "../src/utils/tools";
-Logs.setLogsConfig({ logs: true });
+Logs.setLogsConfig({ logs: false });
 
 test("先挂载消费者，再发送消息", function (done) {
   const unmq = new UNodeMQ(
@@ -276,20 +276,6 @@ test("测试中继器返回不存在的队列名称", function (done) {
     expect(num).toEqual(3);
     done();
   });
-});
-
-test("快速unmq", function (done) {
-  interface T {
-    test: number;
-  }
-  const quickUnmq = new QuickUNodeMQ(new Exchange<T>({ routes: ["qu1"] }), {
-    qu1: new Queue(),
-  });
-  quickUnmq.on("qu1", (res: T) => {
-    expect(res).toEqual({ test: 1 });
-    done();
-  });
-  quickUnmq.emit({ test: 1 });
 });
 
 test("promise确认消费成功", function (done) {

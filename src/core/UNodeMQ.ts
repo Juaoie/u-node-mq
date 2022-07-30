@@ -11,6 +11,9 @@ import Collection from "./Collection";
 export type ReturnPanShapeExchange<T> = T extends Exchange<infer U> ? U : never;
 export type ReturnPanShapeQueue<T> = T extends Queue<infer U> ? U : never;
 
+/**
+ * 安装插件的方法
+ */
 export type PluginInstallFunction = <ExchangeCollection extends Record<string, Exchange<any>>, QueueCollection extends Record<string, Queue<any>>>(
   unmq: UNodeMQ<ExchangeCollection, QueueCollection>,
   ...options: any[]
@@ -76,9 +79,7 @@ export default class UNodeMQ<
   }
 
   /**
-   *  订阅队列消息
-   * 队列名称为null 则订阅所有队列
-   * 消费方法
+   * 订阅队列消息
    * @param queueName 队列名称
    * @param consume 消费方法
    * @param payload 固定参数，有效载荷，在每次消费的时候都传给消费者

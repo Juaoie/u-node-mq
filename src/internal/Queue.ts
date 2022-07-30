@@ -2,7 +2,7 @@ import News from "./News";
 import Consumer, { Consume } from "./Consumer";
 import { random } from "../utils/tools";
 import { queueLogsOperator } from "./Logs";
-interface Option {
+export interface QueueOption {
   ask?: boolean;
   rcn?: number;
   mode?: ConsumMode;
@@ -11,6 +11,11 @@ interface Option {
   maxTime?: number;
   [k: string]: any;
 }
+/**
+ * 队列消费类型
+ * Random：随机选择一个消费者消费；
+ * All：所有消费者都消费消息；
+ */
 export enum ConsumMode {
   "Random" = "Random",
   "All" = "All",
@@ -69,6 +74,9 @@ function isAsyncOperator<D>(arg: keyof Operator<D>): arg is keyof AsyncOperator<
 function isSyncOperator<D>(arg: keyof Operator<D>): arg is keyof SyncOperator<D> {
   return ["beforeAddNews", "ejectNews"].indexOf(arg) !== -1;
 }
+/**
+ * 队列和消息在队列中的生命周期
+ */
 export type Operator<D> = AsyncOperator<D> & SyncOperator<D>;
 /**
  * 队列，理论上一个队列的数据格式应该具有一致性
@@ -309,7 +317,7 @@ export default class Queue<D> {
 
     return true;
   }
-  constructor(option?: Option) {
+  constructor(option?: QueueOption) {
     Object.assign(this, option);
     this.createdTime = new Date().getTime();
     this.add(queueLogsOperator());

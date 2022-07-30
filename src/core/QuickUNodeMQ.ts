@@ -1,23 +1,16 @@
-import { ConstructorParameter, isFunction } from "../utils/tools";
+import { isFunction } from "../utils/tools";
 import { Exchange, Queue } from "../index";
 import { Consume, Next } from "../internal/Consumer";
-type ExchangeOption = NonNullable<ConstructorParameter<typeof Exchange>>;
+import { ExchangeOption } from "../internal/Exchange";
+
 /**
  * 创建QuickUNodeMQ函数
- * @param exchangeOption
- * @param queueCollection
+ * @param x
+ * @param y
+ * @returns
  */
-function createQuickUnmq<D, QueueCollection extends Record<string, Queue<D>>>(
-  exchangeOption: ExchangeOption,
-  queueCollection: QueueCollection,
-): QuickUNodeMQ<D, QueueCollection>;
-function createQuickUnmq<D, QueueCollection extends Record<string, Queue<D>>>(
-  exchange: Exchange<D>,
-  queueCollection: QueueCollection,
-): QuickUNodeMQ<D, QueueCollection>;
-function createQuickUnmq<D, QueueCollection extends Record<string, Queue<D>>>(x: ExchangeOption | Exchange<D>, y: QueueCollection) {
-  if (x instanceof Exchange) return new QuickUNodeMQ<D, QueueCollection>(x, y);
-  else return new QuickUNodeMQ<D, QueueCollection>(x, y);
+function createQuickUnmq<D, QueueCollection extends Record<string, Queue<D>>>(x: ExchangeOption<D> | Exchange<D>, y: QueueCollection) {
+  return new QuickUNodeMQ(x, y);
 }
 export { createQuickUnmq };
 /**
@@ -27,9 +20,7 @@ export default class QuickUNodeMQ<D, QueueCollection extends Record<string, Queu
   private exchange: Exchange<D>;
   private queueCollection: QueueCollection;
 
-  constructor(exchangeOption: ExchangeOption, queueCollection: QueueCollection);
-  constructor(exchange: Exchange<D>, queueCollection: QueueCollection);
-  constructor(x: ExchangeOption | Exchange<D>, y: QueueCollection) {
+  constructor(x: ExchangeOption<D> | Exchange<D>, y: QueueCollection) {
     if (x instanceof Exchange) this.exchange = x;
     else this.exchange = new Exchange<D>(x);
 
@@ -67,9 +58,7 @@ export default class QuickUNodeMQ<D, QueueCollection extends Record<string, Queu
     return this;
   }
   /**
-   *  订阅队列消息
-   * 队列名称为null 则订阅所有队列
-   * 消费方法
+   * 订阅队列消息
    * @param queueName 队列名称
    * @param consume 消费方法
    * @param payload 固定参数，有效载荷，在每次消费的时候都传给消费者

@@ -6,7 +6,7 @@ import Logs from "./Logs";
  */
 type Repeater<D> = (content: D) => Promise<string[]> | string[];
 
-export type Option<D> = {
+export type ExchangeOption<D> = {
   routes?: string[];
   repeater?: Repeater<D>;
   name?: string;
@@ -53,7 +53,7 @@ export default class Exchange<D> {
     this.repeater = repeater;
   }
 
-  constructor(option?: Option<D>) {
+  constructor(option?: ExchangeOption<D>) {
     Object.assign(this, option);
     this.createdTime = new Date().getTime();
     Logs.getLogsInstance()?.setLogs(ComponentEnum.EXCHANGE, { id: this.getId(), name: this.name, createdTime: this.createdTime });

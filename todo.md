@@ -16,9 +16,9 @@
 
 - 完成 ts 类型测试
 
-- 兼容不使用 new 关键字创建组件
+- 补充 SingleUNodeMQ、QuickUNodeMQ 的文档和声明式文件
 
-- 补充 SingleUNodeMQ 的文档和声明式文件
+- 补充 SingleUNodeMQ、QuickUNodeMQ 的测试文件
 
 - 完成 core 文件代码的测试代码
 
@@ -26,7 +26,11 @@
 
 - QuickUNodeMQ 和 SingleUNodeMQ 添加 plugins
 
+- 配置使用自动生成.d.ts 文件的工具
+
 ### 3.6.3
+
+- ~~兼容不使用 new 关键字创建组件~~
 
 - ~~配置 prettier~~
 
