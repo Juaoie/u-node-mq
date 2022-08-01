@@ -67,25 +67,17 @@ describe("QuickUNodeMQ", () => {
 
     setTimeout(done);
   });
-  test("QuickUNodeMQ.once1", function (done) {
-    //
-    expect(2).toEqual(1);
-    done();
-  });
-  test("QuickUNodeMQ.once", function (done) {
-    // expect.assertions(5);
+  test("QuickUNodeMQ.once", async function () {
+    expect.assertions(5);
 
-    (async () => {
-      type T = number;
-      const quickUnmq1 = new QuickUNodeMQ(new Exchange<T>({ routes: ["qu1"] }), { qu1: new Queue<T>() });
+    type T = number;
+    const quickUnmq1 = new QuickUNodeMQ(new Exchange<T>({ routes: ["qu1"] }), { qu1: new Queue<T>() });
 
-      quickUnmq1.emit(1, 2, 3);
+    quickUnmq1.emit(1, 2, 3);
 
-      const res1 = await quickUnmq1.once("qu1");
-      console.log("🚀 ~ file: QuickUNodeMQ.test.ts ~ line 80 ~ res1", res1);
-      expect(res1).toEqual(1);
-
-      /**
+    const res1 = await quickUnmq1.once("qu1");
+    expect(res1).toEqual(1);
+    /**
       
      
      当队列设置为同步消费的时候
@@ -97,27 +89,64 @@ describe("QuickUNodeMQ", () => {
 
      */
 
-      quickUnmq1
-        .once("qu1", (res2: T) => {
-          console.log("🚀 ~ file: QuickUNodeMQ.test.ts ~ line 97 ~ .once ~ res2", res2);
+    /**
+    
+
+      jest内部使用try catch捕获不到异步情况下的断言错误，所以异步代码即使断言错误报错了，只会阻塞下面的代码执行，不会被jest捕获到
+
+      因此这里需要将下面的once方法手动封装成promise方法
+
+
+~~~typescript
+
+  quickUnmq1
+      .once("qu1", (res2: T) => {
+        expect(res2).toEqual(2);
+        quickUnmq1.once("qu1", (res3: T) => {
+          expect(res3).toEqual(4);
+          done();
+        });
+      })
+      .once(
+        "qu1",
+        (res2: T, payload: any) => {
           expect(res2).toEqual(2);
-          quickUnmq1.once("qu1", (res3: T) => {
-            console.log("🚀 ~ file: QuickUNodeMQ.test.ts ~ line 100 ~ quickUnmq1.once ~ res3", res3);
-            // expect(res3).toEqual(4);
-            expect(3).toEqual(4);
-            done();
-          });
-        })
-        .once(
+          expect(payload).toEqual("payload");
+        },
+        "payload",
+      );
+~~~
+      
+      */
+
+    const [res2_1, res2_2] = await Promise.all<any>([
+      new Promise(res => {
+        quickUnmq1.once("qu1", (res2: T) => {
+          res(res2);
+        });
+      }),
+      new Promise(res => {
+        quickUnmq1.once(
           "qu1",
-          (res2: T, payload: any) => {
-            console.log("🚀 ~ file: QuickUNodeMQ.test.ts ~ line 108 ~ res2", res2);
-            expect(res2).toEqual(2);
-            expect(payload).toEqual("payload");
+          (res2: T, payload) => {
+            res({ res2, payload });
           },
           "payload",
         );
-    })();
+      }),
+    ]);
+
+    expect(res2_1).toEqual(2);
+    expect(res2_2.res2).toEqual(2);
+    expect(res2_2.payload).toEqual("payload");
+
+    const res3 = await new Promise(res => {
+      quickUnmq1.once("qu1", (res3: T) => {
+        res(res3);
+      });
+    });
+
+    expect(res3).toEqual(3);
 
     //
   });
