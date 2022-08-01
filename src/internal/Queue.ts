@@ -214,7 +214,7 @@ export default class Queue<D> {
   pushConsumer(consumer: Consumer<D>) {
     //过滤重复的消费者id
     if (this.consumerList.findIndex(item => item.getId() === consumer.getId()) === -1) {
-      //TODO:暂不能限制开发者绑定消费者
+      //TODO:暂不能限制开发者绑定消费者，此钩子函数会对同步once方法产生影响
       // this.operate("beforeAddConsumer", consumer).then((isOk) => {
       //   if (!isOk) return;
       //   this.consumerList.push(consumer);
@@ -328,7 +328,7 @@ export default class Queue<D> {
    * 每次执行消费一条消息
    * @returns
    */
-  async consumeNews() {
+  consumeNews() {
     if (this.news.length === 0) return;
     if (this.consumerList.length === 0) return;
     if (!this.async && this.state) return;

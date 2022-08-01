@@ -67,33 +67,58 @@ describe("QuickUNodeMQ", () => {
 
     setTimeout(done);
   });
-  test("QuickUNodeMQ.once", async function () {
-    expect.assertions(4);
+  test("QuickUNodeMQ.once1", function (done) {
+    //
+    expect(2).toEqual(1);
+    done();
+  });
+  test("QuickUNodeMQ.once", function (done) {
+    // expect.assertions(5);
 
-    type T = number;
-    const quickUnmq1 = new QuickUNodeMQ(new Exchange<T>({ routes: ["qu1"] }), { qu1: new Queue<T>() });
+    (async () => {
+      type T = number;
+      const quickUnmq1 = new QuickUNodeMQ(new Exchange<T>({ routes: ["qu1"] }), { qu1: new Queue<T>() });
 
-    quickUnmq1.emit(1, 2, 3);
+      quickUnmq1.emit(1, 2, 3);
 
-    const res1 = await quickUnmq1.once("qu1");
-    expect(res1).toBe(1);
+      const res1 = await quickUnmq1.once("qu1");
+      console.log("🚀 ~ file: QuickUNodeMQ.test.ts ~ line 80 ~ res1", res1);
+      expect(res1).toEqual(1);
 
-    quickUnmq1.once("qu1", (res2: T) => {
-      console.log("🚀 ~ file: QuickUNodeMQ.test.ts ~ line 82 ~ quickUnmq1.once ~ res2", res2);
-      expect(res2).toBe(2);
-    });
+      /**
+      
+     
+     当队列设置为同步消费的时候
 
-    quickUnmq1.once(
-      "qu1",
-      (res3: T, payload: any) => {
-        console.log("🚀 ~ file: QuickUNodeMQ.test.ts ~ line 88 ~ res3", res3);
-        expect(res3).toBe(3);
-        expect(payload).toBe("payload");
-      },
-      "payload",
-    );
+     由于消费者在消费一条消息以后，队列并不会立马收到回调，所以会在下次事件循环将队列的消费方法放开，所以会积累一次事件循环的消费者进入队列
 
-    await promiseSetTimeout(1000);
-    // return;
+     因此下次两次once方法实际上是订阅的同一条消息
+
+
+     */
+
+      quickUnmq1
+        .once("qu1", (res2: T) => {
+          console.log("🚀 ~ file: QuickUNodeMQ.test.ts ~ line 97 ~ .once ~ res2", res2);
+          expect(res2).toEqual(2);
+          quickUnmq1.once("qu1", (res3: T) => {
+            console.log("🚀 ~ file: QuickUNodeMQ.test.ts ~ line 100 ~ quickUnmq1.once ~ res3", res3);
+            // expect(res3).toEqual(4);
+            expect(3).toEqual(4);
+            done();
+          });
+        })
+        .once(
+          "qu1",
+          (res2: T, payload: any) => {
+            console.log("🚀 ~ file: QuickUNodeMQ.test.ts ~ line 108 ~ res2", res2);
+            expect(res2).toEqual(2);
+            expect(payload).toEqual("payload");
+          },
+          "payload",
+        );
+    })();
+
+    //
   });
 });
