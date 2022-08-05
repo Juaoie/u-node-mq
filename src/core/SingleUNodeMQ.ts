@@ -7,7 +7,7 @@ import { QueueOption } from "../internal/Queue";
  * 创建SingleUNodeMQ函数
  * @param x
  */
-function createSingleUnmq<D>(x?: Queue<D> | QueueOption) {
+function createSingleUnmq<D>(x?: QueueOption<D> | Queue<D>) {
   return new SingleUNodeMQ(x);
 }
 export { createSingleUnmq };
@@ -17,7 +17,7 @@ export { createSingleUnmq };
 export default class SingleUNodeMQ<D> {
   private queue: Queue<D>;
 
-  constructor(x?: Queue<D> | QueueOption) {
+  constructor(x?: Queue<D> | QueueOption<D>) {
     if (x instanceof Queue) this.queue = x;
     else this.queue = new Queue(x);
   }
@@ -40,7 +40,7 @@ export default class SingleUNodeMQ<D> {
    */
   on(consume: Consume<D>, payload?: any) {
     this.queue.pushConsume(consume, payload);
-    return this;
+    return () => this.off(consume);
   }
   /**
    * 移除消费者
@@ -87,12 +87,5 @@ export default class SingleUNodeMQ<D> {
   add(...operators: Operator<D>[]) {
     this.queue.add(...operators);
     return this;
-  }
-  /**
-   * 获取组件
-   * @returns
-   */
-  getComponent() {
-    return this.queue;
   }
 }

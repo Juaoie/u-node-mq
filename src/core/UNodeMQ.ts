@@ -95,10 +95,8 @@ export default class UNodeMQ<
    * @param queueName
    * @param consume
    */
-  off<Q extends keyof QueueCollection>(queueName: Q, consume: Consume<ReturnPanShapeQueue<QueueCollection[Q]>>): this;
-  off<Q extends keyof QueueCollection>(queueName: Q): this;
-  off<Q extends keyof QueueCollection & string>(x: Q, y?: Consume<ReturnPanShapeQueue<QueueCollection[Q]>>): this {
-    super.unsubscribeQueue(x, y);
+  off<Q extends keyof QueueCollection & string>(queueName: Q, consume?: Consume<ReturnPanShapeQueue<QueueCollection[Q]>>): this {
+    super.unsubscribeQueue(queueName, consume);
     return this;
   }
 

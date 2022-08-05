@@ -2,13 +2,14 @@ import News from "./News";
 import Consumer, { Consume } from "./Consumer";
 import { random } from "../utils/tools";
 import { queueLogsOperator } from "./Logs";
-export interface QueueOption {
+export interface QueueOption<D> {
   ask?: boolean;
   rcn?: number;
   mode?: ConsumMode;
   name?: string;
   async?: boolean;
   maxTime?: number;
+  operators?: Operator<D>[];
   [k: string]: any;
 }
 /**
@@ -184,10 +185,10 @@ export default class Queue<D> {
    * 加入消息内容
    * @param content
    */
-  pushContent = ((content: D) => {
+  pushContent(content: D) {
     const news = new News(content);
     this.pushNews(news);
-  }).bind(this);
+  }
   /**
    * 通过id移除指定消息
    * @param newsId
@@ -317,7 +318,7 @@ export default class Queue<D> {
 
     return true;
   }
-  constructor(option?: QueueOption) {
+  constructor(option?: QueueOption<D>) {
     Object.assign(this, option);
     this.createdTime = new Date().getTime();
     this.add(queueLogsOperator());

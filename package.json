@@ -23,7 +23,6 @@
   "scripts": {
     "build": "node ./script/build.js",
     "gobuild": "cd termui && go build",
-    "dev": "node ./script/dev.js",
     "test": "jest",
     "eslint": "eslint",
     "clr": "node ./script/clear.js",

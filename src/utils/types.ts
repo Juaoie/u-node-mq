@@ -1,5 +1,6 @@
 /**
  * 定时器id类型
+ * 需要兼容dom，node，小程序环境
  */
 export type IntTime = number;
 

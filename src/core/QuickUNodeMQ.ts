@@ -74,12 +74,10 @@ export default class QuickUNodeMQ<D, QueueCollection extends Record<string, Queu
    * @param queueName
    * @param consume
    */
-  off<Q extends keyof QueueCollection>(queueName: Q, consume: Consume<D>): this;
-  off<Q extends keyof QueueCollection>(queueName: Q): this;
-  off<Q extends keyof QueueCollection & string>(x: Q, y?: Consume<D>): this {
-    if (isFunction(y)) {
-      this.queueCollection[x].removeConsumer(y);
-    } else this.queueCollection[x].removeAllConsumer();
+  off<Q extends keyof QueueCollection & string>(queueName: Q, consume?: Consume<D>): this {
+    if (isFunction(consume)) {
+      this.queueCollection[queueName].removeConsumer(consume);
+    } else this.queueCollection[queueName].removeAllConsumer();
     return this;
   }
 
