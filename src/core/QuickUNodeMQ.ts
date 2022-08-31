@@ -1,5 +1,5 @@
 import { isFunction } from "../utils/tools";
-import { Exchange, Queue } from "../index";
+import { Exchange, Queue, Plugin } from "../index";
 import { Consume, Next } from "../internal/Consumer";
 import { ExchangeOption } from "../internal/Exchange";
 
@@ -19,6 +19,19 @@ export { createQuickUnmq };
 export default class QuickUNodeMQ<D, QueueCollection extends Record<string, Queue<D>>> {
   private exchange: Exchange<D>;
   private queueCollection: QueueCollection;
+  private readonly installedPlugins: Set<Plugin> = new Set();
+  use(plugin: Plugin, ...options: any[]) {
+    if (this.installedPlugins.has(plugin)) {
+      console.log(`Plugin has already been applied to target unmq.`);
+    } else if (plugin && isFunction(plugin.install)) {
+      this.installedPlugins.add(plugin);
+      plugin.install(this, ...options);
+    } else if (isFunction(plugin)) {
+      this.installedPlugins.add(plugin);
+      plugin(this, ...options);
+    }
+    return this;
+  }
 
   constructor(x: ExchangeOption<D> | Exchange<D>, y: QueueCollection) {
     if (x instanceof Exchange) this.exchange = x;

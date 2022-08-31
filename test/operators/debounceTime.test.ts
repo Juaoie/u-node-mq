@@ -1,4 +1,4 @@
-import { Exchange, Queue, createSingleUnmq } from "../../src/index";
+import { createSingleUnmq } from "../../src/index";
 import debounceTime from "../../src/operators/debounceTime";
 import { expect, test, jest } from "@jest/globals";
 import { promiseSetTimeout } from "../../src/utils/tools";

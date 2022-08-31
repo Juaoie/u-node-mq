@@ -1,9 +1,9 @@
 /**
  * 主包
  */
-import UNodeMQ, { createUnmq, PluginInstallFunction } from "./core/UNodeMQ";
+import UNodeMQ, { createUnmq, PluginInstallFunction, Plugin } from "./core/UNodeMQ";
 export default UNodeMQ;
-export { createUnmq, PluginInstallFunction };
+export { createUnmq, PluginInstallFunction, Plugin };
 /**
  * 扩展包
  */

@@ -14,10 +14,7 @@ export type ReturnPanShapeQueue<T> = T extends Queue<infer U> ? U : never;
 /**
  * 安装插件的方法
  */
-export type PluginInstallFunction = <ExchangeCollection extends Record<string, Exchange<any>>, QueueCollection extends Record<string, Queue<any>>>(
-  unmq: UNodeMQ<ExchangeCollection, QueueCollection>,
-  ...options: any[]
-) => void;
+export type PluginInstallFunction = (unmq: any, ...options: any[]) => void;
 export type Plugin =
   | (PluginInstallFunction & { install?: PluginInstallFunction })
   | {
@@ -51,10 +48,10 @@ export default class UNodeMQ<
       console.log(`Plugin has already been applied to target unmq.`);
     } else if (plugin && isFunction(plugin.install)) {
       this.installedPlugins.add(plugin);
-      plugin.install<ExchangeCollection, QueueCollection>(this, ...options);
+      plugin.install(this, ...options);
     } else if (isFunction(plugin)) {
       this.installedPlugins.add(plugin);
-      plugin<ExchangeCollection, QueueCollection>(this, ...options);
+      plugin(this, ...options);
     }
     return this;
   }

@@ -1,10 +1,6 @@
-**因为代码中的 TODO 比较分散，即使是使用 vscode 插件也没有用起来，所以以后的计划将写在这个文档**
-
-- 完成 IframeMessage 测试代码功能
+**基础功能**
 
 - 完成 IframeMessage vue 页面
-
-- 完成 operators 新文档介绍
 
 - 实现 logs 输出 include 和 exclude 功能
 
@@ -14,17 +10,33 @@
 
 - 实现 WebSocket plugin
 
-- 完成 ts 类型测试
-
-- 补充 SingleUNodeMQ、QuickUNodeMQ 的文档和声明式文件
-
-- 补充 SingleUNodeMQ、QuickUNodeMQ 的测试文件
-
-- 完成 core 文件代码的测试代码
-
 - 集成 Intersection Observer api
 
 - QuickUNodeMQ 和 SingleUNodeMQ 添加 plugins
+
+---
+
+**测试功能**
+
+- 完成 IframeMessage 测试代码功能
+
+- 完成 core 文件代码的测试代码
+
+- 补充 SingleUNodeMQ、QuickUNodeMQ 的测试文件
+
+- 完成 ts 类型测试
+
+---
+
+**文档补充**
+
+- 完成 operators 新文档介绍
+
+- 补充 SingleUNodeMQ、QuickUNodeMQ 的文档
+
+---
+
+**版本管理**
 
 ### 3.6.3
 
