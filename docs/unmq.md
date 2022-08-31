@@ -38,22 +38,23 @@ const unmq = createUnmq(ExchangeCollection, QueueCollection);
 ## 2、QuickUNodeMQ
 
 ```javascript
-import { QuickUNodeMQ, createQuickUnmq } from "u-node-mq";
-const quickUnmq = new QuickUNodeMQ(Exchange, QueueCollection);
+import { QuickUNodeMQ, createQuickUnmq, ExchangeOption, Exchange } from "u-node-mq";
+const quickUnmq = new QuickUNodeMQ(ExchangeOption | Exchange, QueueCollection);
 //or
-const quickUnmq = createQuickUnmq(Exchange, QueueCollection);
+const quickUnmq = createQuickUnmq(ExchangeOption | Exchange, QueueCollection);
 ```
 
 创建模块
 
-**UNodeMQ constructor 参数说明**
+**QuickUNodeMQ constructor 参数说明**
 
-| 名称            | 类型               | 必填 | 说明     |
-| --------------- | ------------------ | ---- | -------- |
-| Exchange        | Exchange           | 是   | 交换机   |
-| QueueCollection | { string : Queue } | 是   | 队列集合 |
+| 名称            | 类型               | 必填 | 说明           |
+| --------------- | ------------------ | ---- | -------------- |
+| ExchangeOption  | QueueCollection    | 是   | 交互机配置参数 |
+| Exchange        | Exchange           | 是   | 交换机         |
+| QueueCollection | { string : Queue } | 是   | 队列集合       |
 
-**unmq 方法说明**
+**quickUnmq 方法说明**
 
 | 名称        | 参数类型                           | 说明                                                           |
 | ----------- | ---------------------------------- | -------------------------------------------------------------- |
@@ -62,3 +63,30 @@ const quickUnmq = createQuickUnmq(Exchange, QueueCollection);
 | on          | (QueueName , 消费方法 , ?载荷消息) | 订阅队列消息，载荷信息每次都会发送给消费者，返回取消订阅的函数 |
 | off         | (QueueName , ?消费方法)            | 移除队列上的指定消费者或者移除队列上所有消费者，返回 this      |
 | once        | (QueueName , 消费方法 , ?载荷消息) | 只消费一条消息，返回 this                                      |
+
+## 3、SingleUNodeMQ
+
+```javascript
+import { SingleUNodeMQ, createSingleUnmq, QueueOption, Queue } from "u-node-mq";
+const singleUnmq = new SingleUNodeMQ(QueueOption | Queue);
+//or
+const singleUnmq = createSingleUnmq(QueueOption | Queue);
+```
+
+创建模块
+
+**SingleUNodeMQ constructor 参数说明**
+
+| 名称        | 类型     | 必填 | 说明         |
+| ----------- | -------- | ---- | ------------ |
+| QueueOption | Exchange | 是   | 队列配置参数 |
+| Queue       | Exchange | 是   | 队列实例     |
+
+**singleUnmq 方法说明**
+
+| 名称 | 参数类型                | 说明                                                           |
+| ---- | ----------------------- | -------------------------------------------------------------- |
+| emit | ( ...消息)              | 发送数据到队列，返回 this                                      |
+| on   | ( 消费方法 , ?载荷消息) | 订阅队列消息，载荷信息每次都会发送给消费者，返回取消订阅的函数 |
+| off  | ( ?消费方法)            | 移除队列上的指定消费者或者移除队列上所有消费者，返回 this      |
+| once | ( 消费方法 , ?载荷消息) | 只消费一条消息，返回 this                                      |

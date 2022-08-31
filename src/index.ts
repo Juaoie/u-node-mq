@@ -13,11 +13,11 @@ export { SingleUNodeMQ, createSingleUnmq, QuickUNodeMQ, createQuickUnmq };
 /**
  * 组件
  */
-import Exchange from "./internal/Exchange";
-import Queue, { ConsumMode, Operator } from "./internal/Queue";
+import Exchange, { ExchangeOption } from "./internal/Exchange";
+import Queue, { ConsumMode, Operator, QueueOption } from "./internal/Queue";
 import Consumer from "./internal/Consumer";
 import News from "./internal/News";
 import Logs from "./internal/Logs";
 export { Exchange, Queue, Consumer, News, Logs };
 
-export { ConsumMode, Operator };
+export { ConsumMode, Operator, ExchangeOption, QueueOption };
