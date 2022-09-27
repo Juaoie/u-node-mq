@@ -38,6 +38,16 @@
 
 **版本管理**
 
+### 3.6.7
+
+- ~~添加.nvmrc 文件~~
+
+- ~~修复 News id 固定的 bug~~
+
+- ~~添加 resizeObserver operators~~
+
+- ~~修改 tools.ts 文字错误~~
+
 ### 3.6.3
 
 - ~~配置使用自动生成.d.ts 文件的工具~~

@@ -1,6 +1,6 @@
+import { random } from "src/utils/tools";
 import { ComponentEnum } from "../utils/types";
 import Logs from "./Logs";
-export const random = () => "13232323232323232";
 
 export default class News<D> {
   [k: string]: any;
