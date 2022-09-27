@@ -1,5 +1,6 @@
 import UNodeMQ, { Exchange, Queue } from "../../index";
 import { isObject, isString } from "../../utils/tools";
+// type Option = {};
 /**
  * 使用postMessage进行iframe跨域通信
  */
@@ -17,7 +18,7 @@ export const getInternalIframeBroadcasMessageQueueName = (queueName: string) => 
 export default class IframePlugin {
   private unmq: UNodeMQ<Record<string, Exchange<any>>, Record<string, Queue<any>>> | null = null;
   constructor(private readonly name: string) {
-    this.name = name;
+    //
   }
   install(unmq: UNodeMQ<Record<string, Exchange<any>>, Record<string, Queue<any>>>) {
     const selfExchange = unmq.getExchange(this.name);

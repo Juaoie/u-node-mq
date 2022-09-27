@@ -4,15 +4,13 @@ import { Operator, Queue } from "../..";
 /**
  * 使用ResizeObserver订阅内容区域大小变化
  * https://developer.mozilla.org/zh-CN/docs/Web/API/ResizeObserver
- * @param arg 需要订阅目标元素的id或者dom节点，默认为body元素
+ * @param arg 需要订阅目标元素的id或者dom节点，默认为html元素
  * @returns
  */
 export default function resizeObserver(arg?: string | HTMLElement): Operator<ResizeObserverEntry> {
   let dom: HTMLElement | null = null;
   if (arg === undefined) {
-    const doms = document.getElementsByName("body");
-    if (doms.length === 0) throw "未查找到body元素";
-    dom = doms[0];
+    dom = document.documentElement;
   } else if (isString(arg)) {
     dom = document.getElementById(arg);
     if (dom === null) throw `id：${arg}不存在`;
