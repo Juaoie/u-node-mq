@@ -17,7 +17,7 @@ export { createSingleUnmq };
 export default class SingleUNodeMQ<D> {
   private queue: Queue<D>;
 
-  constructor(x?: Queue<D> | QueueOption<D>) {
+  constructor(x?: QueueOption<D> | Queue<D>) {
     if (x instanceof Queue) this.queue = x;
     else this.queue = new Queue(x);
   }
@@ -87,5 +87,18 @@ export default class SingleUNodeMQ<D> {
   add(...operators: Operator<D>[]) {
     this.queue.add(...operators);
     return this;
+  }
+  /**
+   * fork一份队列，用于监听当前队列数据输出
+   * @param x
+   * @returns
+   */
+  fork(x?: QueueOption<D> | Queue<D>) {
+    const csu = createSingleUnmq(x);
+    this.on(res => {
+      csu.emit(res);
+      return true;
+    });
+    return csu;
   }
 }

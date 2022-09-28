@@ -38,7 +38,15 @@
 
 **版本管理**
 
-### 3.6.7
+### 3.6.6
+
+- ~~添加 SingleUNodeMQ 的 fork 功能~~
+
+### 3.6.5
+
+- ~~修复 resizeObserver operators bug~~
+
+### 3.6.4-beta.1
 
 - ~~添加.nvmrc 文件~~
 
