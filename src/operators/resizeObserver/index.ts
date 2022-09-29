@@ -1,4 +1,4 @@
-import { isString } from "src/utils/tools";
+import { isString } from "../../utils/tools";
 import { Operator, Queue } from "../..";
 
 /**
