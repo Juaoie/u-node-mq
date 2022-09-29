@@ -148,13 +148,11 @@ export default class IframePlugin {
 
     //同步容器大小消息
     else if (type === MessageType.ResizeObserverMessage) {
-      const frameEl = (source as Window).frameElement as HTMLFrameElement;
+      const frameEl = (source as Window).frameElement as HTMLIFrameElement;
       if (frameEl === null) return false;
 
       frameEl.width = message.contentRect.width;
       frameEl.height = message.contentRect.height;
-
-      const dom = document.getElementById("");
     }
 
     //
