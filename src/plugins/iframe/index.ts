@@ -5,7 +5,7 @@ type Option = {
   autoSize?: boolean; //是否自动大小
   arg?: string | HTMLElement; //当前iframe自动大小的节点元素id或者元素dom，默认为body元素
 };
-const IFRAEE_MASK = "u-node-mq-plugin-iframe";
+const IFRAEE_MASK = "u-node-mq-plugin";
 
 /**
  * 使用postMessage进行iframe跨域通信

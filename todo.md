@@ -40,6 +40,8 @@
 
 ### 3.6.6
 
+- ~~iframe 添加 autoSize 参数~~
+
 - ~~添加 SingleUNodeMQ 的 fork 功能~~
 
 ### 3.6.5

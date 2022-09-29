@@ -3,7 +3,7 @@ import chalk from "chalk";
 import fs from "fs-extra";
 import { execa } from "execa";
 
-const minify = false;
+const minify = true;
 // const bundle = true;
 const platform = "neutral";
 const now = new Date().getTime();
