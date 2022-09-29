@@ -1,24 +1,69 @@
-import UNodeMQ, { Exchange, Queue } from "../../index";
+import UNodeMQ, { Exchange, Queue, createSingleUnmq } from "../../index";
 import { isObject, isString } from "../../utils/tools";
-// type Option = {};
+import resizeObserver from "../../operators/resizeObserver/index";
+type Option = {
+  autoSize?: boolean; //是否自动大小
+  arg?: string | HTMLElement; //当前iframe自动大小的节点元素id或者元素dom，默认为body元素
+};
+const IFRAEE_MASK = "u-node-mq-plugin-iframe";
+
 /**
  * 使用postMessage进行iframe跨域通信
  */
 export enum MessageType {
-  GeneralMessage, //普通消息
-  FindExchangeMessage, //广播查找交换机消息
-  SendCoordinateMessage, //发送exchange坐标消息
-  OnlineNotificationMessage, //上线通知消息
+  /**
+   * 普通消息
+   */
+  GeneralMessage,
+
+  /**
+   * 广播查找交换机消息
+   */
+  FindExchangeMessage,
+
+  /**
+   * 发送exchange坐标消息
+   */
+  SendCoordinateMessage,
+
+  /**
+   * 上线通知消息
+   */
+  OnlineNotificationMessage,
+
+  /**
+   * 同步容器大小消息
+   */
+  ResizeObserverMessage,
 }
-//直发消息队列，即主动发送
+/**
+ * 直发消息队列，即主动发送
+ * @param queueName
+ * @returns
+ */
 export const getInternalIframeMessageQueueName = (queueName: string) => queueName + "_Iframe_Message";
-//用来广播获取地址的消息
+/**
+ * 用来广播获取地址的消息
+ * @param queueName
+ * @returns
+ */
 export const getInternalIframeBroadcasMessageQueueName = (queueName: string) => queueName + "_Iframe_Wait_Message";
 
 export default class IframePlugin {
   private unmq: UNodeMQ<Record<string, Exchange<any>>, Record<string, Queue<any>>> | null = null;
-  constructor(private readonly name: string) {
-    //
+  constructor(private readonly name: string, option?: Option) {
+    if (option?.autoSize) {
+      const resizeObserverInstance = createSingleUnmq<ResizeObserverEntry>().add(resizeObserver(option.arg));
+      resizeObserverInstance.on(res => {
+        const selfFrame = getSelfIframeDoc();
+        if (selfFrame === undefined) throw "selfFrame is undefined";
+        //
+        if (selfFrame.y === 0) return;
+        if (selfFrame.window.parent === window) return;
+
+        this.postMessage(selfFrame.window, MessageType.ResizeObserverMessage, res);
+      });
+    }
   }
   install(unmq: UNodeMQ<Record<string, Exchange<any>>, Record<string, Queue<any>>>) {
     const selfExchange = unmq.getExchange(this.name);
@@ -31,17 +76,18 @@ export default class IframePlugin {
 
     for (const iframe of otherIframe) {
       if (iframe.name === undefined) throw `系统错误`;
-      iframe.setRepeater(() => [
-        getInternalIframeMessageQueueName(iframe.name as string),
-        getInternalIframeBroadcasMessageQueueName(iframe.name as string),
-      ]);
+
+      const internalIframeMessageQueueName = getInternalIframeMessageQueueName(iframe.name);
+      const internalIframeBroadcasMessageQueueName = getInternalIframeBroadcasMessageQueueName(iframe.name);
+
+      iframe.setRepeater(() => [internalIframeMessageQueueName, internalIframeBroadcasMessageQueueName]);
       //用于存储消息的队列
-      unmq.addQueue(new Queue({ name: getInternalIframeMessageQueueName(iframe.name), async: true }));
+      unmq.addQueue(new Queue({ name: internalIframeMessageQueueName, async: true }));
       //用来广播获取地址的消息
-      unmq.addQueue(new Queue({ name: getInternalIframeBroadcasMessageQueueName(iframe.name), async: true }));
+      unmq.addQueue(new Queue({ name: internalIframeBroadcasMessageQueueName, async: true }));
 
       //为广播消息挂载消费方法
-      unmq.on(getInternalIframeBroadcasMessageQueueName(iframe.name), () => {
+      unmq.on(internalIframeBroadcasMessageQueueName, () => {
         //广播查找交换机地址消息
         this.broadcastMessage(MessageType.FindExchangeMessage, {
           exchangeName: iframe.name,
@@ -57,43 +103,64 @@ export default class IframePlugin {
     window.addEventListener("message", this.receiveMessage.bind(this), false);
   }
   /**
-   *
+   * 接收消息
    * @param param0
    * @returns
    */
-  private receiveMessage({ source, data, origin }: MessageEventInit) {
+  private receiveMessage({ source, data, origin }: MessageEvent) {
     if (this.unmq === null) throw `${this.name} iframe 未安装`;
-    if (!isObject(data)) return;
+    if (!isObject(data)) return false;
     const { mask, type, message, fromName } = data;
-    if (mask !== "u-node-mq-plugin") return;
-    if (source === null || source === undefined) return;
-    //发送者是否存在
-    const fromIframe = this.unmq.getExchange(fromName);
-    if (!fromIframe) return;
-    //判断真实的origin 是否是我想要的 origin
-    if (isString(fromIframe.origin) && fromIframe.origin !== origin) return;
 
+    if (mask !== IFRAEE_MASK) return false;
+
+    if (source === null || source === undefined) return false;
+
+    /**
+     * 发送者是否存在
+     * 仅接收初始化创建Exchange的iframe的消息
+     */
+    const fromIframe = this.unmq.getExchange(fromName);
+    if (fromIframe === null) return false;
+
+    /**
+     * 判断真实的origin 是否是我想要的 origin
+     */
+    if (isString(fromIframe.origin) && fromIframe.origin !== origin) return false;
+
+    //接收到有人上线 或者 有人发送坐标过来
     if ([MessageType.OnlineNotificationMessage, MessageType.SendCoordinateMessage].indexOf(type) !== -1) {
-      // 拿到对方坐标，准备发送消息
       const off = this.unmq.on(getInternalIframeMessageQueueName(fromName), data => {
         this.postMessage(source as Window, MessageType.GeneralMessage, data, origin);
       });
       setTimeout(off);
-      return true;
     }
 
     //普通消息
-    if (type === MessageType.GeneralMessage) {
-      //发送确认收到消息
+    else if (type === MessageType.GeneralMessage) {
       this.unmq.emit(this.name, message);
-      return true;
     }
 
     //查找交换机消息
-    if (type === MessageType.FindExchangeMessage && message.exchangeName === this.name) {
+    else if (type === MessageType.FindExchangeMessage && message.exchangeName === this.name) {
       this.postMessage(source as Window, MessageType.SendCoordinateMessage, { msg: `my name is ${this.name}` }, origin);
-      return true;
     }
+
+    //同步容器大小消息
+    else if (type === MessageType.ResizeObserverMessage) {
+      const frameEl = (source as Window).frameElement as HTMLFrameElement;
+      if (frameEl === null) return false;
+
+      frameEl.width = message.contentRect.width;
+      frameEl.height = message.contentRect.height;
+
+      const dom = document.getElementById("");
+    }
+
+    //
+    else return false;
+
+    return true;
   }
 
   /**
@@ -107,7 +174,7 @@ export default class IframePlugin {
   private postMessage(currentWindow: Window, type: MessageType, message: any, origin = "*", transfer?: Transferable[]) {
     currentWindow.postMessage(
       {
-        mask: "u-node-mq-plugin",
+        mask: IFRAEE_MASK,
         type,
         message,
         fromName: this.name,
@@ -149,16 +216,16 @@ export default class IframePlugin {
  */
 export function getOtherAllIframeDoc(): T[] {
   if (window.top === null) throw "window.top is null";
-  const list = getAllIframeDoc(window.top, 0, 0);
+  const list = getAllIframeDoc();
   return list.filter(item => item.window !== window.self);
 }
 /**
  * 获取自己的iframe doc
  * @returns
  */
-export function getSelfIframeDoc() {
+export function getSelfIframeDoc(): T | undefined {
   if (window.top === null) throw "window.top is null";
-  const list = getAllIframeDoc(window.top, 0, 0);
+  const list = getAllIframeDoc();
   return list.find(item => item.window === window.self);
 }
 type T = {
@@ -168,22 +235,33 @@ type T = {
 };
 /**
  * 获取所有node doc
- * @param w
- * @param x
- * @param y
  * @returns
+ * https://www.typescriptlang.org/play?#code/C4TwDgpgBAKlC8UDeBYAUFTUDuAuKAdgK4C2ARhAE4Dc6WUAHvseVbRliM6RTegL7sAZkQIBjYAEsA9gSgBzCMACCAG1UBJIZQCGJCABFpYgBR4oOgiACUyOljGyAzsCirJL7q0oBtALoIUP72mKpKjIEADCFu4SBR6DEi4lKyCkoGEBBgAGK6+mb4liAANIxevGVchDxUtqgc9JgA9M1QjgRO0mEAdKrS8iYARAC0Y+MTE0PWMfSt7c7dEH0DJjazWPMdXb39g+4uPiB+M41NkkJQJgfARwHwD1CiACYQQpIEEM+2N3eBDBtMBBVE5oAxAgBqCG-Y6AhadJYrfYeYCnJoOZyuHSUSj4GD+QL+djozDYyg9MBEJwACxMDRJTWwJTh9AYzLODNKcP41mJJPiEMQAEY+eihNJKFcwq4ANZRahQOUAHhwfRRfQgBHkwGpCplUPqLKwZIpVNpPQtimAmWyeT0EDMasOMr8ZTZUBsvKNmHBgqgIu5cMoSiIlDkZNFUH4MWDwFDcitNty+QdTMYVTRmza20Re2uKNO0bQ6G2WJxgStak02ntRlMMXpJMkz3wkXZDJu+B83rsHIZWGb+CF7f76M7QR7DMbo5nUEHUAAzCPZ6Px8E+yuo2Vp5umy2oAAWZe7scort+Sckosn12JDdNfjHqeXzDzgBMT5na5fTR3J-o84AKyfv+bhnkEF73rO167pB0FwnBWA8neOa7KsZLWEAA
  */
-export function getAllIframeDoc(w: Window, x: number, y: number): T[] {
-  const arr: T[] = [];
-  arr.push({
-    window: w,
-    x,
-    y,
-  });
-  y += 1;
-  for (let k = 0; k < w.length; k++) {
-    arr.push(...getAllIframeDoc(w[k], x, y));
-    x += 1;
+export function getAllIframeDoc(): T[] {
+  const list: number[] = [];
+  const x = 0;
+  const y = 0;
+
+  function getDeepFrame(w: Window, x: number, y: number) {
+    if (list[y] === undefined) list[y] = x;
+    else x = ++list[y];
+
+    const arr: T[] = [];
+    arr.push({
+      window: w,
+      x,
+      y,
+    });
+    y += 1;
+    //window === window.frames
+    for (let k = 0; k < w.frames.length; k++) {
+      arr.push(...getDeepFrame(w[k], x, y));
+      x += 1;
+    }
+    return arr;
   }
-  return arr;
+
+  if (window.top === null) throw "window.top is null";
+  return getDeepFrame(window.top, x, y);
 }

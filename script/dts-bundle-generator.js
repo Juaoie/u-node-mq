@@ -14,6 +14,10 @@ import { execa } from "execa";
     //过滤.js文件，只要d.js文件
     filter: src => src.slice(-3) !== ".js",
   });
+  fs.copy("dist/utils", "u-node-mq/utils", {
+    //过滤.js文件，只要d.js文件
+    filter: src => src.slice(-3) !== ".js",
+  });
 })();
 
 const options = [

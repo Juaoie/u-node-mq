@@ -17,6 +17,7 @@ import UNodeMQ from "u-node-mq";
 const unmq = new UNodeMQ(
   {
     iframeName1: new Exchange({ routes: ["qu1"] }),
+    //约束iframeName2的origin必须为https://iframeName2.com
     iframeName2: new Exchange({ origin: "https://iframeName2.com" }),
   },
   {
