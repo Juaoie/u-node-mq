@@ -61,7 +61,14 @@ export default class IframePlugin {
         if (selfFrame.y === 0) return;
         if (selfFrame.window.parent === window) return;
 
-        this.postMessage(selfFrame.window, MessageType.ResizeObserverMessage, res);
+        //隐藏iframe滚动条，或者在iframe元素上设置scrolling 为 no
+        document.body.style.overflow = "hidden";
+
+        //Failed to execute 'postMessage' on 'Window': ResizeObserverEntry object could not be cloned
+        this.postMessage(selfFrame.window.parent, MessageType.ResizeObserverMessage, {
+          width: res.contentRect.width,
+          height: res.contentRect.height,
+        });
       });
     }
   }
@@ -148,11 +155,18 @@ export default class IframePlugin {
 
     //同步容器大小消息
     else if (type === MessageType.ResizeObserverMessage) {
-      const frameEl = (source as Window).frameElement as HTMLIFrameElement;
-      if (frameEl === null) return false;
-
-      frameEl.width = message.contentRect.width;
-      frameEl.height = message.contentRect.height;
+      let index = 0;
+      for (let i = 0; i < window.frames.length; i++) {
+        if (source === window.frames) {
+          index = i;
+          break;
+        }
+      }
+      const dos = document.getElementsByTagName("iframe");
+      if (dos.length - 1 < index) throw "dom节点与iframe数量不匹配";
+      dos[index].width = message.width;
+      dos[index].height = message.height;
+      // dos[index].scrolling = "no";
     }
 
     //

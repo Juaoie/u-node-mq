@@ -1,6 +1,6 @@
 {
   "name": "u-node-mq",
-  "version": "3.6.7",
+  "version": "3.6.8",
   "author": "hugaojie <uaoie@qq.com>",
   "description": "基于发布订阅模型的消息通信插件",
   "keywords": [

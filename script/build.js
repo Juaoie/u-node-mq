@@ -2,14 +2,13 @@ import esbuild from "esbuild";
 import chalk from "chalk";
 import fs from "fs-extra";
 import { execa } from "execa";
-
-const minify = true;
-// const bundle = true;
+const _package = JSON.parse(fs.readFileSync("./package.json"));
 const platform = "neutral";
 const now = new Date().getTime();
 const operatorsDirList = fs.readdirSync("src/operators");
 
 async function buildMain() {
+  const minify = _package.version.search("beta") === -1;
   //清除缓存
   await execa("pnpm", ["clr"]);
 
