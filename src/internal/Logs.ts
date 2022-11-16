@@ -1,4 +1,4 @@
-import Queue, { Operator } from "./Queue";
+import { Operator, Queue } from "../index";
 import { ComponentEnum } from "../utils/types";
 /**
  * 应该尽量避免生产环境中把日志混入代码，减少代码量，除非生产环境中需要使用到日志

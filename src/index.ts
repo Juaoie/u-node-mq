@@ -14,7 +14,8 @@ export { SingleUNodeMQ, createSingleUnmq, QuickUNodeMQ, createQuickUnmq };
  * 组件
  */
 import Exchange, { ExchangeOption } from "./internal/Exchange";
-import Queue, { ConsumMode, Operator, QueueOption } from "./internal/Queue";
+import Queue, { ConsumMode, QueueOption } from "./internal/Queue/index";
+import { Operator } from "./internal/Queue/operators";
 import Consumer from "./internal/Consumer";
 import News from "./internal/News";
 import Logs from "./internal/Logs";
