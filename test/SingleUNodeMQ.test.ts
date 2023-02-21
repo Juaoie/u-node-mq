@@ -169,4 +169,21 @@ describe("createSingleUnmq", () => {
     expect(createSingleUnmq({}) instanceof SingleUNodeMQ).toBeTruthy();
     expect(createSingleUnmq(new SingleUNodeMQ()) instanceof SingleUNodeMQ).toBeTruthy();
   });
+
+  /**
+   * 测试一个消息返回promise false重复消费
+   */
+
+  test("createSingleUnmq_reset", function () {
+    const t = createSingleUnmq({ ask: true, rcn: 10 });
+    let i = 0;
+    t.on(async () => {
+      await promiseSetTimeout(100);
+      i++;
+      return false;
+    });
+    setTimeout(() => {
+      expect(i).toEqual(10);
+    }, 1200);
+  });
 });
