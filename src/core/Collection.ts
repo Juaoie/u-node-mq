@@ -68,11 +68,10 @@ export default class Collection<
   pushContentListToExchange<E extends keyof ExchangeCollection & string>(exchangeName: E, ...contentList: unknown[]) {
     for (const content of contentList) {
       //分别发送每一条消息
-      this.exchangeCollectionHandle.getQueueNameList(exchangeName, content).then(queueNameList => {
-        for (const queueName of queueNameList) {
-          this.pushContentListToQueue(queueName, content);
-        }
-      });
+      const queueNameList = this.exchangeCollectionHandle.getQueueNameList(exchangeName, content);
+      for (const queueName of queueNameList) {
+        this.pushContentListToQueue(queueName, content);
+      }
     }
   }
   /**
