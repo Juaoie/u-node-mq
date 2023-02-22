@@ -27,7 +27,7 @@ export default class ExchangeCollectionHandle {
    * @param content
    * @returns
    */
-  async getQueueNameList(exchangeName: string, content: unknown) {
+  getQueueNameList(exchangeName: string, content: unknown) {
     const exchagne = this.getExchange(exchangeName);
     if (exchagne === null) return [];
     return exchagne.getQueueNameList(content);

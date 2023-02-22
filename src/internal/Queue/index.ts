@@ -104,12 +104,11 @@ export default class Queue<D> {
     if (news.consumedTimes > 0) {
       //过滤重复的消息id
       if (this.news.findIndex(item => item.getId() === news.getId()) === -1) {
-        this.operate("beforeAddNews", news).then(isOk => {
-          if (!isOk) return;
-          this.news.push(news);
-          this.operate("addedNews", news);
-          if (this.news.length > 0 && this.consumerList.length > 0) this.consumeNews();
-        });
+        const isOk = this.operate("beforeAddNews", news);
+        if (!isOk) return;
+        this.news.push(news);
+        this.operate("addedNews", news);
+        if (this.news.length > 0 && this.consumerList.length > 0) this.consumeNews();
       }
     }
   }
@@ -118,10 +117,10 @@ export default class Queue<D> {
    * @returns
    *
    */
-  async eject(start = 0): Promise<News<D> | null> {
+  eject(start = 0): News<D> | null {
     if (this.news.length > 0) {
       const news = this.news.splice(start, 1)[0];
-      if (!(await this.operate("ejectNews", news))) return null;
+      if (!this.operate("ejectNews", news)) return null;
 
       return news;
     } else return null;
@@ -241,7 +240,7 @@ export default class Queue<D> {
    * @param args
    * @returns
    */
-  private async operate(fun: keyof Operator<D>, ...args: any[]) {
+  private operate(fun: keyof Operator<D>, ...args: any[]) {
     //先过滤数据
     const list = this.operators
       .filter(operator => operator[fun])
@@ -255,7 +254,7 @@ export default class Queue<D> {
     } else if (isSyncOperator(fun)) {
       //同步处理
       for (const iterator of list) {
-        if (!(await iterator?.(args[0]))) return false;
+        if (!iterator?.(args[0])) return false;
       }
     }
     //类型异常
@@ -285,27 +284,26 @@ export default class Queue<D> {
     const consumerList =
       this.mode === ConsumMode.Random ? [this.consumerList[Math.round(Math.random() * (this.consumerList.length - 1))]] : [...this.consumerList];
 
-    this.eject().then(news => {
-      if (news === null) {
+    const news = this.eject();
+    if (news === null) {
+      this.state = false;
+      this.consumeNews();
+      return;
+    }
+
+    Promise.all(consumerList.map(consumer => this.consumption(news, consumer)))
+      .then(() => {
+        //消息被成功消费
+      })
+      .catch(() => {
+        //消费失败
+        news.consumedTimes--;
+        this.pushNews(news);
+      })
+      .finally(() => {
         this.state = false;
         this.consumeNews();
-        return;
-      }
-
-      Promise.all(consumerList.map(consumer => this.consumption(news, consumer)))
-        .then(() => {
-          //消息被成功消费
-        })
-        .catch(() => {
-          //消费失败
-          news.consumedTimes--;
-          this.pushNews(news);
-        })
-        .finally(() => {
-          this.state = false;
-          this.consumeNews();
-        });
-    });
+      });
 
     //如果是异步的就需要执行，因为此时消息已被弹出
     if (this.async) this.consumeNews();

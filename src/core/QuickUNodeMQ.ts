@@ -49,12 +49,11 @@ export default class QuickUNodeMQ<D, QueueCollection extends Record<string, Queu
    */
   emit(...contentList: D[]) {
     for (const content of contentList) {
-      this.exchange.getQueueNameList(content).then((queueNameList: string[]) => {
-        for (const queueName of queueNameList) {
-          if (this.queueCollection[queueName] === undefined) continue;
-          this.queueCollection[queueName].pushContent(content);
-        }
-      });
+      const queueNameList = this.exchange.getQueueNameList(content);
+      for (const queueName of queueNameList) {
+        if (this.queueCollection[queueName] === undefined) continue;
+        this.queueCollection[queueName].pushContent(content);
+      }
     }
     return this;
   }

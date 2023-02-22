@@ -42,11 +42,11 @@ export default class Collection<
   pushNewsListToExchange<E extends keyof ExchangeCollection & string>(exchangeName: E, ...news: News<unknown>[]) {
     for (const newsItem of news) {
       //分别发送每一条消息
-      this.exchangeCollectionHandle.getQueueNameList(exchangeName, newsItem.content).then(queueNameList => {
-        for (const queueName in queueNameList) {
-          this.pushNewsListToQueue(queueName, newsItem);
-        }
-      });
+      const queueNameList = this.exchangeCollectionHandle.getQueueNameList(exchangeName, newsItem.content);
+
+      for (const queueName in queueNameList) {
+        this.pushNewsListToQueue(queueName, newsItem);
+      }
     }
   }
   /**

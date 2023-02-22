@@ -1,6 +1,6 @@
 import { News, Queue, Consumer } from "../..";
 /**
- * 会异步执行的运算方法
+ *
  * 不需要通过返回值控制是否继续执行流程
  */
 interface AsyncOperator<D> {
@@ -26,15 +26,15 @@ interface AsyncOperator<D> {
 }
 
 /**
- * 会同步的执行的运算符方法
- * 每个运算符方法列表都会同步执行，且一个返回false，后面则不会继续执行，用于控制流程是否继续
+ *
+ * 返回false，后面则不会继续执行，用于控制流程是否继续
  */
 interface SyncOperator<D> {
   /**
    * 将消息添加到队列之前
    * 返回的boolean控制消息是否加入队列
    */
-  beforeAddNews?: (news: News<D>) => boolean | Promise<boolean>;
+  beforeAddNews?: (news: News<D>) => boolean;
   /**
    * 加入消费者之前
    * 返回的boolean控制消费者是否能加入队列
@@ -44,11 +44,11 @@ interface SyncOperator<D> {
   /**
    * 控制消息是否可以被弹出，为false则移除消息
    */
-  ejectNews?: (news: News<D>) => boolean | Promise<boolean>;
+  ejectNews?: (news: News<D>) => boolean;
 }
 
 /**
- * 异步运算符
+ * 流程运算符
  * @param arg
  * @returns
  */
@@ -56,7 +56,7 @@ export function isAsyncOperator<D>(arg: keyof Operator<D>): arg is keyof AsyncOp
   return ["mounted", "addedNews", "addedConsumer", "removedConsumer"].indexOf(arg) !== -1;
 }
 /**
- * 同步运算符
+ * 控制运算符
  * @param arg
  * @returns
  */

@@ -4,7 +4,7 @@ import Logs from "./Logs";
 /**
  * 中继器类型
  */
-type Repeater<D> = (content: D) => Promise<string[]> | string[];
+type Repeater<D> = (content: D) => string[];
 
 export type ExchangeOption<D> = {
   routes?: string[];
@@ -73,11 +73,11 @@ export default class Exchange<D> {
    * @param content
    * @returns
    */
-  async getQueueNameList(content: D): Promise<string[]> {
+  getQueueNameList(content: D): string[] {
     Logs.getLogsInstance()?.setLogs(ComponentEnum.EXCHANGE, { id: this.getId(), accepted: 1, name: this.name, createdTime: this.createdTime });
     try {
       //中继器模式
-      const queueNames = await this.repeater(content);
+      const queueNames = this.repeater(content);
       Logs.getLogsInstance()?.setLogs(ComponentEnum.EXCHANGE, {
         id: this.getId(),
         send: queueNames.length,

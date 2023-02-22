@@ -5,7 +5,7 @@ import { Operator, News } from "../..";
  * @param fun
  * @returns boolean 返回值控制是否加入队列
  */
-export default function filter<D = unknown>(fun: (res: D) => boolean | Promise<boolean>): Operator<D> {
+export default function filter<D = unknown>(fun: (res: D) => boolean): Operator<D> {
   return {
     beforeAddNews(res: News<D>) {
       return fun(res.content);
