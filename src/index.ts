@@ -22,3 +22,8 @@ import Logs from "./internal/Logs";
 export { Exchange, Queue, Consumer, News, Logs };
 
 export { ConsumMode, Operator, ExchangeOption, QueueOption };
+
+/**
+ * 管道符
+ */
+export * from "./operators";
