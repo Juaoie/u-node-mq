@@ -1,0 +1,8 @@
+interface E {
+  
+}
+
+
+ class O {
+
+ }
