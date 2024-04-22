@@ -5,7 +5,7 @@ import { execa } from "execa";
 const _package = JSON.parse(fs.readFileSync("./package.json"));
 const platform = "neutral";
 const now = new Date().getTime();
-const operatorsDirList = fs.readdirSync("src/operators");
+// const operatorsDirList = fs.readdirSync("src/operators");
 
 async function buildMain() {
   const minify = _package.version.search("beta") === -1;
@@ -33,17 +33,6 @@ async function buildMain() {
     sourcemap: true,
   });
 
-  //构建operators
-  const operators = esbuild.build({
-    entryPoints: operatorsDirList.map(item => `src/operators/${item}/index.ts`),
-    external: [],
-    outdir: "u-node-mq/operators",
-    platform,
-    bundle: false,
-    minify,
-    sourcemap: true,
-  });
-
   //构建utils
   const utils = esbuild.build({
     entryPoints: ["src/utils/tools.ts", "src/utils/types.ts"],
@@ -58,7 +47,6 @@ async function buildMain() {
   await Promise.all([
     unmq,
     plugin,
-    operators,
     utils,
     execa("pnpm", ["gobuild"]),
     execa("pnpm", ["gdts"]),
