@@ -4,6 +4,20 @@
  */
 export const random = (): string => String(Math.round(Math.random() * 10000000000));
 
+/**
+ * 获取uuid
+ * @returns
+ */
+export function getUUID() {
+  return "xxxxxxxx-xxxx-xxxx-yxxx-xxxxxxxxxxxx"
+    .replace(/[xy]/g, function (c) {
+      const r = (Math.random() * 16) | 0;
+      const v = c == "x" ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    })
+    .toUpperCase();
+}
+
 export const promiseSetTimeout = (time = 0) => new Promise(resolve => setTimeout(resolve, time));
 
 /**

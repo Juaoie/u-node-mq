@@ -1,20 +1,38 @@
 {
-  "include": ["src/index.ts", "src/core/**/*", "src/internal/**/*", "src/operators/**/*", "src/plugins/iframe/**/*"],
-  "exclude": ["node_modules"],
+  "include": [
+    "src/index.ts",
+    "src/core/**/*",
+    "src/internal/**/*",
+    "src/operators/**/*",
+    "src/plugins/iframe/**/*",
+    "src/plugins/wx-logs/**/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
   "compilerOptions": {
     "target": "ES6",
     "module": "ES6",
     "moduleResolution": "Node",
     "diagnostics": true,
     "outDir": "./dist/",
-    "lib": ["dom", "ESNext"],
+    "lib": [
+      "DOM",
+      "ESNext"
+    ],
     "declaration": true,
     "removeComments": false,
     "esModuleInterop": true,
-    "baseUrl": ".",
-    "paths": {},
+    "baseUrl": "./", // 设置基准目录
+    "paths": {
+      "@/*": [
+        "src/*"
+      ]
+    },
     "strict": true,
     "downlevelIteration": true,
-    "types": []
+    "types": [
+      "miniprogram-api-typings"
+    ]
   }
 }

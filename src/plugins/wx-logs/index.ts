@@ -1,7 +1,7 @@
 import { Option, defaultOption, LogLevel, OutputType } from "./config";
-import UNodeMQ, { Queue, Exchange } from "u-node-mq";
-import { getUUID, isFunction } from "./tools";
+import { getUUID, isFunction } from "@/utils/tools";
 import { onListener } from "./listener";
+import UNodeMQ, { Exchange, Queue } from "@/index";
 
 type WechatLogType = WechatMiniprogram.Error | WechatMiniprogram.GeneralCallbackResult;
 
@@ -28,6 +28,12 @@ const list = {
 
 function proxyWxApi(api: keyof WechatMiniprogram.Wx) {
   return wx.canIUse(api);
+}
+function getUnmqDefault() {
+  return new UNodeMQ(
+    Object.fromEntries(Object.entries(LogLevel).map(item => [item[1], new Exchange<Message>()])),
+    Object.fromEntries(Object.entries(OutputType).map(item => [item[1], new Queue<Message>()])),
+  );
 }
 
 const p = proxyWxApi;
@@ -61,14 +67,8 @@ type Message = {
  * 2. 系统信息检查
  * 3. 最小调用api
  */
-export class Logs {
-  /**
-   * u-node-mq
-   */
-  private readonly unmq = new UNodeMQ(
-    Object.fromEntries(Object.entries(LogLevel).map((item) => [item[1], new Exchange<Message>()])),
-    Object.fromEntries(Object.entries(OutputType).map((item) => [item[1], new Queue<Message>()]))
-  );
+export default class WxLogsPlugin {
+  private unmq = getUnmqDefault();
   /**
    * 初始化获取当前系统信息
    */
@@ -87,7 +87,7 @@ export class Logs {
     /**
      * 设置交换机路由
      */
-    Object.entries(option).forEach((item) => {
+    Object.entries(option).forEach(item => {
       const e = this.unmq.getExchange(item[0]);
       if (e === null) return e;
       e.setRoutes(item[1]);
@@ -96,12 +96,23 @@ export class Logs {
     /**
      * 添加默认的监听器
      */
-    Object.values(OutputType).forEach((item) => {
+    Object.values(OutputType).forEach(item => {
       this.unmq.on(item, list[item], { uuid: this.uuid });
     });
 
     onListener();
   }
+  /**
+   *
+   * @param unmq
+   */
+  install(unmq?: UNodeMQ<Record<LogLevel, Exchange<Message>>, Record<OutputType, Queue<Message>>>) {
+    //
+    if (unmq !== undefined) {
+      this.unmq = unmq;
+    }
+  }
+
   /**
    * 获取当前页面环境
    * @returns

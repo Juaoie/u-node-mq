@@ -48,13 +48,13 @@ async function buildMain() {
     unmq,
     plugin,
     utils,
-    execa("pnpm", ["gobuild"]),
+    // execa("pnpm", ["gobuild"]),
     execa("pnpm", ["gdts"]),
     fs.copy("package.json", "u-node-mq/package.json"),
     fs.copy("LICENSE", "u-node-mq/LICENSE"),
     fs.copy("README.md", "u-node-mq/README.md"),
   ]);
-  fs.copy("./termui/u-node-mq-termui.exe", "u-node-mq/bin/u-node-mq-termui.exe");
+  // fs.copy("./termui/u-node-mq-termui.exe", "u-node-mq/bin/u-node-mq-termui.exe");
   console.log(chalk.cyanBright("执行时长：" + (new Date().getTime() - now) / 1000 + "秒"));
 }
 buildMain();

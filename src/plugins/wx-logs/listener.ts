@@ -1,5 +1,5 @@
 // export default function listener() {}
-import { Logs } from "src";
+import { Logs } from "./index";
 import { LogLevel } from "./config";
 type I =
   | "onThemeChange"
@@ -22,15 +22,15 @@ const t: T = {
   [LogLevel.Error]: [wx["onUnhandledRejection"], wx["onPageNotFound"], wx["onLazyLoadError"], wx["onError"]],
 };
 export function onListener(this: Logs) {
-  t[LogLevel.Info].forEach((fun) => {
+  t[LogLevel.Info].forEach(fun => {
     fun(this.info);
   });
 
-  t[LogLevel.Warn].forEach((fun) => {
+  t[LogLevel.Warn].forEach(fun => {
     fun(this.warn);
   });
 
-  t[LogLevel.Error].forEach((fun) => {
+  t[LogLevel.Error].forEach(fun => {
     fun(this.error);
   });
 }

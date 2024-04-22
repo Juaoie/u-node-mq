@@ -47,6 +47,9 @@ devDependencies:
   jest:
     specifier: ^27.5.1
     version: 27.5.1
+  miniprogram-api-typings:
+    specifier: ^3.12.2
+    version: 3.12.2
   prettier:
     specifier: ^2.6.2
     version: 2.6.2
@@ -2881,6 +2884,10 @@ packages:
     resolution: {integrity: sha512-J7p63hRiAjw1NDEww1W7i37+ByIrOWO5XQQAzZ3VOcL0PNybwpfmV/N05zFAzwQ9USyEcX6t3UO+K5aqBQOIHw==}
     dependencies:
       brace-expansion: 1.1.11
+    dev: true
+
+  /miniprogram-api-typings@3.12.2:
+    resolution: {integrity: sha512-OJB2uVAfhycX4teG/zEVpoThushQqLOx946XACDpVc6OQydiJWjn7djVzvNCbv0VOA7sbHGPQp/RkXD9vMCDEw==}
     dev: true
 
   /ms@2.1.2:
