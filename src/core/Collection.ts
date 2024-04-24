@@ -2,12 +2,15 @@ import { Exchange, Queue, News } from "../index";
 import { Consume } from "../internal/Consumer";
 import ExchangeCollectionHandle from "./ExchangeCollectionHandle";
 import QueueCollectionHandle from "./QueueCollectionHandle";
-export default class Collection<
-  ExchangeCollection extends Record<string, Exchange<unknown>>,
-  QueueCollection extends Record<string, Queue<unknown>>,
-> {
-  private readonly exchangeCollectionHandle = new ExchangeCollectionHandle();
-  private readonly queueCollectionHandle = new QueueCollectionHandle();
+export default class Collection<D, ExchangeCollection extends Record<string, Exchange<D>>, QueueCollection extends Record<string, Queue<D>>> {
+  /**
+   * 交换机集合
+   */
+  private readonly exchangeCollectionHandle = new ExchangeCollectionHandle<D>();
+  /**
+   * 队列集合
+   */
+  private readonly queueCollectionHandle = new QueueCollectionHandle<D>();
 
   constructor(exchangeCollection: ExchangeCollection, queueCollection: QueueCollection) {
     for (const name in exchangeCollection) {
@@ -19,27 +22,60 @@ export default class Collection<
     this.exchangeCollectionHandle.setExchangeCollection(exchangeCollection);
     this.queueCollectionHandle.setQueueCollection(queueCollection);
   }
+  /**
+   * 根据交换机名称获取交换机
+   * @param exchangeName
+   * @returns
+   */
   getExchange<E extends keyof ExchangeCollection & string>(exchangeName: E) {
     return this.exchangeCollectionHandle.getExchange(exchangeName);
   }
+  /**
+   * 获取交换机集合列表
+   * @returns
+   */
   getExchangeList() {
     return this.exchangeCollectionHandle.getExchangeList();
   }
+  /**
+   * 添加交换机
+   * @param exchangeName
+   * @param exchange
+   * @returns
+   */
+  addExchage(exchangeName: string, exchange: Exchange<D>) {
+    return this.exchangeCollectionHandle.addExchage(exchangeName, exchange);
+  }
+  /**
+   * 根据
+   * @param queueName
+   * @returns
+   */
   getQueue<Q extends keyof QueueCollection & string>(queueName: Q) {
     return this.queueCollectionHandle.getQueue(queueName);
   }
+  /**
+   * 获取队列集合列表
+   * @returns
+   */
   getQueueList() {
     return this.queueCollectionHandle.getQueueList();
   }
-  addQueue(queue: Queue<unknown>) {
-    this.queueCollectionHandle.addQueue(queue);
+  /**
+   * 添加一个队列到队列集合
+   * @param queurName
+   * @param queue
+   * @returns
+   */
+  addQueue(queurName: string, queue: Queue<D>) {
+    return this.queueCollectionHandle.addQueue(queurName, queue);
   }
   /**
    * 发送消息到交换机
    * @param exchangeName
    * @param news
    */
-  pushNewsListToExchange<E extends keyof ExchangeCollection & string>(exchangeName: E, ...news: News<unknown>[]) {
+  pushNewsListToExchange<E extends keyof ExchangeCollection & string>(exchangeName: E, ...news: News<D>[]) {
     for (const newsItem of news) {
       //分别发送每一条消息
       this.exchangeCollectionHandle.getQueueNameList(exchangeName, newsItem.content).then(queueNameList => {
@@ -54,7 +90,7 @@ export default class Collection<
    * @param queueName
    * @param news
    */
-  pushNewsListToQueue<Q extends keyof QueueCollection & string>(queueName: Q, ...news: News<unknown>[]) {
+  pushNewsListToQueue<Q extends keyof QueueCollection & string>(queueName: Q, ...news: News<D>[]) {
     for (const newsItem of news) {
       //分别发送每一条消息
       this.queueCollectionHandle.pushNewsToQueue(queueName, newsItem);
@@ -65,7 +101,7 @@ export default class Collection<
    * @param exchangeName
    * @param contentList
    */
-  pushContentListToExchange<E extends keyof ExchangeCollection & string>(exchangeName: E, ...contentList: unknown[]) {
+  pushContentListToExchange<E extends keyof ExchangeCollection & string>(exchangeName: E, ...contentList: D[]) {
     for (const content of contentList) {
       //分别发送每一条消息
       this.exchangeCollectionHandle.getQueueNameList(exchangeName, content).then(queueNameList => {
@@ -80,7 +116,7 @@ export default class Collection<
    * @param queueName
    * @param contentList
    */
-  pushContentListToQueue<Q extends keyof QueueCollection & string>(queueName: Q, ...contentList: unknown[]) {
+  pushContentListToQueue<Q extends keyof QueueCollection & string>(queueName: Q, ...contentList: D[]) {
     for (const content of contentList) {
       //分别发送每一条消息
       this.queueCollectionHandle.pushContentToQueue(queueName, content);

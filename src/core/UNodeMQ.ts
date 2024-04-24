@@ -34,11 +34,13 @@ export function createUnmq<ExchangeCollection extends Record<string, Exchange<an
 }
 /**
  * UNodeMQ 发布订阅模型
+ * 从3.7.0版本开始，一个u-node-mq仅支持一种消息类型
  */
 export default class UNodeMQ<
-  ExchangeCollection extends Record<string, Exchange<any>>,
-  QueueCollection extends Record<string, Queue<any>>,
-> extends Collection<ExchangeCollection, QueueCollection> {
+  D,
+  ExchangeCollection extends Record<string, Exchange<D>>,
+  QueueCollection extends Record<string, Queue<D>>,
+> extends Collection<D, ExchangeCollection, QueueCollection> {
   constructor(exchangeCollection: ExchangeCollection, queueCollection: QueueCollection) {
     super(exchangeCollection, queueCollection);
   }

@@ -12,7 +12,7 @@ export interface QueueOption<D> {
   async?: boolean;
   maxTime?: number;
   operators?: Operator<D>[];
-  [k: string]: any;
+  [k: string]: unknown;
 }
 /**
  * 队列消费类型
@@ -29,7 +29,7 @@ export enum ConsumMode {
  *
  */
 export default class Queue<D> {
-  [k: string]: any;
+  [k: string]: unknown;
   name?: string;
   /**
    * 创建时间戳
@@ -191,7 +191,7 @@ export default class Queue<D> {
    * @param consume
    * @param payload 消费载体，每次消费都会传入给消费者
    */
-  pushConsume(consume: Consume<D>, payload?: any) {
+  pushConsume(consume: Consume<D>, payload?: unknown) {
     const consumer = new Consumer(consume, payload);
     this.pushConsumer(consumer);
   }
