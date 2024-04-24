@@ -1,5 +1,5 @@
 // export default function listener() {}
-import { Logs } from "./index";
+import WxLogsPlugin from "./index";
 import { LogLevel } from "./config";
 type I =
   | "onThemeChange"
@@ -21,16 +21,16 @@ const t: T = {
   [LogLevel.Warn]: [wx["onAudioInterruptionEnd"], wx["onAudioInterruptionBegin"], wx["onMemoryWarning"]],
   [LogLevel.Error]: [wx["onUnhandledRejection"], wx["onPageNotFound"], wx["onLazyLoadError"], wx["onError"]],
 };
-export function onListener(this: Logs) {
+export function onListener(this: WxLogsPlugin) {
   t[LogLevel.Info].forEach(fun => {
-    fun(this.info);
+    fun(this[LogLevel.Info]);
   });
 
   t[LogLevel.Warn].forEach(fun => {
-    fun(this.warn);
+    fun(this[LogLevel.Warn]);
   });
 
   t[LogLevel.Error].forEach(fun => {
-    fun(this.error);
+    fun(this[LogLevel.Error]);
   });
 }

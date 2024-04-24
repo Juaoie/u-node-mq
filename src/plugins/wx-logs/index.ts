@@ -36,15 +36,10 @@ function getUnmqDefault() {
   );
 }
 
-const p = proxyWxApi;
-type T = typeof wx;
-const t: WechatMiniprogram.Wx = {
-  ...wx,
-};
 function getMiniprogramInfo() {
   return {
     system: {
-      // w: p.getWindowInfo(),
+      w: wx.getWindowInfo(),
       s: wx.getSystemSetting(),
       S: wx.getSkylineInfoSync(),
       d: wx.getDeviceInfo(),
@@ -63,9 +58,7 @@ type Message = {
   content?: unknown;
 };
 /**
- * 1. 基础库版本检测
- * 2. 系统信息检查
- * 3. 最小调用api
+ * 微信小程序日志监控
  */
 export default class WxLogsPlugin {
   private unmq = getUnmqDefault();
@@ -81,13 +74,24 @@ export default class WxLogsPlugin {
    *
    * @param option
    */
-  constructor(option: Option = defaultOption) {
+  constructor(private readonly option: Option = defaultOption) {
     if (!isFunction(wx.canIUse)) throw new Error("基础库低于 1.1.1");
+  }
+  /**
+   *
+   * @param unmq
+   */
+  install(this: UNodeMQ<Record<LogLevel, Exchange<Message>>, Record<OutputType, Queue<Message>>>) {
+    //
+    if (unmq !== undefined) {
+      this.unmq = unmq;
+    }
+    unmq.exchangeCollectionHandle
 
     /**
      * 设置交换机路由
      */
-    Object.entries(option).forEach(item => {
+    Object.entries(this.option).forEach(item => {
       const e = this.unmq.getExchange(item[0]);
       if (e === null) return e;
       e.setRoutes(item[1]);
@@ -100,17 +104,9 @@ export default class WxLogsPlugin {
       this.unmq.on(item, list[item], { uuid: this.uuid });
     });
 
-    onListener();
-  }
-  /**
-   *
-   * @param unmq
-   */
-  install(unmq?: UNodeMQ<Record<LogLevel, Exchange<Message>>, Record<OutputType, Queue<Message>>>) {
-    //
-    if (unmq !== undefined) {
-      this.unmq = unmq;
-    }
+    onListener.apply(this);
+
+    this.info(this.systemInfo);
   }
 
   /**

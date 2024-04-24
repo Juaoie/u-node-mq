@@ -24,11 +24,11 @@ async function buildMain() {
 
   //构建plugins
   const plugin = esbuild.build({
-    entryPoints: ["src/plugins/iframe/index.ts", "src/plugins/process/index.ts"],
+    entryPoints: ["src/plugins/iframe/index.ts", "src/plugins/process/index.ts", "src/plugins/wx-logs/index.ts"],
     external: [],
     outdir: "u-node-mq/plugins",
     platform,
-    bundle: false,
+    bundle: true,
     minify,
     sourcemap: true,
   });
