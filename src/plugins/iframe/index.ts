@@ -50,7 +50,7 @@ export const getInternalIframeMessageQueueName = (queueName: string) => queueNam
 export const getInternalIframeBroadcasMessageQueueName = (queueName: string) => queueName + "_Iframe_Wait_Message";
 
 export default class IframePlugin {
-  private unmq: UNodeMQ<Record<string, Exchange<any>>, Record<string, Queue<any>>> | null = null;
+  private unmq: UNodeMQ<any, Record<string, Exchange<any>>, Record<string, Queue<any>>> | null = null;
   constructor(private readonly name: string, option?: Option) {
     if (option?.autoSize) {
       const resizeObserverInstance = createSingleUnmq<ResizeObserverEntry>().add(resizeObserver(option.arg));
@@ -72,7 +72,7 @@ export default class IframePlugin {
       });
     }
   }
-  install(unmq: UNodeMQ<Record<string, Exchange<any>>, Record<string, Queue<any>>>) {
+  install(unmq: UNodeMQ<any, Record<string, Exchange<any>>, Record<string, Queue<any>>>) {
     const selfExchange = unmq.getExchange(this.name);
     if (!selfExchange) {
       throw `${this.name}交换机不存在`;
@@ -89,9 +89,9 @@ export default class IframePlugin {
 
       iframe.setRepeater(() => [internalIframeMessageQueueName, internalIframeBroadcasMessageQueueName]);
       //用于存储消息的队列
-      unmq.addQueue(new Queue({ name: internalIframeMessageQueueName, async: true }));
+      unmq.addQueue(internalIframeMessageQueueName, new Queue({ async: true }));
       //用来广播获取地址的消息
-      unmq.addQueue(new Queue({ name: internalIframeBroadcasMessageQueueName, async: true }));
+      unmq.addQueue(internalIframeBroadcasMessageQueueName, new Queue({ async: true }));
 
       //为广播消息挂载消费方法
       unmq.on(internalIframeBroadcasMessageQueueName, () => {

@@ -29,12 +29,6 @@ const list = {
 function proxyWxApi(api: keyof WechatMiniprogram.Wx) {
   return wx.canIUse(api);
 }
-function getUnmqDefault() {
-  return new UNodeMQ(
-    Object.fromEntries(Object.entries(LogLevel).map(item => [item[1], new Exchange<Message>()])),
-    Object.fromEntries(Object.entries(OutputType).map(item => [item[1], new Queue<Message>()])),
-  );
-}
 
 function getMiniprogramInfo() {
   return {
@@ -61,7 +55,7 @@ type Message = {
  * 微信小程序日志监控
  */
 export default class WxLogsPlugin {
-  private unmq = getUnmqDefault();
+  private unmq;
   /**
    * 初始化获取当前系统信息
    */
@@ -81,13 +75,20 @@ export default class WxLogsPlugin {
    *
    * @param unmq
    */
-  install(this: UNodeMQ<Record<LogLevel, Exchange<Message>>, Record<OutputType, Queue<Message>>>) {
+  install(unmq: UNodeMQ<Message, Record<LogLevel, Exchange<Message>>, Record<OutputType, Queue<Message>>>) {
     //
-    if (unmq !== undefined) {
-      this.unmq = unmq;
-    }
-    unmq.exchangeCollectionHandle
-
+    /**
+     * 初始化交换机
+     */
+    Object.entries(LogLevel).forEach(([, value]) => {
+      unmq.addExchage(value, new Exchange<Message>());
+    });
+    /**
+     * 初始化队列
+     */
+    Object.entries(OutputType).forEach(([, value]) => {
+      unmq.addQueue(value, new Queue<Message>());
+    });
     /**
      * 设置交换机路由
      */
