@@ -24,13 +24,31 @@ async function buildMain() {
 
   //构建plugins
   const plugin = esbuild.build({
-    entryPoints: ["src/plugins/iframe/index.ts", "src/plugins/process/index.ts", "src/plugins/wx-logs/index.ts"],
+    entryPoints: [
+      "src/plugins/iframe/index.ts",
+      "src/plugins/process/index.ts",
+      "src/plugins/wx-logs/index.ts",
+      "src/plugins/wx-logs/config.ts",
+      "src/plugins/wx-logs/listener.ts",
+    ],
     external: [],
     outdir: "u-node-mq/plugins",
     platform,
-    bundle: true,
+    bundle: false,
     minify,
     sourcemap: true,
+    plugins: [
+      {
+        name: "resolve-alias",
+        setup(build) {
+          build.onResolve({ filter: /^@\/.+/ }, args => {
+            return {
+              path: args.path.replace("@/", "./src/"),
+            };
+          });
+        },
+      },
+    ],
   });
 
   //构建utils

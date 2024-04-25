@@ -23,14 +23,14 @@ const t: T = {
 };
 export function onListener(this: WxLogsPlugin) {
   t[LogLevel.Info].forEach(fun => {
-    fun(this[LogLevel.Info]);
+    fun(this[LogLevel.Info].bind(this));
   });
 
   t[LogLevel.Warn].forEach(fun => {
-    fun(this[LogLevel.Warn]);
+    fun(this[LogLevel.Warn].bind(this));
   });
 
   t[LogLevel.Error].forEach(fun => {
-    fun(this[LogLevel.Error]);
+    fun(this[LogLevel.Error].bind(this));
   });
 }
