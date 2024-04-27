@@ -1,9 +1,8 @@
-import { Option, defaultOption, LogLevel, OutputType } from "./config";
-import { getUUID, isFunction } from "@/utils/tools";
+import { Option, defaultOption, LOG_LEVEL, OUTPUT_TYPE } from "./config";
+import { getUUID } from "@/utils/tools";
 import { onListener } from "./listener";
 import UNodeMQ, { Exchange, Queue } from "@/index";
-
-type WechatLogType = WechatMiniprogram.Error | WechatMiniprogram.GeneralCallbackResult;
+import { wxApi } from "./proxyApi";
 
 function proxyConsle(this: WxLogsPlugin, content: Message) {
   console.log("----consle 日志---");
@@ -21,33 +20,24 @@ function proxyRequest(this: WxLogsPlugin, content: Message) {
 }
 
 const ProxyList = {
-  [OutputType.Console]: proxyConsle,
-  [OutputType.Realtime]: proxyRealtime,
-  [OutputType.Request]: proxyRequest,
+  [OUTPUT_TYPE.Console]: proxyConsle,
+  [OUTPUT_TYPE.Realtime]: proxyRealtime,
+  [OUTPUT_TYPE.Request]: proxyRequest,
 };
-
-function proxyWxApi(api: keyof WechatMiniprogram.Wx) {
-  return wx.canIUse(api);
-}
 
 function getMiniprogramInfo() {
   return {
-    system: {
-      w: wx.getWindowInfo(),
-      s: wx.getSystemSetting(),
-      S: wx.getSkylineInfoSync(),
-      d: wx.getDeviceInfo(),
-      a: wx.getAppBaseInfo(),
-      A: wx.getAppAuthorizeSetting(),
-    },
-    life: {
-      l: wx.getLaunchOptionsSync(),
-      a: wx.getApiCategory(),
-    },
+    windowInfo: wxApi("getWindowInfo")?.(),
+    skylineInfoSync: wxApi("getSkylineInfoSync")?.(),
+    deviceInfo: wxApi("getDeviceInfo")?.(),
+    appBaseInfo: wxApi("getAppBaseInfo")?.(),
+    appAuthorizeSetting: wxApi("getAppAuthorizeSetting")?.(),
+    launchOptionsSync: wxApi("getLaunchOptionsSync")?.(),
+    apiCategory: wxApi("getApiCategory")?.(),
   };
 }
 type Message = {
-  type: LogLevel;
+  type: LOG_LEVEL;
   uuid: string;
   content?: unknown;
 };
@@ -55,7 +45,7 @@ type Message = {
  * 微信小程序日志监控
  */
 export default class WxLogsPlugin {
-  private unmq: UNodeMQ<Message, Record<LogLevel, Exchange<Message>>, Record<OutputType, Queue<Message>>> | null = null;
+  private unmq: UNodeMQ<Message, Record<LOG_LEVEL, Exchange<Message>>, Record<OUTPUT_TYPE, Queue<Message>>> | null = null;
   /**
    * 实时日志
    * 
@@ -73,7 +63,7 @@ export default class WxLogsPlugin {
     开发版、体验版的实时日志，不计入相关quota，即无使用上限。
 
    */
-  private readonly realtimeLog = wx.getRealtimeLogManager();
+  private readonly realtimeLog = wxApi("getRealtimeLogManager")?.();
   /**
    * 初始化获取当前系统信息
    */
@@ -86,26 +76,24 @@ export default class WxLogsPlugin {
    *
    * @param option
    */
-  constructor(private readonly option: Option = defaultOption) {
-    if (!isFunction(wx.canIUse)) throw new Error("基础库低于 1.1.1");
-  }
+  constructor(private readonly option: Option = defaultOption) {}
   /**
    *
    * @param unmq
    */
-  install(unmq: UNodeMQ<Message, Record<LogLevel, Exchange<Message>>, Record<OutputType, Queue<Message>>>) {
+  install(unmq: UNodeMQ<Message, Record<LOG_LEVEL, Exchange<Message>>, Record<OUTPUT_TYPE, Queue<Message>>>) {
     //
     /**
      * 初始化交换机
      */
-    Object.entries(LogLevel).forEach(([, value]) => {
+    Object.entries(LOG_LEVEL).forEach(([, value]) => {
       unmq.addExchage(value, new Exchange<Message>());
     });
 
     /**
      * 初始化队列
      */
-    Object.entries(OutputType).forEach(([, value]) => {
+    Object.entries(OUTPUT_TYPE).forEach(([, value]) => {
       unmq.addQueue(value, new Queue<Message>());
     });
 
@@ -113,7 +101,7 @@ export default class WxLogsPlugin {
      * 设置交换机路由
      */
     Object.entries(this.option).forEach(item => {
-      const e = unmq.getExchange(item[0] as LogLevel);
+      const e = unmq.getExchange(item[0] as LOG_LEVEL);
       if (e === null) return e;
       e.setRoutes(item[1]);
     });
@@ -121,7 +109,7 @@ export default class WxLogsPlugin {
     /**
      * 添加默认的监听器
      */
-    Object.values(OutputType).forEach(item => {
+    Object.values(OUTPUT_TYPE).forEach(item => {
       unmq.on(item, ProxyList[item].bind(this));
     });
 
@@ -129,49 +117,39 @@ export default class WxLogsPlugin {
 
     onListener.apply(this);
 
-    this[LogLevel.Warn](this.systemInfo);
+    this[LOG_LEVEL.Warn](this.systemInfo);
   }
   /**
    *  添加日志到实时日志
    * @param logType
    * @param msg
    */
-  addRealtimeLog(logType: LogLevel, msg: Message) {
-    this.realtimeLog[logType](msg);
+  addRealtimeLog(logType: LOG_LEVEL, msg: Message) {
+    this.realtimeLog?.[logType](msg);
   }
 
-  /**
-   * 获取当前页面环境
-   * @returns
-   */
-  private getCurrentPage() {
-    return getCurrentPages()[getCurrentPages().length - 1];
-  }
-  // ...Object.values(LogLevel.Info).map(item=>{
-  //   return
-  // })
-  [LogLevel.Info](content: unknown) {
+  [LOG_LEVEL.Info](content: unknown) {
     if (this.unmq === null) return false;
-    this.unmq.emit(LogLevel.Info, {
-      type: LogLevel.Info,
+    this.unmq.emit(LOG_LEVEL.Info, {
+      type: LOG_LEVEL.Info,
       uuid: this.uuid,
       content,
     });
     return true;
   }
-  [LogLevel.Warn](content: unknown) {
+  [LOG_LEVEL.Warn](content: unknown) {
     if (this.unmq === null) return false;
-    this.unmq.emit(LogLevel.Warn, {
-      type: LogLevel.Warn,
+    this.unmq.emit(LOG_LEVEL.Warn, {
+      type: LOG_LEVEL.Warn,
       uuid: this.uuid,
       content,
     });
     return true;
   }
-  [LogLevel.Error](content: unknown) {
+  [LOG_LEVEL.Error](content: unknown) {
     if (this.unmq === null) return false;
-    this.unmq.emit(LogLevel.Error, {
-      type: LogLevel.Error,
+    this.unmq.emit(LOG_LEVEL.Error, {
+      type: LOG_LEVEL.Error,
       uuid: this.uuid,
       content,
     });

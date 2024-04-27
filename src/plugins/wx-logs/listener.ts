@@ -1,36 +1,27 @@
 // export default function listener() {}
 import WxLogsPlugin from "./index";
-import { LogLevel } from "./config";
-type I =
-  | "onThemeChange"
-  | "onNetworkWeakChange"
-  | "onNetworkStatusChange"
-  | "onAudioInterruptionEnd"
-  | "onAudioInterruptionBegin"
-  | "onMemoryWarning"
-  | "onUnhandledRejection"
-  | "onPageNotFound"
-  | "onLazyLoadError"
-  | "onError";
-type OptionWx = Pick<WechatMiniprogram.Wx, I>;
-type T = {
-  [key in LogLevel]: OptionWx[I][];
+import { LOG_LEVEL } from "./config";
+import { wxApi } from "./proxyApi";
+
+const t = {
+  [LOG_LEVEL.Info]: [wxApi("onThemeChange"), wxApi("onNetworkWeakChange"), wxApi("onNetworkStatusChange")],
+  [LOG_LEVEL.Warn]: [wxApi("onAudioInterruptionEnd"), wxApi("onAudioInterruptionBegin"), wxApi("onMemoryWarning")],
+  [LOG_LEVEL.Error]: [wxApi("onUnhandledRejection"), wxApi("onPageNotFound"), wxApi("onLazyLoadError"), wxApi("onError")],
 };
-const t: T = {
-  [LogLevel.Info]: [wx["onThemeChange"], wx["onNetworkWeakChange"], wx["onNetworkStatusChange"]],
-  [LogLevel.Warn]: [wx["onAudioInterruptionEnd"], wx["onAudioInterruptionBegin"], wx["onMemoryWarning"]],
-  [LogLevel.Error]: [wx["onUnhandledRejection"], wx["onPageNotFound"], wx["onLazyLoadError"], wx["onError"]],
-};
+/**
+ * 监听系统变化事件
+ * @param this
+ */
 export function onListener(this: WxLogsPlugin) {
-  t[LogLevel.Info].forEach(fun => {
-    fun(this[LogLevel.Info].bind(this));
+  t[LOG_LEVEL.Info].forEach(fun => {
+    if (fun !== null) fun(this[LOG_LEVEL.Info].bind(this));
   });
 
-  t[LogLevel.Warn].forEach(fun => {
-    fun(this[LogLevel.Warn].bind(this));
+  t[LOG_LEVEL.Warn].forEach(fun => {
+    if (fun !== null) fun(this[LOG_LEVEL.Warn].bind(this));
   });
 
-  t[LogLevel.Error].forEach(fun => {
-    fun(this[LogLevel.Error].bind(this));
+  t[LOG_LEVEL.Error].forEach(fun => {
+    if (fun !== null) fun(this[LOG_LEVEL.Error].bind(this));
   });
 }

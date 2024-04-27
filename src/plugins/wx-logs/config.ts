@@ -1,7 +1,7 @@
 /**
  * 日志级别，日志类型，暂就这些类型，不可动态添加
  */
-export enum LogLevel {
+export enum LOG_LEVEL {
   Info = "info",
   Warn = "warn",
   Error = "error",
@@ -11,7 +11,7 @@ export enum LogLevel {
  * 输出类型
  *
  */
-export enum OutputType {
+export enum OUTPUT_TYPE {
   //控制台
   Console = "console",
   //实时日志
@@ -21,11 +21,11 @@ export enum OutputType {
 }
 
 export type Option = {
-  [P in `${LogLevel}`]: Array<`${OutputType}`>;
+  [P in `${LOG_LEVEL}`]: Array<`${OUTPUT_TYPE}`>;
 };
 
 export const defaultOption: Option = {
-  [LogLevel.Info]: [OutputType.Console],
-  [LogLevel.Warn]: [OutputType.Console, OutputType.Realtime],
-  [LogLevel.Error]: [OutputType.Console, OutputType.Request, OutputType.Realtime],
+  [LOG_LEVEL.Info]: [OUTPUT_TYPE.Console],
+  [LOG_LEVEL.Warn]: [OUTPUT_TYPE.Console, OUTPUT_TYPE.Realtime],
+  [LOG_LEVEL.Error]: [OUTPUT_TYPE.Console, OUTPUT_TYPE.Request, OUTPUT_TYPE.Realtime],
 };

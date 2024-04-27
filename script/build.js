@@ -22,57 +22,13 @@ async function buildMain() {
     sourcemap: true,
   });
 
-  //构建plugins
-  const plugin = esbuild.build({
-    entryPoints: [
-      "src/plugins/iframe/index.ts",
-      "src/plugins/process/index.ts",
-      "src/plugins/wx-logs/index.ts",
-      "src/plugins/wx-logs/config.ts",
-      "src/plugins/wx-logs/listener.ts",
-    ],
-    external: [],
-    outdir: "u-node-mq/plugins",
-    platform,
-    bundle: false,
-    minify,
-    sourcemap: true,
-    plugins: [
-      {
-        name: "resolve-alias",
-        setup(build) {
-          build.onResolve({ filter: /^@\/.+/ }, args => {
-            return {
-              path: args.path.replace("@/", "./src/"),
-            };
-          });
-        },
-      },
-    ],
-  });
-
-  //构建utils
-  const utils = esbuild.build({
-    entryPoints: ["src/utils/tools.ts", "src/utils/types.ts"],
-    external: [],
-    outdir: "u-node-mq/utils",
-    platform,
-    bundle: true,
-    minify,
-    sourcemap: true,
-  });
-
   await Promise.all([
     unmq,
-    plugin,
-    utils,
-    // execa("pnpm", ["gobuild"]),
     execa("pnpm", ["gdts"]),
     fs.copy("package.json", "u-node-mq/package.json"),
     fs.copy("LICENSE", "u-node-mq/LICENSE"),
     fs.copy("README.md", "u-node-mq/README.md"),
   ]);
-  // fs.copy("./termui/u-node-mq-termui.exe", "u-node-mq/bin/u-node-mq-termui.exe");
   console.log(chalk.cyanBright("执行时长：" + (new Date().getTime() - now) / 1000 + "秒"));
 }
 buildMain();

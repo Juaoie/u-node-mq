@@ -27,3 +27,8 @@ export { ConsumMode, Operator, ExchangeOption, QueueOption };
  * 管道符
  */
 export * from "./operators";
+
+/**
+ * 插件
+ */
+export * from "./plugins";
