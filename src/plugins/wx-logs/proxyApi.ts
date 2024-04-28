@@ -20,7 +20,8 @@ type I =
   | "getAppAuthorizeSetting"
   | "getLaunchOptionsSync"
   | "getApiCategory"
-  | "getRealtimeLogManager";
+  | "getRealtimeLogManager"
+  | "getAccountInfoSync";
 
 type OptionWx = Pick<WechatMiniprogram.Wx, I>;
 

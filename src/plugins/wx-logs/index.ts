@@ -34,6 +34,7 @@ function getMiniprogramInfo() {
     appAuthorizeSetting: wxApi("getAppAuthorizeSetting")?.(),
     launchOptionsSync: wxApi("getLaunchOptionsSync")?.(),
     apiCategory: wxApi("getApiCategory")?.(),
+    accountInfoSync: wxApi("getAccountInfoSync")?.(),
   };
 }
 type Message = {
