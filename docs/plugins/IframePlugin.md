@@ -13,8 +13,7 @@
 
 ```javascript
 // https://iframeName1.com
-import IframeMessage from "u-node-mq/plugins/iframe";
-import UNodeMQ from "u-node-mq";
+import UNodeMQ,{IframeMessage} from "u-node-mq";
 const unmq = new UNodeMQ(
   {
     iframeName1: new Exchange({ routes: ["qu1"] }),
@@ -33,8 +32,7 @@ unmq.emit("iframeName2", "发送给iframeName2的消息");
 
 ```javascript
 // https://iframeName2.com
-import IframeMessage from "u-node-mq/plugins/iframe";
-import UNodeMQ from "u-node-mq";
+import UNodeMQ,{IframeMessage} from "u-node-mq";
 const unmq = new UNodeMQ(
   {
     iframeName1: new Exchange(),

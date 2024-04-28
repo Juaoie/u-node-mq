@@ -7,8 +7,7 @@
 将 interval 第二个参数设置为 true，可以在没有消费者的时候停止循环
 
 ```javascript
-import UNodeMQ, { Exchange, Queue, ConsumMode, createQuickUnmq } from "u-node-mq";
-import interval from "u-node-mq/operators/interval"
+import UNodeMQ, { Exchange, Queue, ConsumMode, createQuickUnmq,interval } from "u-node-mq";
 
   const quickUnmq = createQuickUnmq(new Exchange<number>(), {
     qu1: new Queue<number>()
