@@ -10,7 +10,7 @@ const now = new Date().getTime();
 async function buildMain() {
   const minify = _package.version.search("beta") === -1;
   //清除缓存
-  await execa("pnpm", ["clr"]);
+  // await execa("pnpm", ["clr"]);
 
   // 构建core
   const unmq = esbuild.build({
