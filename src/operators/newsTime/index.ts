@@ -6,7 +6,7 @@ import News from "../../internal/News";
  * @param time 存活时长毫秒数
  * @returns
  */
-export default function newsTime<D = unknown>(time: number): Operator<D> {
+export default function newsTime<D>(time: number): Operator<D> {
   return {
     ejectNews(news: News<any>) {
       return new Date().getTime() < time + news.createdTime;

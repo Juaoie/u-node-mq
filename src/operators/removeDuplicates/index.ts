@@ -5,7 +5,7 @@ import { Operator, News } from "../..";
  * @param fun 根据fun 返回的id进行判断是否需要去重
  * @returns
  */
-export default function removeDuplicates<D = unknown>(fun: (res: any) => any): Operator<D> {
+export default function removeDuplicates<D>(fun: (res: any) => any): Operator<D> {
   const list: any[] = [];
   return {
     beforeAddNews(res: News<D>) {

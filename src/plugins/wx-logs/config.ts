@@ -20,11 +20,14 @@ export enum OUTPUT_TYPE {
   Request = "request",
 }
 
-export type Option = {
+/**
+ * 不同日志级别对应日志输出类型的配置
+ */
+export type LevelOutputOption = {
   [P in `${LOG_LEVEL}`]: Array<`${OUTPUT_TYPE}`>;
 };
 
-export const defaultOption: Option = {
+export const defaultOption: LevelOutputOption = {
   [LOG_LEVEL.Info]: [OUTPUT_TYPE.Console],
   [LOG_LEVEL.Warn]: [OUTPUT_TYPE.Console, OUTPUT_TYPE.Realtime],
   [LOG_LEVEL.Error]: [OUTPUT_TYPE.Console, OUTPUT_TYPE.Request, OUTPUT_TYPE.Realtime],

@@ -1,9 +1,9 @@
 /**
  * 主包
  */
-import UNodeMQ, { createUnmq, PluginInstallFunction, Plugin } from "./core/UNodeMQ";
+import UNodeMQ, { createUnmq } from "./core/UNodeMQ";
 export default UNodeMQ;
-export { createUnmq, PluginInstallFunction, Plugin };
+export { createUnmq };
 /**
  * 扩展包
  */
@@ -20,7 +20,6 @@ import Consumer from "./internal/Consumer";
 import News from "./internal/News";
 import Logs from "./internal/Logs";
 export { Exchange, Queue, Consumer, News, Logs };
-
 export { ConsumMode, Operator, ExchangeOption, QueueOption };
 
 /**

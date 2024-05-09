@@ -1,4 +1,4 @@
-import { Option, defaultOption, LOG_LEVEL, OUTPUT_TYPE } from "./config";
+import { LevelOutputOption, defaultOption, LOG_LEVEL, OUTPUT_TYPE } from "./config";
 import { getUUID } from "@/utils/tools";
 import { onListener } from "./listener";
 import UNodeMQ, { Exchange, Queue } from "@/index";
@@ -77,7 +77,7 @@ export default class WxLogsPlugin {
    *
    * @param option
    */
-  constructor(private readonly option: Option = defaultOption) {}
+  constructor(private readonly option: LevelOutputOption = defaultOption) {}
   /**
    *
    * @param unmq

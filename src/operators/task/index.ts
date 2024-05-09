@@ -5,7 +5,7 @@ import { Operator } from "../..";
  * @param count
  * @returns
  */
-export default function task<D = unknown>(count: number): Operator<D> {
+export default function task<D>(count: number): Operator<D> {
   let seen = 0;
   return {
     beforeAddNews() {

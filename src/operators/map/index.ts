@@ -5,7 +5,7 @@ import { Operator } from "../..";
  * @returns
  */
 
-export default function map<D = unknown>(project: (value: D, index: number) => D): Operator<D> {
+export default function map<D>(project: (value: D, index: number) => D): Operator<D> {
   let index = 0;
   return {
     beforeAddNews(num) {

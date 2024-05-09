@@ -1,7 +1,7 @@
 import UNodeMQ, { Exchange, Queue, createSingleUnmq } from "../../index";
 import { isObject, isString } from "../../utils/tools";
 import resizeObserver from "../../operators/resizeObserver/index";
-type Option = {
+type IframeOption = {
   autoSize?: boolean; //是否自动大小
   arg?: string | HTMLElement; //当前iframe自动大小的节点元素id或者元素dom，默认为html元素
 };
@@ -51,7 +51,7 @@ export const getInternalIframeBroadcasMessageQueueName = (queueName: string) => 
 
 export default class IframePlugin {
   private unmq: UNodeMQ<any, Record<string, Exchange<any>>, Record<string, Queue<any>>> | null = null;
-  constructor(private readonly name: string, option?: Option) {
+  constructor(private readonly name: string, option?: IframeOption) {
     if (option?.autoSize) {
       const resizeObserverInstance = createSingleUnmq<ResizeObserverEntry>().add(resizeObserver(option.arg));
       resizeObserverInstance.on(res => {
