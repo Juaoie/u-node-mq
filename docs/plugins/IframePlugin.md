@@ -4,7 +4,8 @@
 - `u-node-mq` 集成 `IframeMessage` 以后，`unmq` 的每个 `Exchange` 将对应一个 `iframe` 容器，且非当前容器的 `Exchange` 路由和中继器将会被重写；
 - 一个 `iframe` 应用一般情况下应该只注册一个 IframeMessage 插件；
 - 被集成了 `IframeMessage` 插件的 `unmq`，开发者只需要维护自己 `Exchange` 下的队列；
-- 可以在其他 `Exchange` 应用上添加 `origin` 用来验证 `iframe` 的 `url`
+- 可以在其他 `Exchange` 应用上添加 `origin` 用来验证 `iframe` 的 `url`；
+- `new IframeMessage` 可以传递参数 `autoSize` 来控制当前`iframe`容器是否和父元素是否一致，默认`iframe`容器大小是不受父元素影响的
 
 ## IframeMessage 基本使用方法
 
@@ -12,8 +13,7 @@
 
 ```javascript
 // https://iframeName1.com
-import IframeMessage from "u-node-mq/plugins/iframe";
-import UNodeMQ from "u-node-mq";
+import UNodeMQ,{IframeMessage} from "u-node-mq";
 const unmq = new UNodeMQ(
   {
     iframeName1: new Exchange({ routes: ["qu1"] }),
@@ -24,7 +24,7 @@ const unmq = new UNodeMQ(
     qu1: new Queue(),
   },
 );
-unmq.use(new IframeMessage("iframeName1"));
+unmq.use(new IframeMessage("iframeName1",{autoSize:true}));
 unmq.emit("iframeName2", "发送给iframeName2的消息");
 ```
 
@@ -32,8 +32,7 @@ unmq.emit("iframeName2", "发送给iframeName2的消息");
 
 ```javascript
 // https://iframeName2.com
-import IframeMessage from "u-node-mq/plugins/iframe";
-import UNodeMQ from "u-node-mq";
+import UNodeMQ,{IframeMessage} from "u-node-mq";
 const unmq = new UNodeMQ(
   {
     iframeName1: new Exchange(),

@@ -2,6 +2,7 @@ import { isFunction } from "../utils/tools";
 import { Exchange, Queue } from "../index";
 import { Consume, Next } from "../internal/Consumer";
 import Collection from "./Collection";
+import { Plugin } from "@/plugins/index";
 
 /**
  * 获取队列名称返回的promise导致消费事件加入微任务队列延迟消费（ios属于加入普通任务队列）
@@ -11,15 +12,6 @@ import Collection from "./Collection";
 export type ReturnPanShapeExchange<T> = T extends Exchange<infer U> ? U : never;
 export type ReturnPanShapeQueue<T> = T extends Queue<infer U> ? U : never;
 
-/**
- * 安装插件的方法
- */
-export type PluginInstallFunction = (unmq: any, ...options: any[]) => void;
-export type Plugin =
-  | (PluginInstallFunction & { install?: PluginInstallFunction })
-  | {
-      install: PluginInstallFunction;
-    };
 /**
  * 使用普通函数创建unmq
  * @param exchangeCollection

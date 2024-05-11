@@ -8,7 +8,7 @@ import { IntTime } from "../../utils/types";
  * @returns
  * 立即执行代表第一个回调函数会立马执行，防抖函数一般不需要立即执行
  */
-export default function debounceTime<D = unknown>(dueTime: number, immediate?: boolean): Operator<D> {
+export default function debounceTime<D>(dueTime: number, immediate?: boolean): Operator<D> {
   let now = 0;
   let timeId: IntTime | null = null;
   let res: (value: boolean | PromiseLike<boolean>) => void;

@@ -1,7 +1,7 @@
 import UNodeMQ, { Exchange, Queue, createSingleUnmq } from "../../index";
 import { isObject, isString } from "../../utils/tools";
 import resizeObserver from "../../operators/resizeObserver/index";
-type Option = {
+type IframeOption = {
   autoSize?: boolean; //是否自动大小
   arg?: string | HTMLElement; //当前iframe自动大小的节点元素id或者元素dom，默认为html元素
 };
@@ -50,8 +50,8 @@ export const getInternalIframeMessageQueueName = (queueName: string) => queueNam
 export const getInternalIframeBroadcasMessageQueueName = (queueName: string) => queueName + "_Iframe_Wait_Message";
 
 export default class IframePlugin {
-  private unmq: UNodeMQ<Record<string, Exchange<any>>, Record<string, Queue<any>>> | null = null;
-  constructor(private readonly name: string, option?: Option) {
+  private unmq: UNodeMQ<any, Record<string, Exchange<any>>, Record<string, Queue<any>>> | null = null;
+  constructor(private readonly name: string, option?: IframeOption) {
     if (option?.autoSize) {
       const resizeObserverInstance = createSingleUnmq<ResizeObserverEntry>().add(resizeObserver(option.arg));
       resizeObserverInstance.on(res => {
@@ -72,7 +72,7 @@ export default class IframePlugin {
       });
     }
   }
-  install(unmq: UNodeMQ<Record<string, Exchange<any>>, Record<string, Queue<any>>>) {
+  install(unmq: UNodeMQ<any, Record<string, Exchange<any>>, Record<string, Queue<any>>>) {
     const selfExchange = unmq.getExchange(this.name);
     if (!selfExchange) {
       throw `${this.name}交换机不存在`;
@@ -89,9 +89,9 @@ export default class IframePlugin {
 
       iframe.setRepeater(() => [internalIframeMessageQueueName, internalIframeBroadcasMessageQueueName]);
       //用于存储消息的队列
-      unmq.addQueue(new Queue({ name: internalIframeMessageQueueName, async: true }));
+      unmq.addQueue(internalIframeMessageQueueName, new Queue({ async: true }));
       //用来广播获取地址的消息
-      unmq.addQueue(new Queue({ name: internalIframeBroadcasMessageQueueName, async: true }));
+      unmq.addQueue(internalIframeBroadcasMessageQueueName, new Queue({ async: true }));
 
       //为广播消息挂载消费方法
       unmq.on(internalIframeBroadcasMessageQueueName, () => {
@@ -226,7 +226,7 @@ export default class IframePlugin {
  * 获取其他所有Iframe doc
  * @returns
  */
-export function getOtherAllIframeDoc(): T[] {
+function getOtherAllIframeDoc(): T[] {
   if (window.top === null) throw "window.top is null";
   const list = getAllIframeDoc();
   return list.filter(item => item.window !== window.self);
@@ -235,7 +235,7 @@ export function getOtherAllIframeDoc(): T[] {
  * 获取自己的iframe doc
  * @returns
  */
-export function getSelfIframeDoc(): T | undefined {
+function getSelfIframeDoc(): T | undefined {
   if (window.top === null) throw "window.top is null";
   const list = getAllIframeDoc();
   return list.find(item => item.window === window.self);
@@ -250,7 +250,7 @@ type T = {
  * @returns
  * https://www.typescriptlang.org/play?#code/C4TwDgpgBAKlC8UDeBYAUFTUDuAuKAdgK4C2ARhAE4Dc6WUAHvseVbRliM6RTegL7sAZkQIBjYAEsA9gSgBzCMACCAG1UBJIZQCGJCABFpYgBR4oOgiACUyOljGyAzsCirJL7q0oBtALoIUP72mKpKjIEADCFu4SBR6DEi4lKyCkoGEBBgAGK6+mb4liAANIxevGVchDxUtqgc9JgA9M1QjgRO0mEAdKrS8iYARAC0Y+MTE0PWMfSt7c7dEH0DJjazWPMdXb39g+4uPiB+M41NkkJQJgfARwHwD1CiACYQQpIEEM+2N3eBDBtMBBVE5oAxAgBqCG-Y6AhadJYrfYeYCnJoOZyuHSUSj4GD+QL+djozDYyg9MBEJwACxMDRJTWwJTh9AYzLODNKcP41mJJPiEMQAEY+eihNJKFcwq4ANZRahQOUAHhwfRRfQgBHkwGpCplUPqLKwZIpVNpPQtimAmWyeT0EDMasOMr8ZTZUBsvKNmHBgqgIu5cMoSiIlDkZNFUH4MWDwFDcitNty+QdTMYVTRmza20Re2uKNO0bQ6G2WJxgStak02ntRlMMXpJMkz3wkXZDJu+B83rsHIZWGb+CF7f76M7QR7DMbo5nUEHUAAzCPZ6Px8E+yuo2Vp5umy2oAAWZe7scort+Sckosn12JDdNfjHqeXzDzgBMT5na5fTR3J-o84AKyfv+bhnkEF73rO167pB0FwnBWA8neOa7KsZLWEAA
  */
-export function getAllIframeDoc(): T[] {
+function getAllIframeDoc(): T[] {
   const list: number[] = [];
   const x = 0;
   const y = 0;

@@ -9,7 +9,7 @@ import { IntTime } from "../../utils/types";
  * 如果为true，则会拿第一次触发的参数立即执行
  * @returns
  */
-export default function throttleTime<D = unknown>(duration: number, immediate?: boolean): Operator<D> {
+export default function throttleTime<D>(duration: number, immediate?: boolean): Operator<D> {
   let now = 0;
   let timeId: IntTime | null = null;
   return {

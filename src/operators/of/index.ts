@@ -5,7 +5,7 @@ import { Operator, Queue } from "../..";
  * @param args
  * @returns
  */
-export default function of<D = unknown>(...args: D[]): Operator<D> {
+export default function of<D>(...args: D[]): Operator<D> {
   return {
     mounted(queue: Queue<D>) {
       args.forEach(item => {

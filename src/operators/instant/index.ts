@@ -5,7 +5,7 @@ import { Operator, Queue, ConsumMode } from "../../index";
  * 使用off方法可以移除此属性，开发时请注意协调
  * @returns
  */
-export default function instant<D = unknown>(): Operator<D> {
+export default function instant<D>(): Operator<D> {
   return {
     mounted(that: Queue<D>) {
       if (that.mode !== ConsumMode.All) throw `${that.name} 队列 mode 需要设置成All`;
